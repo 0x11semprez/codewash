@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 120" width="100" height="120">
+  <defs>
+    <linearGradient id="obsidian-shield" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#7c3aed"/>
+      <stop offset="100%" stop-color="#4c1d95"/>
+    </linearGradient>
+    <linearGradient id="obsidian-star" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#fde68a"/>
+      <stop offset="50%" stop-color="#f59e0b"/>
+      <stop offset="100%" stop-color="#d97706"/>
+    </linearGradient>
+    <radialGradient id="obsidian-glow" cx="50%" cy="50%">
+      <stop offset="0%" stop-color="#fbbf24" stop-opacity="0.5"/>
+      <stop offset="100%" stop-color="#fbbf24" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <path d="M50 5 L90 20 L90 65 Q90 95 50 115 Q10 95 10 65 L10 20 Z" fill="url(#obsidian-shield)" stroke="#3b0764" stroke-width="4"/>
+  <path d="M50 15 L82 27 L82 63 Q82 88 50 105 Q18 88 18 63 L18 27 Z" fill="#1e1b4b" opacity="0.4"/>
+  <circle cx="50" cy="52" r="14" fill="url(#obsidian-glow)"/>
+  <polygon points="50,28 56,45 74,45 60,56 65,73 50,63 35,73 40,56 26,45 44,45" fill="url(#obsidian-star)" stroke="#d97706" stroke-width="1.5"/>
+  <circle cx="50" cy="50" r="2" fill="white" opacity="0.9"/>
+  <circle cx="28" cy="40" r="1.5" fill="white" opacity="0.5"/>
+  <circle cx="74" cy="60" r="1.2" fill="#c084fc" opacity="0.5"/>
+  <circle cx="30" cy="80" r="1" fill="#c084fc" opacity="0.4"/>
+  <circle cx="70" cy="35" r="1" fill="white" opacity="0.4"/>
+</svg>

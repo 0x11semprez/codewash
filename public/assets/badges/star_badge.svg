@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 120" width="100" height="120">
+  <defs>
+    <linearGradient id="star-tl" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#8b6342"/>
+      <stop offset="100%" stop-color="#6b4226"/>
+    </linearGradient>
+    <linearGradient id="star-tr" x1="1" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#6b7280"/>
+      <stop offset="100%" stop-color="#4b5563"/>
+    </linearGradient>
+    <linearGradient id="star-bl" x1="0" y1="1" x2="1" y2="0">
+      <stop offset="0%" stop-color="#059669"/>
+      <stop offset="100%" stop-color="#047857"/>
+    </linearGradient>
+    <linearGradient id="star-br" x1="1" y1="1" x2="0" y2="0">
+      <stop offset="0%" stop-color="#7c3aed"/>
+      <stop offset="100%" stop-color="#5b21b6"/>
+    </linearGradient>
+    <linearGradient id="star-center" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#fde68a"/>
+      <stop offset="100%" stop-color="#f59e0b"/>
+    </linearGradient>
+    <radialGradient id="star-glow" cx="50%" cy="45%">
+      <stop offset="0%" stop-color="white" stop-opacity="0.7"/>
+      <stop offset="100%" stop-color="white" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <clipPath id="shield-clip">
+    <path d="M50 5 L90 20 L90 65 Q90 95 50 115 Q10 95 10 65 L10 20 Z"/>
+  </clipPath>
+  <path d="M50 5 L90 20 L90 65 Q90 95 50 115 Q10 95 10 65 L10 20 Z" fill="#fbbf24" stroke="#92400e" stroke-width="4"/>
+  <g clip-path="url(#shield-clip)">
+    <rect x="10" y="5" width="40" height="55" fill="url(#star-tl)"/>
+    <rect x="50" y="5" width="40" height="55" fill="url(#star-tr)"/>
+    <rect x="10" y="60" width="40" height="55" fill="url(#star-bl)"/>
+    <rect x="50" y="60" width="40" height="55" fill="url(#star-br)"/>
+    <rect x="45" y="5" width="10" height="110" fill="#fbbf24" opacity="0.6"/>
+    <rect x="10" y="55" width="80" height="10" fill="#fbbf24" opacity="0.6"/>
+  </g>
+  <path d="M50 5 L90 20 L90 65 Q90 95 50 115 Q10 95 10 65 L10 20 Z" fill="none" stroke="#92400e" stroke-width="4"/>
+  <circle cx="50" cy="55" r="18" fill="url(#star-glow)"/>
+  <polygon points="50,20 58,42 82,42 63,56 70,78 50,65 30,78 37,56 18,42 42,42" fill="url(#star-center)" stroke="#b8860b" stroke-width="1.5"/>
+  <polygon points="50,20 54,42 70,42 57,52 62,70 50,60 38,70 43,52 30,42 46,42" fill="white" opacity="0.15"/>
+  <circle cx="50" cy="48" r="3" fill="white" opacity="0.8"/>
+  <circle cx="30" cy="30" r="1.5" fill="white" opacity="0.6"/>
+  <circle cx="75" cy="45" r="1.2" fill="white" opacity="0.5"/>
+  <circle cx="25" cy="80" r="1" fill="white" opacity="0.5"/>
+  <circle cx="70" cy="75" r="1" fill="white" opacity="0.4"/>
+</svg>
