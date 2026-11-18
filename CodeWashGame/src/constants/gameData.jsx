@@ -274,26 +274,6 @@ export const SPELLING_ITEMS = [
     { word: "NETHERITE", length: 9 }
 ];
 
-// Helper function to format multi-word display names
-// Converts "coppergolem" -> "Copper Golem", "witherskeleton" -> "Wither Skeleton"
-export const formatDisplayName = (word) => {
-    const multiWordMap = {
-        'coppergolem': 'Copper Golem',
-        'irongolem': 'Iron Golem',
-        'snowgolem': 'Snow Golem',
-        'glowsquid': 'Glow Squid',
-        'polarbear': 'Polar Bear',
-        'magmacube': 'Magma Cube',
-        'elderguardian': 'Elder Guardian',
-        'enderdragon': 'Ender Dragon',
-        'witherskeleton': 'Wither Skeleton',
-        'ender_chest': 'Ender Chest',
-        'shulker_box': 'Shulker Box',
-        'trapped_chest': 'Trapped Chest'
-    };
-    
-    return multiWordMap[word.toLowerCase()] || word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
-};
 
 // Comprehensive writing word index from all mobs (excluding axolotls), blocks, and items
 export const WRITING_WORD_INDEX = [
