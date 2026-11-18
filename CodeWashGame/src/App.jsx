@@ -242,6 +242,7 @@ const App = () => {
     const [skills, setSkills] = useState(() => loadSkills(currentProfile));
     const [activeTheme, setActiveTheme] = useState(() => loadTheme(currentProfile));
     const [stats, setStats] = useState(() => loadStats(currentProfile));
+    const pendingAchievementChecksRef = useRef([]);
     const [achievementToast, setAchievementToast] = useState(null);
     const [battlingSkillId, setBattlingSkillId] = useState(null);
     const [battleDifficulty, setBattleDifficulty] = useState(null); // Track battle's starting difficulty for consistent challenge generation
@@ -441,6 +442,15 @@ const App = () => {
         }
     }, []);
 
+    useEffect(() => {
+        const pendingChecks = pendingAchievementChecksRef.current;
+        pendingAchievementChecksRef.current = [];
+
+        pendingChecks.forEach(({ oldStats, newStats, oldSkills, newSkills }) => {
+            checkAchievements(oldStats, newStats, oldSkills, newSkills);
+        });
+    }, [stats, checkAchievements]);
+
     const handleSuccessHit = (skillId, isWrong) => {
         // Handle wrong answer
         if (isWrong === 'WRONG') {
@@ -487,10 +497,12 @@ const App = () => {
                             totalDeaths: (prevStats.totalDeaths || 0) + 1
                         };
                         
-                        // Check achievements after death
-                        setTimeout(() => {
-                            checkAchievements(prevStats, newStats, skills, skills);
-                        }, 100);
+                        pendingAchievementChecksRef.current.push({
+                            oldStats: prevStats,
+                            newStats,
+                            oldSkills: skills,
+                            newSkills: skills
+                        });
                         
                         return newStats;
                     });
@@ -648,10 +660,12 @@ const App = () => {
                         );
                     }
                     
-                    // Check achievements after stats update
-                    setTimeout(() => {
-                        checkAchievements(prevStats, newStats, prev, { ...prev, [skillId]: { ...current, level: newLevel } });
-                    }, 100);
+                    pendingAchievementChecksRef.current.push({
+                        oldStats: prevStats,
+                        newStats,
+                        oldSkills: prev,
+                        newSkills: { ...prev, [skillId]: { ...current, level: newLevel } }
+                    });
                     
                     return newStats;
                 });
@@ -830,10 +844,12 @@ const App = () => {
                     themeChanges: (prevStats.themeChanges || 0) + 1
                 };
                 
-                // Check achievements
-                setTimeout(() => {
-                    checkAchievements(prevStats, newStats, skills, skills);
-                }, 100);
+                pendingAchievementChecksRef.current.push({
+                    oldStats: prevStats,
+                    newStats,
+                    oldSkills: skills,
+                    newSkills: skills
+                });
                 
                 return newStats;
             });
@@ -850,10 +866,12 @@ const App = () => {
                     borderChanges: (prevStats.borderChanges || 0) + 1
                 };
                 
-                // Check achievements
-                setTimeout(() => {
-                    checkAchievements(prevStats, newStats, skills, skills);
-                }, 100);
+                pendingAchievementChecksRef.current.push({
+                    oldStats: prevStats,
+                    newStats,
+                    oldSkills: skills,
+                    newSkills: skills
+                });
                 
                 return newStats;
             });
@@ -1477,10 +1495,12 @@ const App = () => {
                             phantomsCaught: (prevStats.phantomsCaught || 0) + 1
                         };
                         
-                        // Check achievements
-                        setTimeout(() => {
-                            checkAchievements(prevStats, newStats, skills, skills);
-                        }, 100);
+                        pendingAchievementChecksRef.current.push({
+                            oldStats: prevStats,
+                            newStats,
+                            oldSkills: skills,
+                            newSkills: skills
+                        });
                         
                         return newStats;
                     });
