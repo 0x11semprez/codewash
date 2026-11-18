@@ -22,23 +22,3 @@ export const AURA_ADJECTIVES = {
 export const getRandomAura = () => {
     return AURA_TYPES[Math.floor(Math.random() * AURA_TYPES.length)];
 };
-
-/**
- * Generate mob with aura for display
- * @param {string} mobName - Name of the mob
- * @param {string} mobSrc - Source path for mob image
- * @returns {object} Object with mobName, mobSrc, aura, and displayName
- */
-export const generateMobWithAura = (mobName, mobSrc) => {
-    const aura = getRandomAura();
-    const displayName = AURA_ADJECTIVES[aura] 
-        ? `${AURA_ADJECTIVES[aura]} ${mobName}` 
-        : mobName;
-    
-    return {
-        mobName,
-        mobSrc,
-        aura,
-        displayName
-    };
-};
