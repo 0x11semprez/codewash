@@ -1,6 +1,6 @@
 export const BASE_ASSETS = {
     skillIcons: { 'Reading': 'assets/skills/reading_icon.gif', 'Math': 'assets/skills/math_icon.png', 'Writing': 'assets/skills/writing_icon.png', 'Cleaning': 'assets/skills/cleaning_icon.gif', 'Memory': 'assets/skills/farm_icon.png', 'Patterns': 'assets/skills/pattern_icon.png' },
-    badges: { 'Wood': 'assets/badges/wood_badge.png', 'Stone': 'assets/badges/stone_badge.png', 'Gold': 'assets/badges/gold_badge.png', 'Iron': 'assets/badges/iron_badge.png', 'Emerald': 'assets/badges/emerald_badge.png', 'Diamond': 'assets/badges/diamond_badge.png', 'Netherite': 'assets/badges/netherite_badge.png', 'Obsidian': 'assets/badges/obsidian_badge.png', 'Legendary': 'assets/badges/star_badge.png' },
+    badges: { 'Wood': 'assets/badges/wood_badge.svg', 'Stone': 'assets/badges/stone_badge.svg', 'Gold': 'assets/badges/gold_badge.svg', 'Iron': 'assets/badges/iron_badge.svg', 'Emerald': 'assets/badges/emerald_badge.svg', 'Diamond': 'assets/badges/diamond_badge.svg', 'Netherite': 'assets/badges/netherite_badge.svg', 'Obsidian': 'assets/badges/obsidian_badge.svg', 'Legendary': 'assets/badges/star_badge.svg' },
     audio: { 'bgm': ['assets/sounds/bgm_1.wav'], 'click': 'assets/sounds/click.wav', 'hit': ['assets/sounds/hit_1.wav'], 'levelup': 'assets/sounds/levelup.wav', 'success': 'assets/sounds/success.wav', 'fail': 'assets/sounds/fail.wav', 'match': 'assets/sounds/match_success.wav', 'mismatch': 'assets/sounds/mismatch.wav', 'damage': 'assets/sounds/damage.wav', 'faint': 'assets/sounds/faint.wav' },
     axolotls: { 'Pink': 'assets/mobs/axolotl/axolotl_pink.gif', 'Cyan': 'assets/mobs/axolotl/axolotl_cyan.gif', 'Gold': 'assets/mobs/axolotl/axolotl_gold.gif', 'Brown': 'assets/mobs/axolotl/axolotl_brown.gif', 'Blue': 'assets/mobs/axolotl/axolotl_blue.gif', 'Red': 'assets/mobs/axolotl/axolotl_red.gif', 'Green': 'assets/mobs/axolotl/axolotl_green.gif', 'Black': 'assets/mobs/axolotl/axolotl_black.gif' },
     items: {
@@ -163,13 +163,13 @@ export const DIFFICULTY_CONTENT = {
 
 // Difficulty image assets
 export const DIFFICULTY_IMAGES = {
-    1: 'assets/difficulty/Difficulty_1.png',
-    2: 'assets/difficulty/Difficulty_2.png',
-    3: 'assets/difficulty/Difficulty_3.png',
-    4: 'assets/difficulty/Difficulty_4.png',
-    5: 'assets/difficulty/Difficulty_5.png',
-    6: 'assets/difficulty/Difficulty_6.png',
-    7: 'assets/difficulty/Difficulty_7.png'
+    1: 'assets/difficulty/Difficulty_1.svg',
+    2: 'assets/difficulty/Difficulty_2.svg',
+    3: 'assets/difficulty/Difficulty_3.svg',
+    4: 'assets/difficulty/Difficulty_4.svg',
+    5: 'assets/difficulty/Difficulty_5.svg',
+    6: 'assets/difficulty/Difficulty_6.svg',
+    7: 'assets/difficulty/Difficulty_7.svg'
 };
 
 export const THEME_CONFIG = {
