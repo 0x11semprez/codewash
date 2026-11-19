@@ -181,18 +181,6 @@ export const addUniqueToArray = (arr, value) => {
     return arr;
 };
 
-/**
- * Record a login date (only once per day)
- * @param {array} loginDates - Array of date strings
- * @returns {array} - Updated login dates
- */
-export const recordLoginDate = (loginDates) => {
-    const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD format
-    if (!loginDates.includes(today)) {
-        return [...loginDates, today];
-    }
-    return loginDates;
-};
 
 /**
  * Get achievement display name with tier
