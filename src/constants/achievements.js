@@ -308,11 +308,3 @@ export const ACHIEVEMENTS = {
         }
     }
 };
-
-// Helper to get all achievements as array
-export const getAllAchievements = () => Object.values(ACHIEVEMENTS);
-
-// Helper to get achievements by category
-export const getAchievementsByCategory = (category) => {
-    return getAllAchievements().filter(a => a.category === category);
-};

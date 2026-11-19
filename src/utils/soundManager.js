@@ -268,20 +268,5 @@ export const playMobDeath = (mobName) => {
     audio.volume = sfxVolume;
     audio.play().catch(() => {});
 };
-
-/**
- * Play mob say sound (for friendly mobs)
- * @param {string} mobName - Display name of the mob
- */
-export const playMobSay = (mobName) => {
-    const folder = getMobFolder(mobName);
-    if (!folder) return;
-    
-    // Use standardized naming (all files renamed to say.wav)
-    const audio = new Audio(`assets/sounds/mob/${folder}/say.wav`);
-    audio.volume = sfxVolume;
-    audio.play().catch(() => {});
-};
-
 // Export UI sound names for reference
 export const UI_SOUND_NAMES = Object.keys(UI_SOUNDS);
