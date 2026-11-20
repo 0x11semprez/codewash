@@ -454,15 +454,18 @@ const App = () => {
     const handleSuccessHit = (skillId, isWrong) => {
         // Handle wrong answer
         if (isWrong === 'WRONG') {
-            // Check if player is fighting a boss
             if (battlingSkillId) {
-                const currentSkillState = skills[battlingSkillId];
-                const encounterType = getEncounterType(currentSkillState.level);
-                
-                // Boss fights: heal the boss instead of damaging the player
-                if (encounterType === 'boss') {
-                    setSkills(prev => {
-                        const current = prev[battlingSkillId];
+                setSkills(prev => {
+                    const current = prev[battlingSkillId];
+
+                    // Check if player is fighting a boss
+                    if (getEncounterType(current.level) === 'boss') {
+                        // Boss fights: heal the boss instead of damaging the player
+                        // Trigger boss healing animation
+                        setBossHealing(battlingSkillId);
+                        setTimeout(() => setBossHealing(null), BOSS_HEALING_ANIMATION_DURATION);
+                        // Play fail sound to indicate mistake
+                        playFail();
                         return {
                             ...prev,
                             [battlingSkillId]: {
@@ -470,116 +473,112 @@ const App = () => {
                                 mobHealth: current.mobMaxHealth // Fully heal the boss
                             }
                         };
-                    });
-                    
-                    // Trigger boss healing animation
-                    setBossHealing(battlingSkillId);
-                    setTimeout(() => setBossHealing(null), BOSS_HEALING_ANIMATION_DURATION);
-                    
-                    // Play fail sound to indicate mistake
-                    playFail();
-                    return;
-                }
-            }
-            
-            // Non-boss encounters: damage player
-            setPlayerHealth(h => {
-                const newH = h - 1;
-                if (newH <= 0) {
-                    // Death sequence - play UI death sound
-                    playDeath();
-                    setShowDeathOverlay(true);
-                    
-                    // Track death in stats
-                    setStats(prevStats => {
-                        const newStats = {
-                            ...prevStats,
-                            totalDeaths: (prevStats.totalDeaths || 0) + 1
-                        };
-                        
-                        pendingAchievementChecksRef.current.push({
-                            oldStats: prevStats,
-                            newStats,
-                            oldSkills: skills,
-                            newSkills: skills
-                        });
-                        
-                        return newStats;
-                    });
-                    
-                    // Reduce player level by 1 for the active skill (minimum level 1)
-                    if (battlingSkillId) {
-                        setSkills(prev => {
-                            const current = prev[battlingSkillId];
-                            const newLevel = Math.max(1, current.level - 1);
-                            const currentDiff = current.difficulty || 1;
-                            return {
-                                ...prev,
-                                [battlingSkillId]: {
-                                    ...current,
-                                    level: newLevel,
-                                    lostLevel: current.level > 1, // Only true if we actually lost a level
-                                    recoveryDifficulty: Math.max(1, currentDiff - 1)
-                                }
-                            };
-                        });
                     }
-                    
-                    // End battle after short delay
-                    setTimeout(() => {
-                        setBattlingSkillId(null);
-                        setShowDeathOverlay(false);
-                    }, 2000);
-                    
-                    return 10; // Heal to full health
-                }
-                // Player takes damage but doesn't die - play fail sound
-                playFail();
-                return newH;
-            });
+
+                    // Non-boss encounters: damage player
+                    setPlayerHealth(h => {
+                        const newH = h - 1;
+                        if (newH <= 0) {
+                            // Death sequence - play UI death sound
+                            playDeath();
+                            setShowDeathOverlay(true);
+                            // Track death in stats
+                            setStats(prevStats => {
+                                const newStats = {
+                                    ...prevStats,
+                                    totalDeaths: (prevStats.totalDeaths || 0) + 1
+                                };
+
+                                pendingAchievementChecksRef.current.push({
+                                    oldStats: prevStats,
+                                    newStats,
+                                    oldSkills: prev,
+                                    newSkills: prev
+                                });
+
+                                return newStats;
+                            });
+
+                            // End battle after short delay
+                            setTimeout(() => {
+                                setBattlingSkillId(null);
+                                setShowDeathOverlay(false);
+                            }, 2000);
+                            // Heal to full health
+                            return 10;
+                        }
+                        // Player takes damage but doesn't die - play fail sound
+                        playFail();
+                        return newH;
+                    });
+
+                    // Reduce player level by 1 for the active skill (minimum level 1)
+                    if (playerHealth <= 1) {
+                        const newLevel = Math.max(1, current.level - 1);
+                        const currentDiff = current.difficulty || 1;
+                        return {
+                            ...prev,
+                            [battlingSkillId]: {
+                                ...current,
+                                level: newLevel,
+                                lostLevel: current.level > 1, // Only true if we actually lost a level
+                                recoveryDifficulty: Math.max(1, currentDiff - 1)
+                            }
+                        };
+                    }
+                    return prev;
+                });
+            } else {
+                setPlayerHealth(h => Math.max(0, h - 1));
+            }
             return;
         }
         
         if (!skillId) return;
         const skillConfig = SKILL_DATA.find(s => s.id === skillId);
-        const currentSkillState = skills[skillId];
-        const skillDifficulty = currentSkillState.difficulty || 1;
-        const playerLevel = currentSkillState.level;
-        const currentMobName = currentSkillState.currentMob;
-        
-        // Calculate damage using new RPG formulas
-        const damage = calculateDamage(playerLevel, skillDifficulty);
-        
-        // Get encounter type for current level
-        const encounterType = getEncounterType(playerLevel);
-        
-        // Cleaning/memory/miniboss are defeated in single hit
-        const isMiniboss = encounterType === 'miniboss' && skillConfig.id !== 'cleaning';
-        const isInstantDefeat = skillConfig.id === 'cleaning' || skillConfig.id === 'memory' || isMiniboss;
-        const actualDamage = isInstantDefeat ? currentSkillState.mobHealth : damage;
-        
-        // Determine if this hit will defeat the mob
-        const willDefeatMob = (currentSkillState.mobHealth - actualDamage) <= 0;
-        
-        // Show damage numbers and play sounds
-        if (skillConfig.id !== 'memory') {
-            const id = ++damageIdRef.current;
-            setDamageNumbers(prev => [...prev, { id, skillId, val: actualDamage, x: Math.random() * 100 - 50, y: Math.random() * 50 - 25 }]);
-            setTimeout(() => setDamageNumbers(prev => prev.filter(n => n.id !== id)), 800);
-            
-            // Play mob hurt or death sound based on if mob is defeated
-            if (willDefeatMob) {
-                playMobDeath(currentMobName);
-            } else {
-                playMobHurt(currentMobName);
-            }
-            
-            // Play successful hit UI sound
-            playSuccessfulHit();
-        }
-        
+        let skillDifficulty = 1;
         setSkills(prev => {
             const current = prev[skillId];
+            skillDifficulty = current.difficulty || 1;
+            const playerLevel = current.level;
+            const currentMobName = current.currentMob;
+
+            // Calculate damage using new RPG formulas
+            const damage = calculateDamage(playerLevel, skillDifficulty);
+
+            // Get encounter type for current level
+            const encounterType = getEncounterType(playerLevel);
+
+            // Cleaning/memory/miniboss are defeated in single hit
+            const isMiniboss = encounterType === 'miniboss' && skillConfig.id !== 'cleaning';
+            const isInstantDefeat = skillConfig.id === 'cleaning' || skillConfig.id === 'memory' || isMiniboss;
+            const actualDamage = isInstantDefeat ? current.mobHealth : damage;
+
+            // Determine if this hit will defeat the mob
+            const willDefeatMob = current.mobHealth - actualDamage <= 0;
+
+            // Show damage numbers and play sounds
+            if (skillConfig.id !== 'memory') {
+                const id = ++damageIdRef.current;
+                setDamageNumbers(prevNumbers => [...prevNumbers, {
+                    id,
+                    skillId,
+                    val: actualDamage,
+                    x: Math.random() * 100 - 50,
+                    y: Math.random() * 50 - 25
+                }]);
+                setTimeout(() => setDamageNumbers(prevNumbers => prevNumbers.filter(n => n.id !== id)), 800);
+
+                // Play mob hurt or death sound based on if mob is defeated
+                if (willDefeatMob) {
+                    playMobDeath(currentMobName);
+                } else {
+                    playMobHurt(currentMobName);
+                }
+                // Play successful hit UI sound
+                playSuccessfulHit();
+            }
+
             let newMobHealth = current.mobHealth - actualDamage;
             let newLevel = current.level;
             let newXp = current.xp;
