@@ -1,0 +1,7 @@
+import { describe, it, expect } from 'vitest'
+
+describe('App', () => {
+  it('runs test suite', () => {
+    expect(true).toBe(true)
+  })
+})
