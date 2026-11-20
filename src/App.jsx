@@ -191,7 +191,12 @@ const App = () => {
             const data = JSON.parse(saved);
             if (data.stats) {
                 // Merge with default stats to ensure all fields exist
-                return { ...getDefaultStats(), ...data.stats };
+                return {
+                    ...getDefaultStats(),
+                    ...data.stats,
+                    // This counter is scoped to the current app session.
+                    battlesThisSession: 0
+                };
             }
         } catch (e) {
             console.warn('Failed to parse stats:', e);
