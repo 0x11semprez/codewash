@@ -1,6 +1,6 @@
 import React from 'react';
 import { Users, Music, Trash2, AlertTriangle } from 'lucide-react';
-import ProfileCard from '../profile/ProfileCard';
+import ProfileCard from '../../profile/components/ProfileCard';
 
 const SettingsDrawer = ({ isOpen, onReset, bgmVol, setBgmVol, sfxVol, setSfxVol, currentProfile, onSwitchProfile, profileNames, onRenameProfile, getProfileStats, parentStatus, onParentVerified, currentSkills }) => (
     <div 

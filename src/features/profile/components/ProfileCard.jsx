@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Pencil, Check, Heart, Crown } from 'lucide-react';
-import SafeImage from '../ui/SafeImage';
-import ParentalVerificationModal from '../ui/ParentalVerificationModal';
-import { THEMES_LIST, SKILL_DATA } from '../../constants/gameData';
+import SafeImage from '../../../shared/components/SafeImage';
+import ParentalVerificationModal from './ParentalVerificationModal';
+import { THEMES_LIST } from '../../cosmetics/constants/themes';
+import { SKILL_DATA } from '../../skills/constants/skills';
 
 const ProfileCard = ({ id, name, stats, isCurrent, onSwitch, onRename, isParent, onParentVerified }) => {
     const [isEditing, setIsEditing] = useState(false);

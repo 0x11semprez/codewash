@@ -1,16 +1,17 @@
 import React from 'react';
 import { Lock } from 'lucide-react';
-import SafeImage from '../ui/SafeImage';
-import { BADGE_TIERS, BASE_ASSETS, SKILL_DATA } from '../../constants/gameData';
-import { ACHIEVEMENTS, TIER_COLORS, TIER_NAMES } from '../../constants/achievements';
-import { 
-    isAchievementUnlocked, 
-    getCurrentTier, 
-    getNextTier, 
+import SafeImage from '../../../shared/components/SafeImage';
+import { BADGE_TIERS, BASE_ASSETS } from '../../../shared/constants/assets';
+import { SKILL_DATA } from '../../skills/constants/skills';
+import { ACHIEVEMENTS, TIER_COLORS, TIER_NAMES } from '../../achievements/constants/achievements';
+import {
+    isAchievementUnlocked,
+    getCurrentTier,
+    getNextTier,
     getTierProgress,
-    getAchievementDisplayName 
-} from '../../utils/achievementUtils';
-import { calculateXPToLevel } from '../../utils/gameUtils';
+    getAchievementDisplayName
+} from '../../achievements/utils/achievementUtils';
+import { calculateXPToLevel } from '../../battle/utils/gameUtils';
 
 // Achievement grid constants
 const ACHIEVEMENT_GRID_COLUMNS = 6;

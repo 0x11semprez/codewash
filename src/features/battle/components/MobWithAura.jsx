@@ -1,5 +1,5 @@
 import React from 'react';
-import SafeImage from './SafeImage';
+import SafeImage from '../../../shared/components/SafeImage';
 
 /**
  * MobWithAura - Composite component that renders mob and aura as a single element

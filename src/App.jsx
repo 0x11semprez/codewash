@@ -3,36 +3,42 @@ import {
     Menu, Sparkles, Gift, Maximize, Minimize, Settings, Bug
 } from 'lucide-react';
 
-// Modules
-import GlobalStyles from './components/ui/GlobalStyles';
-import SafeImage from './components/ui/SafeImage';
-import PixelHeart from './components/ui/PixelHeart';
-import ResetModal from './components/modals/ResetModal';
-import BugReportModal from './components/modals/BugReportModal';
-import SettingsDrawer from './components/drawers/SettingsDrawer';
-import CosmeticsDrawer from './components/drawers/CosmeticsDrawer';
-import MenuDrawer from './components/drawers/MenuDrawer';
-import SkillCard from './components/skills/SkillCard';
-import PhantomEvent from './components/PhantomEvent';
-import AchievementToast from './components/ui/AchievementToast';
-
-// Utils & Constants
-import { getRandomMob, getRandomFriendlyMob, getRandomMiniboss, getRandomBoss, getMobForSkill, getEncounterType, generateMathProblem, getReadingWord, getWordForDifficulty, calculateDamage, calculateMobHealth, calculateXPReward, calculateXPToLevel } from './utils/gameUtils';
-import { getRandomAura } from './utils/mobDisplayUtils';
-import { 
-    BASE_ASSETS, THEME_CONFIG, SKILL_DATA, 
-    HOMOPHONES, DIFFICULTY_CONTENT, HOSTILE_MOBS, BOSS_MOBS, MINIBOSS_MOBS
-} from './constants/gameData';
-import { 
-    getBGMManager, setSfxVolume, 
-    playActionCardLeft, playActionCardRight, playClick, 
+// Shared
+import GlobalStyles from './shared/components/GlobalStyles';
+import SafeImage from './shared/components/SafeImage';
+import BugReportModal from './shared/components/BugReportModal';
+import {
+    getBGMManager, setSfxVolume,
+    playActionCardLeft, playActionCardRight, playClick,
     playDeath, playFail, playLevelUp, playNotification, playSuccessfulHit,
     playMobHurt, playMobDeath, playAchievement
-} from './utils/soundManager';
-import { 
+} from './shared/services/soundManager';
+import { BASE_ASSETS } from './shared/constants/assets';
+
+// Features
+import PixelHeart from './features/battle/components/PixelHeart';
+import { getRandomMob, getRandomFriendlyMob, getRandomMiniboss, getRandomBoss, getMobForSkill, getEncounterType, generateMathProblem, getReadingWord, getWordForDifficulty, calculateDamage, calculateMobHealth, calculateXPReward, calculateXPToLevel } from './features/battle/utils/gameUtils';
+import { getRandomAura } from './features/battle/utils/mobDisplayUtils';
+import { HOSTILE_MOBS, BOSS_MOBS, MINIBOSS_MOBS } from './features/battle/constants/mobs';
+
+import SkillCard from './features/skills/components/SkillCard';
+import { SKILL_DATA, DIFFICULTY_CONTENT } from './features/skills/constants/skills';
+import { HOMOPHONES } from './features/skills/constants/words';
+
+import AchievementToast from './features/achievements/components/AchievementToast';
+import {
     getDefaultStats, getNewlyUnlockedAchievements, getNewTierAchievements,
     addUniqueToArray, isAchievementUnlocked
-} from './utils/achievementUtils';
+} from './features/achievements/utils/achievementUtils';
+
+import CosmeticsDrawer from './features/cosmetics/components/CosmeticsDrawer';
+import { THEME_CONFIG } from './features/cosmetics/constants/themes';
+
+import SettingsDrawer from './features/settings/components/SettingsDrawer';
+import ResetModal from './features/settings/components/ResetModal';
+
+import MenuDrawer from './features/menu/components/MenuDrawer';
+import PhantomEvent from './features/events/components/PhantomEvent';
 
 // Parent verification privilege constants
 const PARENT_PRIVILEGE_LEVEL = 200;

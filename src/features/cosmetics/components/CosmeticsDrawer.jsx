@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { Sparkles, Flame, Snowflake, Zap, Skull, Star, Activity, Atom, Droplet, Grid3x3, Gem, Info } from 'lucide-react';
-import SafeImage from '../ui/SafeImage';
-import { THEMES_LIST } from '../../constants/gameData';
-import { ACHIEVEMENTS } from '../../constants/achievements';
+import SafeImage from '../../../shared/components/SafeImage';
+import { THEMES_LIST } from '../constants/themes';
+import { ACHIEVEMENTS } from '../../achievements/constants/achievements';
 
 const BORDER_EFFECTS = [
     { id: 'solid', name: 'Default', badge: null, description: 'Eternal golden radiance', icon: Star },

@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { HOSTILE_MOBS } from '../constants/gameData';
-import { playSuccessfulHit } from '../utils/soundManager';
+import { HOSTILE_MOBS } from '../../battle/constants/mobs';
+import { playSuccessfulHit } from '../../../shared/services/soundManager';
 
 const PHANTOM_COOLDOWN_KEY = 'phantomEvent_lastSpawn_v1';
 const MIN_COOLDOWN_MS = 5 * 60 * 1000; // 5 minutes

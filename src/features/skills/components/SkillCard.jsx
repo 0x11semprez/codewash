@@ -1,13 +1,16 @@
 import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import ReactDOM from 'react-dom';
 import { Mic, Plus, Minus } from 'lucide-react';
-import SafeImage from '../ui/SafeImage';
-import MobWithAura from '../ui/MobWithAura';
-import ParentalVerificationModal from '../ui/ParentalVerificationModal';
-import { BASE_ASSETS, FRIENDLY_MOBS, HOSTILE_MOBS, CHEST_BLOCKS, BOSS_MOBS, MINIBOSS_MOBS, DIFFICULTY_IMAGES, DIFFICULTY_CONTENT, HOMOPHONES } from '../../constants/gameData';
-import { playClick, getSfxVolume } from '../../utils/soundManager';
-import { calculateXPToLevel } from '../../utils/gameUtils';
-import { AURA_ADJECTIVES } from '../../utils/mobDisplayUtils';
+import SafeImage from '../../../shared/components/SafeImage';
+import MobWithAura from '../../battle/components/MobWithAura';
+import ParentalVerificationModal from '../../profile/components/ParentalVerificationModal';
+import { FRIENDLY_MOBS, HOSTILE_MOBS, CHEST_BLOCKS, BOSS_MOBS, MINIBOSS_MOBS } from '../../battle/constants/mobs';
+import { BASE_ASSETS } from '../../../shared/constants/assets';
+import { DIFFICULTY_IMAGES, DIFFICULTY_CONTENT } from '../constants/skills';
+import { HOMOPHONES } from '../constants/words';
+import { playClick, getSfxVolume } from '../../../shared/services/soundManager';
+import { calculateXPToLevel } from '../../battle/utils/gameUtils';
+import { AURA_ADJECTIVES } from '../../battle/utils/mobDisplayUtils';
 
 const PRESTIGE_LEVEL_THRESHOLD = 20;
 

@@ -1,4 +1,7 @@
-import { HOSTILE_MOBS, FRIENDLY_MOBS, CHEST_BLOCKS, SPECIAL_CHESTS, MINIBOSS_MOBS, BOSS_MOBS, READING_WORDS, FUNNY_LONG_WORDS, SPELLING_ITEMS, DIFFICULTY_CONTENT, BASE_ASSETS, WRITING_WORD_INDEX, WRITING_DIFFICULTY_POOLS } from '../constants/gameData';
+import { HOSTILE_MOBS, FRIENDLY_MOBS, CHEST_BLOCKS, SPECIAL_CHESTS, MINIBOSS_MOBS, BOSS_MOBS } from '../constants/mobs';
+import { READING_WORDS, FUNNY_LONG_WORDS, SPELLING_ITEMS, WRITING_WORD_INDEX, WRITING_DIFFICULTY_POOLS } from '../../skills/constants/words';
+import { DIFFICULTY_CONTENT } from '../../skills/constants/skills';
+import { BASE_ASSETS } from '../../../shared/constants/assets';
 
 export const getRandomMob = (exclude) => { 
     const pool = Object.keys(HOSTILE_MOBS).filter(m => m !== exclude); 

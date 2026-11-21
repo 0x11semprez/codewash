@@ -1,6 +1,6 @@
 import React from 'react';
 import { Trophy } from 'lucide-react';
-import { ACHIEVEMENTS, TIER_COLORS, TIER_NAMES } from '../../constants/achievements';
+import { ACHIEVEMENTS, TIER_COLORS, TIER_NAMES } from '../constants/achievements';
 
 /**
  * AchievementToast Component
