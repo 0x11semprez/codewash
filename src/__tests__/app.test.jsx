@@ -1,7 +1,8 @@
 import { describe, it, expect } from 'vitest'
 
 describe('App', () => {
-  it('runs test suite', () => {
-    expect(true).toBe(true)
+  it('module imports without error', async () => {
+    const mod = await import('../App.jsx')
+    expect(mod).toBeDefined()
   })
 })
