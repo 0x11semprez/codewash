@@ -21,11 +21,9 @@ Run these commands from the project directory:
 
 > Mission: improve startup and in-game responsiveness while preserving gameplay, animations, and transitions.
 
-### PERF-001: Loading screen and startup responsiveness [P2] [Open]
+### **Issue:** [#12](https://github.com/EpitechBachelorPromo2028/B-ING-300-PAR-3-1-codewash-21/issues/12) — Loading screen and startup responsiveness [P2] [Open]
 
-- **Issue:** [#12](https://github.com/EpitechBachelorPromo2028/B-ING-300-PAR-3-1-codewash-21/issues/12) —
-- **Status:** The loading screen and startup achievement are implemented. Manual visual verification remains.
-- **Location:** `src/components/LoadingScreen.jsx`, `src/components/LoadingGate.jsx`, `src/utils/preloadStartupAssets.js`, `src/main.jsx`, `src/index.css`, `src/utils/soundManager.js`, `src/constants/achievements.js`, and `src/components/ui/AchievementToast.jsx`.
+- **Status:** The Loading screen and profiling performance are done. It remains Optimizations, Measurement and Tests.
 - **Observed problem:** The issue reports a sluggish main menu and asks for visible startup progress. Before the change, there was no dedicated loading screen or asset preload progress, and the React interface rendered directly.
 - **Impact:** Players had no visible indication of startup progress. The issue also asks for improved responsiveness, which needs to be confirmed through profiling and measurement.
 - **Risk:** Preloading can delay access to the menu if too many assets are required. A loading screen improves feedback while loading, but does not by itself prove that startup is faster.
@@ -33,7 +31,7 @@ Run these commands from the project directory:
 
 #### Implementation details
 
-- The loading screen uses CodeWash branding, a percentage, a bordered progress bar, and a short opacity transition to the game.
+- The loading screen uses a percentage, a bordered progress bar, and a short opacity transition to the game.
 - At startup, a new `So... So fast !?` achievement reports the time taken to load the game in seconds.
 - The preload covers the selected theme background, logo and card-back image, all six skill icons, mob sprites rendered on the initial screen, and eight small UI sound effects warmed in the background.
 - Failed critical images are reported with a Continue action. Failed optional sounds do not block access to the game.
@@ -49,16 +47,29 @@ Run these commands from the project directory:
 | `src/index.css` | Adds responsive red-screen styling and reduced-motion handling. |
 | `src/utils/soundManager.js` | Aligns UI and mob sound URLs with files present in `public/assets/sounds`. |
 
-#### Tests and verification
+---
 
-| Command or check | Result |
+### **Issue:** [#12](https://github.com/EpitechBachelorPromo2028/B-ING-300-PAR-3-1-codewash-21/issues/12) — React profiling and closed drawer renders [P2] [Open]
+
+- **Status:** React Profiler identified repeated rendering of closed drawers during game interactions. A targeted memoization change is implemented. A fresh Skip / Manual Success profile on the enchanting table game confirms the closed drawers no longer render in that scenario.
+- **Observed problem:** Before the change, updates from the game caused the mounted Settings, Achievements, and Cosmetics drawers to render even while closed. Their Settings content also rendered three `ProfileCard` instances.
+- **Player impact:** These renders add React work during interactions. The captures do not establish that players experienced a visible delay, so no user-visible slowdown is claimed.
+- **Behavior before:** The drawers stayed mounted to preserve their slide transitions, and each parent update rendered their contents.
+- **Fix:** Wrap each drawer in `React.memo`. Its comparison skips parent updates only when both the previous and next `isOpen` values are false. Opening and closing still render, preserving the transition; opening also renders the latest props.
+
+| File | Change |
 | --- | --- |
-| `npm run build` after implementation | Passed; see build output for current bundle size. |
-| `npm run lint` | Failed on three unused imports in existing test files; two existing hook dependency warnings in `App.jsx`. No lint errors remained in the new startup/loading files. |
-| `npm run test`, `npm run test:coverage` | Not run. |
-| Visual review of loading progress, animation, and gameplay | Pending manual verification. |
+| `src/components/drawers/SettingsDrawer.jsx` | Skips parent updates while closed and preserves slide transitions. |
+| `src/components/drawers/MenuDrawer.jsx` | Skips parent updates while closed and uses current props when opened. |
+| `src/components/drawers/CosmeticsDrawer.jsx` | Skips parent updates while closed and uses current props when opened. |
 
-#### Limitations and follow-up
+#### Measurement method and results
 
-- Startup performance still needs profiling in Chrome DevTools and React Profiler.
-- Manually verify the achievement toast and displayed duration, loading progress, image/audio failure handling, gameplay sounds, animations, and transitions.
+- Used React DevTools Profiler with the Vite development server at `http://localhost:5173/`; the exported profile identifies `LoadingGate` as the root and Vite source modules. Captures were made around the Skip / Manual Success interaction.
+- The earlier profile recorded 10 React commits with a median of 79.35 ms, maximum 277.2 ms; `MenuDrawer`, `CosmeticsDrawer`, `SettingsDrawer`, and their profile cards appeared in 8 commits.
+- The fresh profile `scripts/profil Skip.json` recorded 13 commits with a median of 85.0 ms, maximum 142.3 ms after two Skip / Manual Success presses. It contains no render-duration entries for the three drawers or `ProfileCard`; `App` and `SkillCard` still render.
+- These commit durations are development-profiler render measurements, not end-to-end input latency.
+
+#### Baseline metrics
+
+- **FCP:** 522.9 ms, one Opera GX measurement on the production preview (`http://localhost:4173/`).
