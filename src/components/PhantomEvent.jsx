@@ -132,6 +132,7 @@ const PhantomEvent = ({ battlingSkillId, onAwardLevel, onPhantomCaught }) => {
                     key={`phantom-${fromLeft}`}
                     src={phantomSrc}
                     alt="Phantom"
+                    loading="lazy"
                     className="w-24 h-24 object-contain drop-shadow-[0_0_10px_rgba(100,200,255,0.8)]"
                     draggable={false}
                 />

@@ -49,19 +49,33 @@ Run these commands from the project directory:
 
 ---
 
-### **Issue:** [#12](https://github.com/EpitechBachelorPromo2028/B-ING-300-PAR-3-1-codewash-21/issues/12) — React profiling and closed drawer renders [P2] [Open]
+### **Issue:** [#12](https://github.com/EpitechBachelorPromo2028/B-ING-300-PAR-3-1-codewash-21/issues/12) — Performance profiling and optimizations [P2] [Open]
 
-- **Status:** React Profiler identified repeated rendering of closed drawers during game interactions. A targeted memoization change is implemented. A fresh Skip / Manual Success profile on the enchanting table game confirms the closed drawers no longer render in that scenario.
+- **Status:** React profiling and the selected optimizations are implemented and manually checked. The game interactions and deferred image loading were verified. TTI and production before/after measurements remain outstanding.
 - **Observed problem:** Before the change, updates from the game caused the mounted Settings, Achievements, and Cosmetics drawers to render even while closed. Their Settings content also rendered three `ProfileCard` instances.
 - **Player impact:** These renders add React work during interactions. The captures do not establish that players experienced a visible delay, so no user-visible slowdown is claimed.
 - **Behavior before:** The drawers stayed mounted to preserve their slide transitions, and each parent update rendered their contents.
-- **Fix:** Wrap each drawer in `React.memo`. Its comparison skips parent updates only when both the previous and next `isOpen` values are false. Opening and closing still render, preserving the transition; opening also renders the latest props.
+
+#### Optimizations
+
+- **Observed problem:** App updates also rerendered closed drawers, display-only components, and images outside the visible area. Global styles were embedded in a JSX component, and all drawers and modals were in the startup import graph.
+- **Impact:** These patterns can add rendering work and load code or images before the player needs them. No production speedup is claimed without a controlled before/after measurement.
+- **Behavior before:** Drawers and modals were statically imported, global styles were injected by `GlobalStyles.jsx`, and images had no default lazy-loading behavior.
+- **Fix:** Memoize display-only components and closed drawers; load drawers and modals with `React.lazy` on first use; extract global CSS and load it under the loading screen; lazy-load images and limit startup sprite preloading to the visible viewport.
 
 | File | Change |
 | --- | --- |
 | `src/components/drawers/SettingsDrawer.jsx` | Skips parent updates while closed and preserves slide transitions. |
 | `src/components/drawers/MenuDrawer.jsx` | Skips parent updates while closed and uses current props when opened. |
 | `src/components/drawers/CosmeticsDrawer.jsx` | Skips parent updates while closed and uses current props when opened. |
+| `src/App.jsx` | Loads drawers and modals with `React.lazy` and `Suspense` when first needed. |
+| `src/components/ui/GlobalStyles.css`, `src/components/LoadingGate.jsx` | Extracts global styles and loads them during the loading screen before the game is revealed. |
+| `src/components/ui/SafeImage.jsx`, `src/components/PhantomEvent.jsx`, `src/utils/preloadStartupAssets.js` | Defers off-screen images and preloads only sprites visible in the initial viewport. |
+| `src/components/ui/SafeImage.jsx`, `src/components/ui/PixelHeart.jsx`, `src/components/ui/MobWithAura.jsx` | Memoizes display components to skip renders when their props have not changed. |
+
+- **Code splitting per skill type:** Considered. `SkillCard` currently owns state, effects, and challenge handlers shared across the six mini-games. Splitting the skill implementations would require extracting that state and interaction logic; it was not included in this change because it would be a broader gameplay refactor without a profile showing that this code is a startup bottleneck.
+
+#### Performance profiling
 
 #### Measurement method and results
 

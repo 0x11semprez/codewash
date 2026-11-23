@@ -25,8 +25,14 @@ const LoadingGate = () => {
 
     useLayoutEffect(() => {
         if (preloadRef.current) return;
-        preloadRef.current = preloadStartupAssets(({ percent }) => setProgress(percent))
-            .then(({ failedCritical }) => {
+        const stylesReady = import('./ui/GlobalStyles.css').catch((error) => {
+            console.error('Global game styles failed to load:', error);
+        });
+        preloadRef.current = Promise.all([
+            preloadStartupAssets(({ percent }) => setProgress(percent)),
+            stylesReady,
+        ])
+            .then(([{ failedCritical }]) => {
                 finishPreloading(failedCritical.length);
             })
             .catch((error) => {

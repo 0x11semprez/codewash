@@ -1,17 +1,11 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { lazy, Suspense, useState, useEffect, useRef, useCallback } from 'react';
 import { 
     Menu, Sparkles, Gift, Maximize, Minimize, Settings, Bug
 } from 'lucide-react';
 
 // Modules
-import GlobalStyles from './components/ui/GlobalStyles';
 import SafeImage from './components/ui/SafeImage';
 import PixelHeart from './components/ui/PixelHeart';
-import ResetModal from './components/modals/ResetModal';
-import BugReportModal from './components/modals/BugReportModal';
-import SettingsDrawer from './components/drawers/SettingsDrawer';
-import CosmeticsDrawer from './components/drawers/CosmeticsDrawer';
-import MenuDrawer from './components/drawers/MenuDrawer';
 import SkillCard from './components/skills/SkillCard';
 import PhantomEvent from './components/PhantomEvent';
 import AchievementToast from './components/ui/AchievementToast';
@@ -33,6 +27,12 @@ import {
     getDefaultStats, getNewlyUnlockedAchievements, getNewTierAchievements,
     addUniqueToArray, isAchievementUnlocked
 } from './utils/achievementUtils';
+
+const ResetModal = lazy(() => import('./components/modals/ResetModal'));
+const BugReportModal = lazy(() => import('./components/modals/BugReportModal'));
+const SettingsDrawer = lazy(() => import('./components/drawers/SettingsDrawer'));
+const CosmeticsDrawer = lazy(() => import('./components/drawers/CosmeticsDrawer'));
+const MenuDrawer = lazy(() => import('./components/drawers/MenuDrawer'));
 
 // Parent verification privilege constants
 const PARENT_PRIVILEGE_LEVEL = 200;
@@ -257,6 +257,9 @@ const App = ({ startupLoadSeconds = null }) => {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [isSettingsOpen, setIsSettingsOpen] = useState(false);
     const [isCosmeticsOpen, setIsCosmeticsOpen] = useState(false);
+    const [hasOpenedMenu, setHasOpenedMenu] = useState(false);
+    const [hasOpenedSettings, setHasOpenedSettings] = useState(false);
+    const [hasOpenedCosmetics, setHasOpenedCosmetics] = useState(false);
     const [isResetOpen, setIsResetOpen] = useState(false);
     const [isBugReportOpen, setIsBugReportOpen] = useState(false);
     const [isListening, setIsListening] = useState(false);
@@ -1239,20 +1242,19 @@ const App = ({ startupLoadSeconds = null }) => {
 
     return (
         <div className="min-h-screen overflow-hidden relative flex flex-col bg-cover bg-center bg-no-repeat font-sans text-stone-100" style={containerStyle}>
-            <GlobalStyles />
             <div className="absolute inset-0 bg-black/30 pointer-events-none z-0"></div>
             
             {/* Top Left Buttons */}
             {/* Button dimensions: p-3 (12px) + icon(48px) + p-3 (12px) + border-2*2 (4px) = 76px + 8px gap = 84px spacing */}
             <button 
-                onClick={() => { setIsMenuOpen(false); setIsCosmeticsOpen(false); setIsSettingsOpen(true); playClick(); }} 
+                onClick={() => { setHasOpenedSettings(true); setIsMenuOpen(false); setIsCosmeticsOpen(false); setIsSettingsOpen(true); playClick(); }} 
                 className="absolute z-40 bg-stone-800/90 text-white p-3 rounded-lg border-2 border-stone-600 hover:bg-stone-700 transition-all shadow-lg" 
                 style={{ top: '24px', left: '24px' }}
             >
                 <Settings size={48} className="text-slate-400" />
             </button>
             <button 
-                onClick={() => { setIsMenuOpen(false); setIsSettingsOpen(false); setIsCosmeticsOpen(true); playClick(); }} 
+                onClick={() => { setHasOpenedCosmetics(true); setIsMenuOpen(false); setIsSettingsOpen(false); setIsCosmeticsOpen(true); playClick(); }} 
                 className="absolute z-40 bg-stone-800/90 text-white p-3 rounded-lg border-2 border-stone-600 hover:bg-stone-700 transition-all shadow-lg" 
                 style={{ top: '24px', left: 'calc(24px + 76px + 12px)' }}
             >
@@ -1269,7 +1271,7 @@ const App = ({ startupLoadSeconds = null }) => {
                     onClick={() => { setIsCosmeticsOpen(false); playClick(); }}
                 />
             )}
-            <CosmeticsDrawer 
+            <Suspense fallback={null}>{(hasOpenedCosmetics || isCosmeticsOpen) && <CosmeticsDrawer 
                 isOpen={isCosmeticsOpen} 
                 activeTheme={activeTheme} 
                 setActiveTheme={handleThemeChange}
@@ -1279,7 +1281,7 @@ const App = ({ startupLoadSeconds = null }) => {
                 setBorderColor={setBorderColor}
                 unlockedBorders={unlockedBorders}
                 unlockedAchievements={unlockedAchievements}
-            />
+            />}</Suspense>
             
             {/* Settings drawer overlay - click to close */}
             {isSettingsOpen && (
@@ -1288,7 +1290,7 @@ const App = ({ startupLoadSeconds = null }) => {
                     onClick={() => { setIsSettingsOpen(false); playClick(); }}
                 />
             )}
-            <SettingsDrawer 
+            <Suspense fallback={null}>{(hasOpenedSettings || isSettingsOpen) && <SettingsDrawer 
                 isOpen={isSettingsOpen} 
                 onReset={() => setIsResetOpen(true)} 
                 bgmVol={bgmVol} 
@@ -1303,9 +1305,9 @@ const App = ({ startupLoadSeconds = null }) => {
                 parentStatus={parentStatus} 
                 onParentVerified={handleParentVerified} 
                 currentSkills={skills} 
-            />
-            <ResetModal isOpen={isResetOpen} onClose={() => setIsResetOpen(false)} onConfirm={handleReset} />
-            <BugReportModal isOpen={isBugReportOpen} onClose={() => setIsBugReportOpen(false)} />
+            />}</Suspense>
+            <Suspense fallback={null}>{isResetOpen && <ResetModal isOpen={isResetOpen} onClose={() => setIsResetOpen(false)} onConfirm={handleReset} />}</Suspense>
+            <Suspense fallback={null}>{isBugReportOpen && <BugReportModal isOpen={isBugReportOpen} onClose={() => setIsBugReportOpen(false)} />}</Suspense>
             
             {/* Top Right Buttons */}
             {/* Button dimensions: p-3 (12px) + icon(48px) + p-3 (12px) + border-2*2 (4px) = 76px + 8px gap = 84px spacing */}
@@ -1319,7 +1321,7 @@ const App = ({ startupLoadSeconds = null }) => {
                 {isFullscreen ? <Minimize size={48} /> : <Maximize size={48} />}
             </button>
             <button 
-                onClick={() => { setIsSettingsOpen(false); setIsCosmeticsOpen(false); setIsMenuOpen(true); playClick(); }} 
+                onClick={() => { setHasOpenedMenu(true); setIsSettingsOpen(false); setIsCosmeticsOpen(false); setIsMenuOpen(true); playClick(); }} 
                 className="absolute z-40 bg-stone-800/90 text-white p-3 rounded-lg border-2 border-stone-600 hover:bg-stone-700 transition-all shadow-lg" 
                 style={{ top: '24px', right: '24px' }}
             >
@@ -1333,7 +1335,7 @@ const App = ({ startupLoadSeconds = null }) => {
                     onClick={() => { setIsMenuOpen(false); playClick(); }}
                 />
             )}
-            <MenuDrawer isOpen={isMenuOpen} skills={skills} stats={stats} />
+            <Suspense fallback={null}>{(hasOpenedMenu || isMenuOpen) && <MenuDrawer isOpen={isMenuOpen} skills={skills} stats={stats} />}</Suspense>
             
             {/* Bottom Right Bug Report Button */}
             <button 

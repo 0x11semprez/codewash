@@ -90,4 +90,4 @@ const PixelHeart = ({ size = 32, filled = true }) => {
   );
 };
 
-export default PixelHeart;
+export default React.memo(PixelHeart);

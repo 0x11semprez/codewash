@@ -59,6 +59,11 @@ export const preloadStartupAssets = async (onProgress = () => {}) => {
     const cardBack = theme.assets?.cardBack;
     const skillIcons = SKILL_DATA.map(skill => skill.img);
     const renderedSprites = [...document.querySelectorAll('#root main img')]
+        .filter(image => {
+            const bounds = image.getBoundingClientRect();
+            return bounds.bottom > 0 && bounds.right > 0
+                && bounds.top < window.innerHeight && bounds.left < window.innerWidth;
+        })
         .map(image => image.currentSrc || image.src)
         .filter(Boolean);
     const imageAssets = [...new Set([background, logo, cardBack, ...skillIcons, ...renderedSprites].filter(Boolean))];
