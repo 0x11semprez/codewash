@@ -9,7 +9,15 @@ export default defineConfig({
     setupFiles: ['./src/__tests__/setup.js'],
     coverage: {
       provider: 'v8',
-      reporter: ['text', 'lcov'],
+      reporter: ['text', 'lcov', 'json-summary'],
+      include: ['src/**/*.{js,jsx}'],
+      exclude: ['src/__tests__/**', 'src/main.jsx'],
+      thresholds: {
+        lines: 30,
+        functions: 20,
+        branches: 20,
+        statements: 30,
+      },
     },
   },
 })
