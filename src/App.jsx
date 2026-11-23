@@ -46,7 +46,7 @@ const MIC_OFF_TEXT = "Mic Off";
 // Boss healing animation duration (ms)
 const BOSS_HEALING_ANIMATION_DURATION = 600;
 
-const App = () => {
+const App = ({ startupLoadSeconds = null }) => {
     const [currentProfile, setCurrentProfile] = useState(() => localStorage.getItem('currentProfile_v1') ? parseInt(localStorage.getItem('currentProfile_v1')) : 1);
     const [profileNames, setProfileNames] = useState(() => localStorage.getItem('heroProfileNames_v1') ? JSON.parse(localStorage.getItem('heroProfileNames_v1')) : { 1: "Player 1", 2: "Player 2", 3: "Player 3" });
     const [parentStatus, setParentStatus] = useState(() => localStorage.getItem('heroParentStatus_v1') ? JSON.parse(localStorage.getItem('heroParentStatus_v1')) : { 1: false, 2: false, 3: false });
@@ -249,6 +249,7 @@ const App = () => {
     const [stats, setStats] = useState(() => loadStats(currentProfile));
     const pendingAchievementChecksRef = useRef([]);
     const [achievementToast, setAchievementToast] = useState(null);
+    const startupAchievementShownRef = useRef(false);
     const [battlingSkillId, setBattlingSkillId] = useState(null);
     const [battleDifficulty, setBattleDifficulty] = useState(null); // Track battle's starting difficulty for consistent challenge generation
     const [challengeData, setChallengeData] = useState(null);
@@ -326,7 +327,7 @@ const App = () => {
     // Calculate unlocked achievements (memoized)
     const unlockedAchievements = React.useMemo(() => {
         const unlocked = [];
-        const achievementIds = ['speed_demon', 'world_ender', 'monster_manual', 'perfectionist', 'full_set'];
+        const achievementIds = ['speed_demon', 'world_ender', 'monster_manual', 'perfectionist', 'full_set', 'game_loaded'];
         
         achievementIds.forEach(id => {
             if (isAchievementUnlocked(id, stats, skills)) {
@@ -455,6 +456,19 @@ const App = () => {
             checkAchievements(oldStats, newStats, oldSkills, newSkills);
         });
     }, [stats, checkAchievements]);
+
+    useEffect(() => {
+        if (startupLoadSeconds === null || startupAchievementShownRef.current) return;
+        startupAchievementShownRef.current = true;
+        const description = `The game loaded successfully in ${startupLoadSeconds.toFixed(2)} seconds!`;
+        setStats(previous => {
+            const unlocked = Array.isArray(previous.achievementsUnlocked) ? previous.achievementsUnlocked : [];
+            if (unlocked.includes('game_loaded')) return previous;
+            return { ...previous, achievementsUnlocked: [...unlocked, 'game_loaded'] };
+        });
+        setAchievementToast({ achievementId: 'game_loaded', tierIndex: null, description });
+        playAchievement();
+    }, [startupLoadSeconds]);
 
     const handleSuccessHit = (skillId, isWrong) => {
         // Handle wrong answer
@@ -1460,6 +1474,7 @@ const App = () => {
                 <AchievementToast 
                     achievementId={achievementToast.achievementId}
                     tierIndex={achievementToast.tierIndex}
+                    descriptionOverride={achievementToast.description}
                 />
             )}
             

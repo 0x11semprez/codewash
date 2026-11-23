@@ -1,0 +1,64 @@
+# CodeWashGame
+
+CodeWashGame is a React game built with Vite and packaged for desktop with Electron.
+
+## Development commands
+
+Run these commands from the project directory:
+
+| Command | Purpose |
+| --- | --- |
+| `npm run dev` | Start the Vite development server |
+| `npm run build` | Create the production web build in `dist/` |
+| `npm run preview` | Preview the production web build |
+| `npm run electron:dev` | Build and launch the game in Electron |
+| `npm run electron:build` | Build the portable Electron application |
+| `npm run lint` | Run ESLint on `src/` |
+| `npm run test` | Run Vitest tests |
+| `npm run test:coverage` | Run Vitest with coverage thresholds |
+
+## Performance improvements
+
+> Mission: improve startup and in-game responsiveness while preserving gameplay, animations, and transitions.
+
+### PERF-001: Loading screen and startup responsiveness [P2] [Open]
+
+- **Issue:** [#12](https://github.com/EpitechBachelorPromo2028/B-ING-300-PAR-3-1-codewash-21/issues/12) —
+- **Status:** The loading screen and startup achievement are implemented. Manual visual verification remains.
+- **Location:** `src/components/LoadingScreen.jsx`, `src/components/LoadingGate.jsx`, `src/utils/preloadStartupAssets.js`, `src/main.jsx`, `src/index.css`, `src/utils/soundManager.js`, `src/constants/achievements.js`, and `src/components/ui/AchievementToast.jsx`.
+- **Observed problem:** The issue reports a sluggish main menu and asks for visible startup progress. Before the change, there was no dedicated loading screen or asset preload progress, and the React interface rendered directly.
+- **Impact:** Players had no visible indication of startup progress. The issue also asks for improved responsiveness, which needs to be confirmed through profiling and measurement.
+- **Risk:** Preloading can delay access to the menu if too many assets are required. A loading screen improves feedback while loading, but does not by itself prove that startup is faster.
+- **Fix:** Show a full-screen loading view, preload assets needed by the initial game screen, reveal the game when the preload finishes, and use profiling to guide further optimization.
+
+#### Implementation details
+
+- The loading screen uses CodeWash branding, a percentage, a bordered progress bar, and a short opacity transition to the game.
+- At startup, a new `So... So fast !?` achievement reports the time taken to load the game in seconds.
+- The preload covers the selected theme background, logo and card-back image, all six skill icons, mob sprites rendered on the initial screen, and eight small UI sound effects warmed in the background.
+- Failed critical images are reported with a Continue action. Failed optional sounds do not block access to the game.
+- Background music and combat sprites are not startup-critical and are not preloaded. The six background music WAV files total about 201 MB.
+
+| File | Change |
+| --- | --- |
+| `src/components/LoadingScreen.jsx` | Adds the loading screen and accessible progress indicator. |
+| `src/components/LoadingGate.jsx` | Coordinates preload state and provides the elapsed load time to the startup achievement. |
+| `src/utils/preloadStartupAssets.js` | Loads critical images and warms optional UI sounds. |
+| `src/constants/achievements.js`, `src/components/ui/AchievementToast.jsx`, `src/App.jsx` | Define and display the startup achievement, including the measured time. |
+| `src/main.jsx` | Mounts the loading gate at the entry point. |
+| `src/index.css` | Adds responsive red-screen styling and reduced-motion handling. |
+| `src/utils/soundManager.js` | Aligns UI and mob sound URLs with files present in `public/assets/sounds`. |
+
+#### Tests and verification
+
+| Command or check | Result |
+| --- | --- |
+| `npm run build` after implementation | Passed; see build output for current bundle size. |
+| `npm run lint` | Failed on three unused imports in existing test files; two existing hook dependency warnings in `App.jsx`. No lint errors remained in the new startup/loading files. |
+| `npm run test`, `npm run test:coverage` | Not run. |
+| Visual review of loading progress, animation, and gameplay | Pending manual verification. |
+
+#### Limitations and follow-up
+
+- Startup performance still needs profiling in Chrome DevTools and React Profiler.
+- Manually verify the achievement toast and displayed duration, loading progress, image/audio failure handling, gameplay sounds, animations, and transitions.
