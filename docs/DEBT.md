@@ -201,6 +201,131 @@ graph TD
 - **Network:** None. Fully offline.
 - **Electron:** Window management only.
 
+### Init Dependency Graph (commit `f12cd74`)
+
+> Snapshot of the original codebase before any refactoring. A second graph will be produced after the full refactor is complete.
+
+```mermaid
+graph TD
+    subgraph entrypoint
+        main["main.jsx (9)"]
+    end
+
+    subgraph app ["App — god component"]
+        App["App.jsx (1,492)"]
+    end
+
+    subgraph components
+        GlobalStyles["GlobalStyles.jsx (1,302)"]
+        SkillCard["SkillCard.jsx (778)"]
+        CosmeticsDrawer["CosmeticsDrawer.jsx (322)"]
+        MenuDrawer["MenuDrawer.jsx (262)"]
+        SettingsDrawer["SettingsDrawer.jsx (67)"]
+        PhantomEvent["PhantomEvent.jsx (150)"]
+        ResetModal["ResetModal.jsx (107)"]
+        BugReportModal["BugReportModal.jsx (19)"]
+        ProfileCard["ProfileCard.jsx (142)"]
+        AchievementToast["AchievementToast.jsx (82)"]
+        MobWithAura["MobWithAura.jsx (57)"]
+        SafeImage["SafeImage.jsx (19)"]
+        PixelHeart["PixelHeart.jsx (93)"]
+        ParentalVerif["ParentalVerificationModal.jsx (125)"]
+    end
+
+    subgraph constants ["constants — config & data"]
+        gameData["gameData.jsx (416)"]
+        achievements["achievements.js (318)"]
+        assets["assets.js (36) ⚠ DEAD"]
+    end
+
+    subgraph utils ["utils — helpers"]
+        gameUtils["gameUtils.js (363)"]
+        achievementUtils["achievementUtils.js (217)"]
+        mobDisplayUtils["mobDisplayUtils.js (44)"]
+        soundManager["soundManager.js (287)"]
+    end
+
+    subgraph electron
+        electronMain["electron/main.cjs (54)"]
+    end
+
+    %% Entrypoint
+    main --> App
+
+    %% App imports
+    App --> GlobalStyles
+    App --> SafeImage
+    App --> PixelHeart
+    App --> ResetModal
+    App --> BugReportModal
+    App --> SettingsDrawer
+    App --> CosmeticsDrawer
+    App --> MenuDrawer
+    App --> SkillCard
+    App --> PhantomEvent
+    App --> AchievementToast
+    App --> gameUtils
+    App --> mobDisplayUtils
+    App --> gameData
+    App --> soundManager
+    App --> achievementUtils
+
+    %% SkillCard imports
+    SkillCard --> SafeImage
+    SkillCard --> MobWithAura
+    SkillCard --> ParentalVerif
+    SkillCard --> gameData
+    SkillCard --> soundManager
+    SkillCard --> gameUtils
+    SkillCard --> mobDisplayUtils
+
+    %% CosmeticsDrawer imports
+    CosmeticsDrawer --> SafeImage
+    CosmeticsDrawer --> gameData
+    CosmeticsDrawer --> achievements
+
+    %% MenuDrawer imports
+    MenuDrawer --> SafeImage
+    MenuDrawer --> gameData
+    MenuDrawer --> achievements
+    MenuDrawer --> achievementUtils
+    MenuDrawer --> gameUtils
+
+    %% SettingsDrawer imports
+    SettingsDrawer --> ProfileCard
+
+    %% ProfileCard imports
+    ProfileCard --> SafeImage
+    ProfileCard --> ParentalVerif
+    ProfileCard --> gameData
+
+    %% AchievementToast imports
+    AchievementToast --> achievements
+
+    %% PhantomEvent imports
+    PhantomEvent --> gameData
+    PhantomEvent --> soundManager
+
+    %% MobWithAura imports
+    MobWithAura --> SafeImage
+
+    %% Utils cross-deps
+    gameUtils --> gameData
+    achievementUtils --> achievements
+```
+
+#### Observations from init graph
+
+| Problem | Detail |
+|---------|--------|
+| Star coupling | `App.jsx` imports 15 internal modules directly |
+| Hub constants | `gameData.jsx` imported by 6 files, 416 lines, mixes mobs/skills/themes/words |
+| Hub UI | `SafeImage` imported by 6 files (leaf, acceptable) |
+| Deep chains | `App` → `SkillCard` → `gameData` and `App` → `gameData` (redundant coupling) |
+| Dead nodes | `assets.js` has zero inbound edges, `MenuDrawer_old.jsx` unreferenced |
+| No isolation | Utils and constants freely cross-import with no barrel files or boundaries |
+| Monolith app | All state, logic, and orchestration in single `App.jsx` node |
+
 ---
 
 ## 2. Debt items
