@@ -3,11 +3,9 @@ node_modules/
 
 # Build output
 dist/
-release/
 
-# Coverage and local scripts
+# Coverage
 coverage/
-scripts
 
 # macOS metadata
 .DS_Store
@@ -15,7 +13,7 @@ scripts
 .AppleDouble
 __MACOSX/
 
-# Windows metadata
+# Windows
 Thumbs.db
 desktop.ini
 
@@ -25,7 +23,16 @@ desktop.ini
 *.swp
 *.swo
 
-# Environment and logs
-.env
-.env.*
+# Environment
+node_modules/
+dist/
+release/
+coverage/
 *.log
+.DS_Store
+.env
+.env.local
+.env.*
+
+# Local scripts
+scripts
