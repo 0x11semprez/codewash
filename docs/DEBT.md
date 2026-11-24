@@ -554,6 +554,41 @@ All measurements taken at commit `f12cd74` (original codebase, before any refact
 | Production dependencies | 3 (react, react-dom, lucide-react) | `package.json` |
 | Dev dependencies | 12 | `package.json` |
 
+### 3.1 Lighthouse Performance (pre-refactor)
+
+Measured with `npx lighthouse http://localhost:4173 --only-categories=performance` on production build served via `npx serve dist`.
+
+| Metric | Value | Status | Target |
+|--------|-------|--------|--------|
+| **Performance Score** | 71/100 | NEEDS WORK | 90+ |
+| **FCP** (First Contentful Paint) | 1.5s | GOOD | < 1.8s |
+| **LCP** (Largest Contentful Paint) | 1.5s | GOOD | < 2.5s |
+| **TBT** (Total Blocking Time) | 2,390ms | POOR | < 200ms |
+| **CLS** (Cumulative Layout Shift) | 0 | GOOD | < 0.1 |
+| **Speed Index** | 1.8s | GOOD | < 3.4s |
+| **Main Thread Work** | 8.1s | POOR | < 3.5s |
+| **JS Bundle** | 363 KB (102 KB gzip) | — | — |
+
+**Root cause:** `App.jsx` mounts 32 `useState`, 12 `useEffect`, 5 `useCallback`, 2 `useMemo` synchronously. Every state change re-renders the full 1,517-line component tree including closed drawers, invisible skill cards, and unrelated UI. No code splitting, no lazy loading.
+
+### 3.2 Lighthouse Performance (post-refactor — DEBT-001)
+
+Measured after extracting 6 hooks from App.jsx (1,517 → 337 lines).
+
+| Metric | Before | After | Change |
+|--------|--------|-------|--------|
+| **Performance Score** | 71/100 | **90/100** | **+19** |
+| **FCP** | 1.5s | 1.6s | ≈ |
+| **LCP** | 1.5s | 1.6s | ≈ |
+| **TBT** | 2,390ms | **380ms** | **-84%** |
+| **CLS** | 0 | 0.033 | ≈ |
+| **Speed Index** | 1.8s | 1.6s | -11% |
+| **Main Thread Work** | 8.1s | **4.8s** | **-41%** |
+| **JS Execution** | 0.8s | **0.5s** | **-37%** |
+| **JS Bundle** | 363 KB | 363 KB | ≈ (same deps, just restructured) |
+
+**Key wins:** TBT dropped 84% (2,390ms → 380ms) because hooks isolate state domains — a setState in one hook no longer forces React to re-evaluate all 32 state variables and 12 effects in a single component.
+
 ---
 
 ## 4. Risk matrix
