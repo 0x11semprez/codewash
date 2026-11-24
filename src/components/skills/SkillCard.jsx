@@ -4,6 +4,7 @@ import { Mic, Plus, Minus } from 'lucide-react';
 import SafeImage from '../ui/SafeImage';
 import MobWithAura from '../ui/MobWithAura';
 import ParentalVerificationModal from '../ui/ParentalVerificationModal';
+import GameErrorBoundary from '../ui/GameErrorBoundary';
 import { BASE_ASSETS, FRIENDLY_MOBS, HOSTILE_MOBS, CHEST_BLOCKS, BOSS_MOBS, MINIBOSS_MOBS, DIFFICULTY_IMAGES, DIFFICULTY_CONTENT, HOMOPHONES } from '../../constants/gameData';
 import { playClick, getSfxVolume } from '../../utils/soundManager';
 import { calculateXPToLevel } from '../../utils/gameUtils';
@@ -480,6 +481,7 @@ const SkillCard = ({ config, data, themeData, isCenter, isBattling, mobName, mob
                 {(!isBattling || config.id !== 'memory') && <div className="bg-[#1a1a1a] p-2 border-t-4 border-b-4 border-black relative"><div className="flex justify-between text-gray-400 text-xs mb-1 uppercase"><span>HP</span><span>{hpPercent}%</span></div><div className="w-full h-6 bg-[#333] rounded-full overflow-hidden border-2 border-[#555] relative"><div className="h-full bg-gradient-to-r from-red-600 to-red-500 transition-all duration-200" style={{ width: `${hpPercent}%` }}></div></div></div>}
             <div className={bottomSectionClass}>
                 {isBattling ? (
+                    <GameErrorBoundary gameName={config.id} onError={onEndBattle}>
                     <div className="flex flex-col h-full animate-in slide-in-from-bottom-10 duration-300">
                         {config.id === 'memory' ? (
                             <div className={`flex-1 grid gap-2 bg-black/20 p-2 rounded items-center`} style={{ gridTemplateColumns: `repeat(${memoryGridCols}, 1fr)` }}>
@@ -627,6 +629,7 @@ const SkillCard = ({ config, data, themeData, isCenter, isBattling, mobName, mob
                             );
                         })()}
                     </div>
+                    </GameErrorBoundary>
                 ) : (
                     <div className="flex-1 flex flex-col items-center justify-center">
                         <p className="text-gray-400 text-center mb-4 px-2">{config.taskDescription}</p>
