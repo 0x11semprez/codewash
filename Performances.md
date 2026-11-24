@@ -116,7 +116,7 @@ A single measurement is an indication, not a benchmark. Lighthouse figures for t
 
 ### Code splitting per skill type
 
-Considered, not applied. `SkillCard` owns state, effects and challenge handlers shared by the six mini-games. Splitting them would be a broader gameplay refactor, and no profile shows this code as a startup bottleneck. The mini-games now live in `src/components/skills/games/` but are still bundled together.
+Applied. Each mini-game in `src/components/skills/games/` is loaded with `React.lazy` from `SkillCard.jsx` and rendered inside a `Suspense` boundary, so it becomes its own chunk (0.95 kB to 3.31 kB, 0.62 kB to 1.58 kB gzipped) fetched on the first battle of that skill. The saving at startup is small because the games are tiny; no speedup is claimed. `SkillCard.test.jsx` checks that each skill renders the right game after loading.
 
 ---
 
