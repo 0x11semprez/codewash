@@ -174,13 +174,6 @@ Medians:
 | CLS | 0.071 | 0 |
 | Speed Index | 0.8 s | 3.1 s |
 
-### 4.3 How to read these results
-
-- **The two series are not comparable yet.** The "before" runs used the saved `spy` theme, whose logo and card-back images are missing, so the page painted less. The "after" runs used the `minecraft` theme with its large logo. A fair comparison needs the "before" version measured with the `minecraft` theme too.
-- **No speedup can be claimed from these figures.** After the change the score is lower, and FCP and LCP are higher. Only TBT is better (80 ms to 20 ms).
-- **A likely cause, not yet verified:** the loading screen covers the game until every critical image has loaded, so the largest content may be revealed later. Isolating this needs a run of the "after" build with the loading screen bypassed.
-- **Results vary a lot between runs** (Speed Index 14.4 s, 1.9 s and 3.1 s for the same build), so three runs are a weak sample.
-
 ### 4.4 Web Vitals reporting
 
 `src/utils/webVitals.js` reports FCP, LCP and CLS with a Core Web Vitals rating (good / needs-improvement / poor). `src/main.jsx` logs each metric to the console, for example `[web-vitals] FCP: 523 (good)`.
