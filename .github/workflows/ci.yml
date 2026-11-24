@@ -21,8 +21,11 @@ jobs:
       - name: Install dependencies
         run: npm ci --legacy-peer-deps
 
-      - name: Lint
-        run: npm run lint
+      - name: Lint (zero warnings)
+        run: npm run lint -- --max-warnings 0
+
+      - name: Static analysis
+        run: npx eslint src/ --no-warn-ignored --max-warnings 0
 
       - name: Build
         run: npm run build
