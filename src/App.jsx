@@ -858,8 +858,8 @@ const App = () => {
                 return newStats;
             });
         }
-    }, [activeTheme, skills, checkAchievements]);
-    
+    }, [activeTheme, skills]);
+
     // Wrapper for setSelectedBorder to track border changes
     const handleBorderChange = useCallback((newBorder) => {
         if (newBorder !== selectedBorder) {
@@ -869,18 +869,18 @@ const App = () => {
                     ...prevStats,
                     borderChanges: (prevStats.borderChanges || 0) + 1
                 };
-                
+
                 pendingAchievementChecksRef.current.push({
                     oldStats: prevStats,
                     newStats,
                     oldSkills: skills,
                     newSkills: skills
                 });
-                
+
                 return newStats;
             });
         }
-    }, [selectedBorder, skills, checkAchievements]);
+    }, [selectedBorder, skills]);
 
     // Award a free level from phantom click
     const handlePhantomLevelAward = (skillId) => {
