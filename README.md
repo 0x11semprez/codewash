@@ -65,7 +65,7 @@ docs/
 
 ## Performance
 
-Work tracked in issue #12. Full details, figures and open items are in [Performances.md](Performances.md).
+Work tracked in issue #12. Full details, figures and open items are in [docs/Performances.md](docs/Performances.md).
 
 ### Loading screen
 
@@ -103,3 +103,14 @@ See [docs/adr/](docs/adr/) for recorded decisions.
 - **Testing**: Vitest + jsdom + @testing-library/react
 - **CI**: GitHub Actions
 - **Coverage**: v8 provider, thresholds: 30% lines, 20% functions/branches
+
+## Missing theme assets (to add)
+
+These images are referenced by the game but absent from `public/assets/themes/`. With the matching theme selected, the loading screen reports failed critical images.
+
+| Theme | Missing file |
+| --- | --- |
+| spy | `spy_logo.png` |
+| spy | `spy_memorycard.jpg` |
+| kpop | `kpop_memorycard.jpg` |
+| pokemon | `pokemon_memorycard.jpg` |
