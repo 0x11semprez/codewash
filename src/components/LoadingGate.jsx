@@ -1,6 +1,6 @@
 import React, { useCallback, useLayoutEffect, useRef, useState } from 'react';
 import App from '../App.jsx';
-import LoadingScreen from './LoadingScreen.jsx';
+import LoadingScreen from './ui/LoadingScreen.jsx';
 import { preloadStartupAssets } from '../utils/preloadStartupAssets.js';
 
 const LoadingGate = () => {

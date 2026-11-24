@@ -201,6 +201,131 @@ graph TD
 - **Network:** None. Fully offline.
 - **Electron:** Window management only.
 
+### Init Dependency Graph (commit `f12cd74`)
+
+> Snapshot of the original codebase before any refactoring. A second graph will be produced after the full refactor is complete.
+
+```mermaid
+graph TD
+    subgraph entrypoint
+        main["main.jsx (9)"]
+    end
+
+    subgraph app ["App — god component"]
+        App["App.jsx (1,492)"]
+    end
+
+    subgraph components
+        GlobalStyles["GlobalStyles.jsx (1,302)"]
+        SkillCard["SkillCard.jsx (778)"]
+        CosmeticsDrawer["CosmeticsDrawer.jsx (322)"]
+        MenuDrawer["MenuDrawer.jsx (262)"]
+        SettingsDrawer["SettingsDrawer.jsx (67)"]
+        PhantomEvent["PhantomEvent.jsx (150)"]
+        ResetModal["ResetModal.jsx (107)"]
+        BugReportModal["BugReportModal.jsx (19)"]
+        ProfileCard["ProfileCard.jsx (142)"]
+        AchievementToast["AchievementToast.jsx (82)"]
+        MobWithAura["MobWithAura.jsx (57)"]
+        SafeImage["SafeImage.jsx (19)"]
+        PixelHeart["PixelHeart.jsx (93)"]
+        ParentalVerif["ParentalVerificationModal.jsx (125)"]
+    end
+
+    subgraph constants ["constants — config & data"]
+        gameData["gameData.jsx (416)"]
+        achievements["achievements.js (318)"]
+        assets["assets.js (36) ⚠ DEAD"]
+    end
+
+    subgraph utils ["utils — helpers"]
+        gameUtils["gameUtils.js (363)"]
+        achievementUtils["achievementUtils.js (217)"]
+        mobDisplayUtils["mobDisplayUtils.js (44)"]
+        soundManager["soundManager.js (287)"]
+    end
+
+    subgraph electron
+        electronMain["electron/main.cjs (54)"]
+    end
+
+    %% Entrypoint
+    main --> App
+
+    %% App imports
+    App --> GlobalStyles
+    App --> SafeImage
+    App --> PixelHeart
+    App --> ResetModal
+    App --> BugReportModal
+    App --> SettingsDrawer
+    App --> CosmeticsDrawer
+    App --> MenuDrawer
+    App --> SkillCard
+    App --> PhantomEvent
+    App --> AchievementToast
+    App --> gameUtils
+    App --> mobDisplayUtils
+    App --> gameData
+    App --> soundManager
+    App --> achievementUtils
+
+    %% SkillCard imports
+    SkillCard --> SafeImage
+    SkillCard --> MobWithAura
+    SkillCard --> ParentalVerif
+    SkillCard --> gameData
+    SkillCard --> soundManager
+    SkillCard --> gameUtils
+    SkillCard --> mobDisplayUtils
+
+    %% CosmeticsDrawer imports
+    CosmeticsDrawer --> SafeImage
+    CosmeticsDrawer --> gameData
+    CosmeticsDrawer --> achievements
+
+    %% MenuDrawer imports
+    MenuDrawer --> SafeImage
+    MenuDrawer --> gameData
+    MenuDrawer --> achievements
+    MenuDrawer --> achievementUtils
+    MenuDrawer --> gameUtils
+
+    %% SettingsDrawer imports
+    SettingsDrawer --> ProfileCard
+
+    %% ProfileCard imports
+    ProfileCard --> SafeImage
+    ProfileCard --> ParentalVerif
+    ProfileCard --> gameData
+
+    %% AchievementToast imports
+    AchievementToast --> achievements
+
+    %% PhantomEvent imports
+    PhantomEvent --> gameData
+    PhantomEvent --> soundManager
+
+    %% MobWithAura imports
+    MobWithAura --> SafeImage
+
+    %% Utils cross-deps
+    gameUtils --> gameData
+    achievementUtils --> achievements
+```
+
+#### Observations from init graph
+
+| Problem | Detail |
+|---------|--------|
+| Star coupling | `App.jsx` imports 15 internal modules directly |
+| Hub constants | `gameData.jsx` imported by 6 files, 416 lines, mixes mobs/skills/themes/words |
+| Hub UI | `SafeImage` imported by 6 files (leaf, acceptable) |
+| Deep chains | `App` → `SkillCard` → `gameData` and `App` → `gameData` (redundant coupling) |
+| Dead nodes | `assets.js` has zero inbound edges, `MenuDrawer_old.jsx` unreferenced |
+| No isolation | Utils and constants freely cross-import with no barrel files or boundaries |
+| Monolith app | All state, logic, and orchestration in single `App.jsx` node |
+
 ---
 
 ## 2. Debt items
@@ -428,6 +553,41 @@ All measurements taken at commit `f12cd74` (original codebase, before any refact
 | macOS metadata files | 112 `._*` files in repo | `find . -name '._*' \| wc -l` |
 | Production dependencies | 3 (react, react-dom, lucide-react) | `package.json` |
 | Dev dependencies | 12 | `package.json` |
+
+### 3.1 Lighthouse Performance (pre-refactor)
+
+Measured with `npx lighthouse http://localhost:4173 --only-categories=performance` on production build served via `npx serve dist`.
+
+| Metric | Value | Status | Target |
+|--------|-------|--------|--------|
+| **Performance Score** | 71/100 | NEEDS WORK | 90+ |
+| **FCP** (First Contentful Paint) | 1.5s | GOOD | < 1.8s |
+| **LCP** (Largest Contentful Paint) | 1.5s | GOOD | < 2.5s |
+| **TBT** (Total Blocking Time) | 2,390ms | POOR | < 200ms |
+| **CLS** (Cumulative Layout Shift) | 0 | GOOD | < 0.1 |
+| **Speed Index** | 1.8s | GOOD | < 3.4s |
+| **Main Thread Work** | 8.1s | POOR | < 3.5s |
+| **JS Bundle** | 363 KB (102 KB gzip) | — | — |
+
+**Root cause:** `App.jsx` mounts 32 `useState`, 12 `useEffect`, 5 `useCallback`, 2 `useMemo` synchronously. Every state change re-renders the full 1,517-line component tree including closed drawers, invisible skill cards, and unrelated UI. No code splitting, no lazy loading.
+
+### 3.2 Lighthouse Performance (post-refactor — DEBT-001)
+
+Measured after extracting 6 hooks from App.jsx (1,517 → 337 lines).
+
+| Metric | Before | After | Change |
+|--------|--------|-------|--------|
+| **Performance Score** | 71/100 | **90/100** | **+19** |
+| **FCP** | 1.5s | 1.6s | ≈ |
+| **LCP** | 1.5s | 1.6s | ≈ |
+| **TBT** | 2,390ms | **380ms** | **-84%** |
+| **CLS** | 0 | 0.033 | ≈ |
+| **Speed Index** | 1.8s | 1.6s | -11% |
+| **Main Thread Work** | 8.1s | **4.8s** | **-41%** |
+| **JS Execution** | 0.8s | **0.5s** | **-37%** |
+| **JS Bundle** | 363 KB | 363 KB | ≈ (same deps, just restructured) |
+
+**Key wins:** TBT dropped 84% (2,390ms → 380ms) because hooks isolate state domains — a setState in one hook no longer forces React to re-evaluate all 32 state variables and 12 effects in a single component.
 
 ---
 

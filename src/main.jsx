@@ -1,10 +1,13 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import LoadingGate from './components/LoadingGate.jsx'
+import ErrorBoundary from './components/ui/ErrorBoundary.jsx'
 import './index.css'
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
-    <LoadingGate />
+    <ErrorBoundary>
+      <LoadingGate />
+    </ErrorBoundary>
   </React.StrictMode>,
 )

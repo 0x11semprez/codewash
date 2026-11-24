@@ -1,0 +1,41 @@
+import React from 'react';
+
+class GameErrorBoundary extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = { hasError: false };
+    }
+
+    static getDerivedStateFromError() {
+        return { hasError: true };
+    }
+
+    componentDidCatch(error, errorInfo) {
+        console.error(`[GameError] ${this.props.gameName || 'Unknown'}:`, error, errorInfo);
+    }
+
+    handleRetry = () => {
+        this.setState({ hasError: false });
+        if (this.props.onError) this.props.onError();
+    };
+
+    render() {
+        if (this.state.hasError) {
+            return (
+                <div className="flex-1 flex flex-col items-center justify-center gap-3 p-4">
+                    <div className="text-red-400 text-lg font-bold">Game crashed!</div>
+                    <button
+                        onClick={this.handleRetry}
+                        className="bg-blue-600 hover:bg-blue-500 text-white font-bold py-2 px-6 rounded shadow-[0_4px_0_#1e40af] active:shadow-none active:translate-y-[4px] transition-all"
+                    >
+                        Retry
+                    </button>
+                </div>
+            );
+        }
+
+        return this.props.children;
+    }
+}
+
+export default GameErrorBoundary;
