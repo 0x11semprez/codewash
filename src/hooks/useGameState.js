@@ -10,6 +10,7 @@ import {
 import { getRandomAura } from '../utils/mobDisplayUtils';
 import { SKILL_DATA } from '../constants/gameData';
 import { getDefaultStats, isAchievementUnlocked } from '../utils/achievementUtils';
+import { now as systemNow, today as getToday } from '../utils/clock';
 
 const getStorageKey = (profileId) => `heroSkills_v23_p${profileId}`;
 
@@ -107,7 +108,8 @@ const loadStats = (profileId) => {
     return getDefaultStats();
 };
 
-export const useGameState = () => {
+// `now` is injectable so tests can fix the date. The app calls useGameState() with no argument.
+export const useGameState = ({ now = systemNow } = {}) => {
     const [currentProfile, setCurrentProfile] = useState(() =>
         localStorage.getItem('currentProfile_v1') ? parseInt(localStorage.getItem('currentProfile_v1')) : 1,
     );
@@ -152,7 +154,7 @@ export const useGameState = () => {
     useEffect(() => {
         if (loginTrackedRef.current) return;
         loginTrackedRef.current = true;
-        const today = new Date().toISOString().split('T')[0];
+        const today = getToday(now);
         const currentDates = stats.loginDates || [];
         if (!currentDates.includes(today)) {
             setStats((prev) => ({ ...prev, loginDates: [...(prev.loginDates || []), today] }));
