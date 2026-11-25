@@ -344,14 +344,16 @@ Each item links to its GitHub issue for full context and to the PR that addresse
 - **Fix:** Extract custom hooks (`useBattle`, `useProfile`, `useVoiceRecognition`, `useCarousel`, `useAchievements`), move state into context providers.
 - **Effort:** L
 
-### DEBT-002: GlobalStyles monolith [P2] [Open]
+### DEBT-002: GlobalStyles monolith [P2] [In Progress]
 
 - **Issue:** [#25](https://github.com/0x11semprez/codewash/issues/25) — **PR:** none yet
-- **Location:** `src/components/ui/GlobalStyles.jsx` (1,302 lines)
-- **Smell:** Monolith. All CSS in one `<style>` tag: animations, layouts, themes, aura effects. No scoping, no tree-shaking.
-- **Impact:** Any style change risks breaking unrelated components. No dead-CSS elimination.
+- **Location:** `src/styles/` (5 files, 1,777 lines), loaded through `src/components/ui/GlobalStyles.css`
+- **Smell:** Monolith. All CSS was in one `<style>` tag: animations, layouts, themes, aura effects. No scoping, no tree-shaking.
+- **Done:** the CSS moved out of `GlobalStyles.jsx` into a stylesheet, then was split into 5 files by topic (`base`, `card-borders`, `aura-animations`, `auras`, `achievement-borders`). The built CSS is byte-identical to the one before the split. The unused `GlobalStyles.jsx` copy was deleted.
+- **Remaining:** class names are still global, so a style change can still affect unrelated components. No dead-CSS elimination.
+- **Impact:** Any style change risks breaking unrelated components.
 - **Risk:** High impact, medium likelihood.
-- **Fix:** CSS modules or Tailwind utilities per component.
+- **Fix (next step):** CSS modules or Tailwind utilities per component.
 - **Effort:** M
 
 ### DEBT-003: SkillCard does too much [P1] [Done ✓]
@@ -655,7 +657,7 @@ Low Impact    │ DEBT-018, 019  │                 │ DEBT-004 ✓      │
 
 | # | Debt | Task | Status |
 |---|------|------|--------|
-| 17 | DEBT-002 | Break GlobalStyles into modules | Open |
+| 17 | DEBT-002 | Break GlobalStyles into modules | In Progress |
 | 18 | DEBT-008 | Remove internal duplication | Open |
 | 19 | DEBT-011 | Refactor sound manager + audio pooling | Open |
 | 20 | DEBT-013 | Add error tracking | Open |
@@ -667,7 +669,7 @@ Low Impact    │ DEBT-018, 019  │                 │ DEBT-004 ✓      │
 | Debt | Issue | PR | Status |
 |------|-------|----|--------|
 | DEBT-001 | [#24](https://github.com/0x11semprez/codewash/issues/24) | [#45](https://github.com/0x11semprez/codewash/pull/45) (merged) | Done ✓ |
-| DEBT-002 | [#25](https://github.com/0x11semprez/codewash/issues/25) | — | Open |
+| DEBT-002 | [#25](https://github.com/0x11semprez/codewash/issues/25) | — | In Progress |
 | DEBT-003 | [#26](https://github.com/0x11semprez/codewash/issues/26) | [#48](https://github.com/0x11semprez/codewash/pull/48) (merged) | Done ✓ |
 | DEBT-004 | [#27](https://github.com/0x11semprez/codewash/issues/27) | commit `883e02f` (Epitech PR #43) | Done ✓ |
 | DEBT-005 | [#28](https://github.com/0x11semprez/codewash/issues/28) | [#3](https://github.com/0x11semprez/codewash/pull/3), [#4](https://github.com/0x11semprez/codewash/pull/4), [#6](https://github.com/0x11semprez/codewash/pull/6), [#46](https://github.com/0x11semprez/codewash/pull/46) (merged) | Done ✓ |
