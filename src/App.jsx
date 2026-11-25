@@ -1,23 +1,17 @@
-import React from 'react';
+import React, { lazy, Suspense } from 'react';
 import {
     Menu, Sparkles, Gift, Maximize, Minimize, Settings, Bug
 } from 'lucide-react';
 
-import GlobalStyles from './components/ui/GlobalStyles';
 import SafeImage from './components/ui/SafeImage';
 import PixelHeart from './components/ui/PixelHeart';
-import ResetModal from './components/modals/ResetModal';
-import BugReportModal from './components/modals/BugReportModal';
-import SettingsDrawer from './components/drawers/SettingsDrawer';
-import CosmeticsDrawer from './components/drawers/CosmeticsDrawer';
-import MenuDrawer from './components/drawers/MenuDrawer';
 import SkillCard from './components/skills/SkillCard';
 import PhantomEvent from './components/PhantomEvent';
 import AchievementToast from './components/ui/AchievementToast';
 
 import { getMobForSkill, getEncounterType } from './utils/gameUtils';
 import { THEME_CONFIG, SKILL_DATA } from './constants/gameData';
-import { playClick } from './utils/soundManager';
+import { playClick, playAchievement } from './utils/soundManager';
 
 import { useGameState } from './hooks/useGameState';
 import { useAudio } from './hooks/useAudio';
@@ -26,7 +20,13 @@ import { useCarousel } from './hooks/useCarousel';
 import { useBattle } from './hooks/useBattle';
 import { useVoiceRecognition } from './hooks/useVoiceRecognition';
 
-const App = () => {
+const ResetModal = lazy(() => import('./components/modals/ResetModal'));
+const BugReportModal = lazy(() => import('./components/modals/BugReportModal'));
+const SettingsDrawer = lazy(() => import('./components/drawers/SettingsDrawer'));
+const CosmeticsDrawer = lazy(() => import('./components/drawers/CosmeticsDrawer'));
+const MenuDrawer = lazy(() => import('./components/drawers/MenuDrawer'));
+
+const App = ({ startupLoadSeconds = null }) => {
     const gameState = useGameState();
     const {
         currentProfile, profileNames, parentStatus,
@@ -45,7 +45,7 @@ const App = () => {
     const {
         battlingSkillId, challengeData, challengeDataRef,
         playerHealth, damageNumbers, showDeathOverlay, showLevelRestored,
-        lootBox, bossHealing, achievementToast,
+        lootBox, bossHealing, achievementToast, setAchievementToast,
         handleSuccessHit, startBattle, endBattle, handlePhantomLevelAward,
         setSpokenTextSetter
     } = battle;
@@ -65,8 +65,25 @@ const App = () => {
     const [isMenuOpen, setIsMenuOpen] = React.useState(false);
     const [isSettingsOpen, setIsSettingsOpen] = React.useState(false);
     const [isCosmeticsOpen, setIsCosmeticsOpen] = React.useState(false);
+    const [hasOpenedMenu, setHasOpenedMenu] = React.useState(false);
+    const [hasOpenedSettings, setHasOpenedSettings] = React.useState(false);
+    const [hasOpenedCosmetics, setHasOpenedCosmetics] = React.useState(false);
+    const startupAchievementShownRef = React.useRef(false);
     const [isResetOpen, setIsResetOpen] = React.useState(false);
     const [isBugReportOpen, setIsBugReportOpen] = React.useState(false);
+
+    React.useEffect(() => {
+        if (startupLoadSeconds === null || startupAchievementShownRef.current) return;
+        startupAchievementShownRef.current = true;
+        const description = `The game loaded successfully in ${startupLoadSeconds.toFixed(2)} seconds!`;
+        setStats(previous => {
+            const unlocked = Array.isArray(previous.achievementsUnlocked) ? previous.achievementsUnlocked : [];
+            if (unlocked.includes('game_loaded')) return previous;
+            return { ...previous, achievementsUnlocked: [...unlocked, 'game_loaded'] };
+        });
+        setAchievementToast({ achievementId: 'game_loaded', tierIndex: null, description });
+        playAchievement();
+    }, [startupLoadSeconds, setStats, setAchievementToast]);
 
     const handleThemeChange = React.useCallback((newTheme) => {
         if (newTheme !== activeTheme) {
@@ -100,7 +117,7 @@ const App = () => {
         return combatSkillAuras[skillConfig.id] || null;
     };
 
-    const getVisibleItems = () => {
+    const visibleItems = React.useMemo(() => {
         const items = [];
         for (let i = -3; i <= 3; i++) {
             let idx = selectedIndex + i;
@@ -109,25 +126,24 @@ const App = () => {
             items.push({ ...SKILL_DATA[dataIndex], offset: i, key: idx });
         }
         return items;
-    };
+    }, [selectedIndex]);
 
     const currentThemeData = THEME_CONFIG[activeTheme] || THEME_CONFIG.minecraft;
     const containerStyle = { ...currentThemeData.style, fontFamily: '"VT323", monospace' };
 
     return (
         <div className="min-h-screen overflow-hidden relative flex flex-col bg-cover bg-center bg-no-repeat font-sans text-stone-100" style={containerStyle}>
-            <GlobalStyles />
             <div className="absolute inset-0 bg-black/30 pointer-events-none z-0"></div>
 
             <button
-                onClick={() => { setIsMenuOpen(false); setIsCosmeticsOpen(false); setIsSettingsOpen(true); playClick(); }}
+                onClick={() => { setHasOpenedSettings(true); setIsMenuOpen(false); setIsCosmeticsOpen(false); setIsSettingsOpen(true); playClick(); }}
                 className="absolute z-40 bg-stone-800/90 text-white p-3 rounded-lg border-2 border-stone-600 hover:bg-stone-700 transition-all shadow-lg"
                 style={{ top: '24px', left: '24px' }}
             >
                 <Settings size={48} className="text-slate-400" />
             </button>
             <button
-                onClick={() => { setIsMenuOpen(false); setIsSettingsOpen(false); setIsCosmeticsOpen(true); playClick(); }}
+                onClick={() => { setHasOpenedCosmetics(true); setIsMenuOpen(false); setIsSettingsOpen(false); setIsCosmeticsOpen(true); playClick(); }}
                 className="absolute z-40 bg-stone-800/90 text-white p-3 rounded-lg border-2 border-stone-600 hover:bg-stone-700 transition-all shadow-lg"
                 style={{ top: '24px', left: 'calc(24px + 76px + 12px)' }}
             >
@@ -141,26 +157,26 @@ const App = () => {
             {isCosmeticsOpen && (
                 <div className="fixed inset-0 bg-black/50 z-40" onClick={() => { setIsCosmeticsOpen(false); playClick(); }} />
             )}
-            <CosmeticsDrawer
+            <Suspense fallback={null}>{(hasOpenedCosmetics || isCosmeticsOpen) && <CosmeticsDrawer
                 isOpen={isCosmeticsOpen} activeTheme={activeTheme} setActiveTheme={handleThemeChange}
                 selectedBorder={selectedBorder} setSelectedBorder={handleBorderChange}
                 borderColor={borderColor} setBorderColor={setBorderColor}
                 unlockedBorders={unlockedBorders} unlockedAchievements={unlockedAchievements}
-            />
+            />}</Suspense>
 
             {isSettingsOpen && (
                 <div className="fixed inset-0 bg-black/50 z-40" onClick={() => { setIsSettingsOpen(false); playClick(); }} />
             )}
-            <SettingsDrawer
+            <Suspense fallback={null}>{(hasOpenedSettings || isSettingsOpen) && <SettingsDrawer
                 isOpen={isSettingsOpen} onReset={() => setIsResetOpen(true)}
                 bgmVol={bgmVol} setBgmVol={setBgmVol} sfxVol={sfxVol} setSfxVol={setSfxVol}
                 currentProfile={currentProfile} onSwitchProfile={handleSwitchProfile}
                 profileNames={profileNames} onRenameProfile={handleRenameProfile}
                 getProfileStats={getProfileStats} parentStatus={parentStatus}
                 onParentVerified={handleParentVerified} currentSkills={skills}
-            />
-            <ResetModal isOpen={isResetOpen} onClose={() => setIsResetOpen(false)} onConfirm={handleReset} />
-            <BugReportModal isOpen={isBugReportOpen} onClose={() => setIsBugReportOpen(false)} />
+            />}</Suspense>
+            <Suspense fallback={null}>{isResetOpen && <ResetModal isOpen={isResetOpen} onClose={() => setIsResetOpen(false)} onConfirm={handleReset} />}</Suspense>
+            <Suspense fallback={null}>{isBugReportOpen && <BugReportModal isOpen={isBugReportOpen} onClose={() => setIsBugReportOpen(false)} />}</Suspense>
 
             <button
                 onClick={toggleFullscreen}
@@ -172,7 +188,7 @@ const App = () => {
                 {isFullscreen ? <Minimize size={48} /> : <Maximize size={48} />}
             </button>
             <button
-                onClick={() => { setIsSettingsOpen(false); setIsCosmeticsOpen(false); setIsMenuOpen(true); playClick(); }}
+                onClick={() => { setHasOpenedMenu(true); setIsSettingsOpen(false); setIsCosmeticsOpen(false); setIsMenuOpen(true); playClick(); }}
                 className="absolute z-40 bg-stone-800/90 text-white p-3 rounded-lg border-2 border-stone-600 hover:bg-stone-700 transition-all shadow-lg"
                 style={{ top: '24px', right: '24px' }}
             >
@@ -182,7 +198,7 @@ const App = () => {
             {isMenuOpen && (
                 <div className="fixed inset-0 bg-black/50 z-40" onClick={() => { setIsMenuOpen(false); playClick(); }} />
             )}
-            <MenuDrawer isOpen={isMenuOpen} skills={skills} stats={stats} />
+            <Suspense fallback={null}>{(hasOpenedMenu || isMenuOpen) && <MenuDrawer isOpen={isMenuOpen} skills={skills} stats={stats} />}</Suspense>
 
             <button
                 onClick={() => { setIsMenuOpen(false); setIsCosmeticsOpen(false); setIsSettingsOpen(false); setIsBugReportOpen(true); playClick(); }}
@@ -237,7 +253,7 @@ const App = () => {
                     onTouchMove={(e) => { e.preventDefault(); handleDragMove(e.touches[0].clientX); }}
                     onTouchEnd={handleDragEnd}
                 >
-                    {getVisibleItems().map((item) => {
+                    {visibleItems.map((item) => {
                         const isItemBattling = item.offset === 0 && battlingSkillId === item.id;
                         const getVerticalOffset = (offset) => {
                             if (offset === 0) return -55;
@@ -298,7 +314,7 @@ const App = () => {
             )}
 
             {achievementToast && (
-                <AchievementToast achievementId={achievementToast.achievementId} tierIndex={achievementToast.tierIndex} />
+                <AchievementToast achievementId={achievementToast.achievementId} tierIndex={achievementToast.tierIndex} descriptionOverride={achievementToast.description} />
             )}
 
             {showDeathOverlay && (

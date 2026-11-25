@@ -6,7 +6,7 @@ import { ACHIEVEMENTS, TIER_COLORS, TIER_NAMES } from '../../constants/achieveme
  * AchievementToast Component
  * Displays a celebratory toast when an achievement is unlocked
  */
-const AchievementToast = ({ achievementId, tierIndex = null }) => {
+const AchievementToast = ({ achievementId, tierIndex = null, descriptionOverride = null }) => {
     const achievement = ACHIEVEMENTS[achievementId];
     
     if (!achievement) return null;
@@ -58,6 +58,11 @@ const AchievementToast = ({ achievementId, tierIndex = null }) => {
                         <p className="text-white text-lg font-bold">
                             {displayName}
                         </p>
+                        {(descriptionOverride || achievement.description) && (
+                            <p className="text-stone-300 text-base mt-1">
+                                {descriptionOverride || achievement.description}
+                            </p>
+                        )}
                         {tierName && (
                             <p className="text-stone-400 text-sm mt-1">
                                 {tierName} Tier

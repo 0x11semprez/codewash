@@ -259,4 +259,9 @@ const MenuDrawer = ({ isOpen, skills, stats }) => {
     );
 };
 
-export default MenuDrawer;
+// Preserve the open/close transition while skipping updates that only affect
+// this hidden drawer's stale contents. The latest props are used when it opens.
+export default React.memo(
+    MenuDrawer,
+    (previousProps, nextProps) => !previousProps.isOpen && !nextProps.isOpen
+);

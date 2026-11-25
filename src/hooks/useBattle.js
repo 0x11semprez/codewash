@@ -314,7 +314,7 @@ export const useBattle = (skills, setSkills, stats, setStats) => {
     return {
         battlingSkillId, battleDifficulty, challengeData, challengeDataRef,
         playerHealth, damageNumbers, showDeathOverlay, showLevelRestored,
-        lootBox, bossHealing, achievementToast,
+        lootBox, bossHealing, achievementToast, setAchievementToast,
         handleSuccessHit, startBattle, endBattle, handlePhantomLevelAward,
         setSpokenTextSetter
     };

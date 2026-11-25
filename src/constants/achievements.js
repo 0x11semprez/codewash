@@ -254,6 +254,16 @@ export const ACHIEVEMENTS = {
         isTiered: false,
         checkUnlock: (stats) => (stats.battlesThisSession || 0) >= 10
     },
+
+    game_loaded: {
+        id: 'game_loaded',
+        name: 'So... So fast !?',
+        description: 'The game loaded successfully.',
+        icon: Timer,
+        category: 'engagement',
+        isTiered: false,
+        checkUnlock: (stats) => (stats.achievementsUnlocked || []).includes('game_loaded')
+    },
     
     dedicated: {
         id: 'dedicated',

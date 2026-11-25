@@ -37,7 +37,7 @@ const MobWithAura = ({ mobSrc, aura, displayName, size = '100%', isHit = false, 
             }}
             data-aura={aura}
         >
-            {/* Aura is rendered via CSS ::before pseudo-element in GlobalStyles.jsx */}
+            {/* Aura is rendered via CSS ::before pseudo-element in GlobalStyles.css */}
             <SafeImage 
                 src={mobSrc} 
                 alt={displayName} 
@@ -54,4 +54,4 @@ const MobWithAura = ({ mobSrc, aura, displayName, size = '100%', isHit = false, 
     );
 };
 
-export default MobWithAura;
+export default React.memo(MobWithAura);

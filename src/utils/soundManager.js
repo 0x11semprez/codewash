@@ -15,14 +15,14 @@ const BGM_TRACKS = [
 
 // UI sound paths
 const UI_SOUNDS = {
-    actioncard_left: 'assets/sounds/ui/actioncard_left.wav',
-    actioncard_right: 'assets/sounds/ui/actioncard_right.wav',
-    click: 'assets/sounds/ui/click.wav',
-    death: 'assets/sounds/ui/death.wav',
-    fail: 'assets/sounds/ui/fail.wav',
-    levelup: 'assets/sounds/ui/levelup.wav',
-    notification: 'assets/sounds/ui/notification.wav',
-    successful_hit: 'assets/sounds/ui/successful_hit.wav'
+    actioncard_left: 'assets/sounds/ui/ui/actioncard_left.wav',
+    actioncard_right: 'assets/sounds/ui/ui/actioncard_right.wav',
+    click: 'assets/sounds/ui/ui/click.wav',
+    death: 'assets/sounds/ui/ui/death.wav',
+    fail: 'assets/sounds/ui/ui/fail.wav',
+    levelup: 'assets/sounds/ui/ui/levelup.wav',
+    notification: 'assets/sounds/ui/ui/notification.wav',
+    successful_hit: 'assets/sounds/ui/ui/successful_hit.wav'
 };
 
 // Mob name to folder name mapping (handles differences between display names and folder names)
@@ -250,7 +250,7 @@ export const playMobHurt = (mobName) => {
     if (!folder) return;
     
     // Use standardized naming (all files renamed to hurt.wav)
-    const audio = new Audio(`assets/sounds/mob/${folder}/hurt.wav`);
+    const audio = new Audio(`assets/sounds/mob/mob/${folder}/hurt.wav`);
     audio.volume = sfxVolume;
     audio.play().catch(() => {});
 };
@@ -264,7 +264,7 @@ export const playMobDeath = (mobName) => {
     if (!folder) return;
     
     // Use standardized naming (all files renamed to death.wav)
-    const audio = new Audio(`assets/sounds/mob/${folder}/death.wav`);
+    const audio = new Audio(`assets/sounds/mob/mob/${folder}/death.wav`);
     audio.volume = sfxVolume;
     audio.play().catch(() => {});
 };

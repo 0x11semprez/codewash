@@ -64,4 +64,9 @@ const SettingsDrawer = ({ isOpen, onReset, bgmVol, setBgmVol, sfxVol, setSfxVol,
     </div>
 );
 
-export default SettingsDrawer;
+// Keep the drawer mounted so its slide transition remains intact, but avoid
+// rebuilding its hidden contents when unrelated game state changes.
+export default React.memo(
+    SettingsDrawer,
+    (previousProps, nextProps) => !previousProps.isOpen && !nextProps.isOpen
+);

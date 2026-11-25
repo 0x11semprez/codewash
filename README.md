@@ -63,6 +63,25 @@ docs/
   DEBT.md           # Technical debt register
 ```
 
+## Performance
+
+Work tracked in issue #12. Full details, figures and open items are in [docs/Performances.md](docs/Performances.md).
+
+### Loading screen
+
+A full-screen loader shows a progress percentage while the theme background, logo, card back, skill icons and visible mob sprites are preloaded, then fades into the game. A failed critical image offers a **Continue** action. The measured load time unlocks the `So... So fast !?` achievement. UI sounds are warmed in the background; background music is not preloaded.
+
+### Performance profiling
+
+React DevTools Profiler captures showed closed drawers re-rendering on every update (8 of 10 commits). After the changes they no longer render, and the maximum commit time went from 277.2 ms to 142.3 ms (development build, not input latency). A first FCP baseline of 522.9 ms was recorded on the production preview; Time to Interactive is still to be measured.
+
+### Optimizations
+
+- `React.memo` on `SafeImage`, `PixelHeart`, `MobWithAura` and the three drawers
+- `React.lazy` + `Suspense` for drawers and modals, mounted on first use
+- Global CSS extracted to `GlobalStyles.css` and loaded under the loading screen
+- Off-screen images loaded lazily, `useMemo` on carousel items
+
 ## CI Pipeline
 
 GitHub Actions runs on every PR and push to `main`:
@@ -84,3 +103,14 @@ See [docs/adr/](docs/adr/) for recorded decisions.
 - **Testing**: Vitest + jsdom + @testing-library/react
 - **CI**: GitHub Actions
 - **Coverage**: v8 provider, thresholds: 30% lines, 20% functions/branches
+
+## Missing theme assets (to add)
+
+These images are referenced by the game but absent from `public/assets/themes/`. With the matching theme selected, the loading screen reports failed critical images.
+
+| Theme | Missing file |
+| --- | --- |
+| spy | `spy_logo.png` |
+| spy | `spy_memorycard.jpg` |
+| kpop | `kpop_memorycard.jpg` |
+| pokemon | `pokemon_memorycard.jpg` |

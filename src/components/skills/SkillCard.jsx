@@ -1,18 +1,19 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { lazy, Suspense, useState, useEffect, useRef } from 'react';
 import ReactDOM from 'react-dom';
 import { Plus, Minus } from 'lucide-react';
 import SafeImage from '../ui/SafeImage';
 import MobWithAura from '../ui/MobWithAura';
 import ParentalVerificationModal from '../ui/ParentalVerificationModal';
+import GameErrorBoundary from '../ui/GameErrorBoundary';
 import { BASE_ASSETS, HOSTILE_MOBS, CHEST_BLOCKS, BOSS_MOBS, MINIBOSS_MOBS, DIFFICULTY_IMAGES } from '../../constants/gameData';
 import { calculateXPToLevel } from '../../utils/gameUtils';
 import { AURA_ADJECTIVES } from '../../utils/mobDisplayUtils';
-import MemoryGame from './games/MemoryGame';
-import PatternGame from './games/PatternGame';
-import MathGame from './games/MathGame';
-import WritingGame from './games/WritingGame';
-import ReadingGame from './games/ReadingGame';
-import CleaningGame from './games/CleaningGame';
+const MemoryGame = lazy(() => import('./games/MemoryGame'));
+const PatternGame = lazy(() => import('./games/PatternGame'));
+const MathGame = lazy(() => import('./games/MathGame'));
+const WritingGame = lazy(() => import('./games/WritingGame'));
+const ReadingGame = lazy(() => import('./games/ReadingGame'));
+const CleaningGame = lazy(() => import('./games/CleaningGame'));
 
 const PRESTIGE_LEVEL_THRESHOLD = 20;
 
@@ -214,7 +215,7 @@ const SkillCard = ({ config, data, themeData, isCenter, isBattling, mobName, mob
                 {isBattling ? (
                     <GameErrorBoundary gameName={config.id} onError={onEndBattle}>
                     <div className="flex flex-col h-full animate-in slide-in-from-bottom-10 duration-300">
-                        {renderBattleContent()}
+                        <Suspense fallback={null}>{renderBattleContent()}</Suspense>
                         {(() => {
                             const xpToLevel = calculateXPToLevel(difficulty, data.level);
                             const xpPercent = Math.min(100, (data.xp / xpToLevel) * 100);

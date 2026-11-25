@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 
-const SafeImage = ({ src, alt, className, onClick }) => {
+const SafeImage = ({ src, alt, className, onClick, loading = 'lazy' }) => {
     const [error, setError] = useState(false);
     // eslint-disable-next-line react-hooks/set-state-in-effect
     useEffect(() => { setError(false); }, [src]);
@@ -14,7 +14,7 @@ const SafeImage = ({ src, alt, className, onClick }) => {
         );
     }
     
-    return <img src={src} alt={alt} className={className} onError={() => setError(true)} onClick={onClick} />;
+    return <img src={src} alt={alt} loading={loading} className={className} onError={() => setError(true)} onClick={onClick} />;
 };
 
-export default SafeImage;
+export default React.memo(SafeImage);
