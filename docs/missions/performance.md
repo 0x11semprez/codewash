@@ -69,7 +69,7 @@ A full-screen loader is displayed over the game while critical assets are preloa
 ### Limitations
 
 - A loading screen improves feedback; it does not by itself make startup faster. Preloading too many assets would delay the menu, which is why only startup-critical assets are blocking.
-- A theme with missing images (see the README) makes the loader report failed critical images until the player presses **Continue**.
+- A theme with missing images (see [DEBT-021](../DEBT.md#debt-021-missing-theme-assets-p2-open)) makes the loader report failed critical images until the player presses **Continue**.
 
 ---
 
@@ -100,7 +100,7 @@ Closed drawers stayed mounted to preserve their slide transitions, so every upda
 
 ### Earlier baseline
 
-First Contentful Paint measured at 522.9 ms: one Opera GX measurement on the production preview (`http://localhost:4173/`). A single measurement is an indication, not a benchmark. Lighthouse figures for the earlier hook extraction are in [DEBT.md](DEBT.md) (section 3.2).
+First Contentful Paint measured at 522.9 ms: one Opera GX measurement on the production preview (`http://localhost:4173/`). A single measurement is an indication, not a benchmark. Lighthouse figures for the earlier hook extraction are in [section 4.3](#43-earlier-lighthouse-runs-debt-001).
 
 ---
 
@@ -174,6 +174,26 @@ Medians:
 | CLS | 0.071 | 0 |
 | Speed Index | 0.8 s | 3.1 s |
 
+### 4.3 Earlier Lighthouse runs (DEBT-001)
+
+These figures were first recorded in the debt register. They measure the hook extraction from DEBT-001 ([#45](https://github.com/0x11semprez/codewash/pull/45)), before the loading screen existed. They were taken with the Lighthouse CLI (`npx lighthouse http://localhost:4173 --only-categories=performance`) on a build served with `npx serve dist`. The theme was not recorded.
+
+The tool, the server and the code differ from section 4.2. Do not compare the two tables.
+
+| Metric | Before DEBT-001 | After DEBT-001 |
+| --- | --- | --- |
+| Performance score | 71 | 90 |
+| FCP | 1.5 s | 1.6 s |
+| LCP | 1.5 s | 1.6 s |
+| TBT | 2,390 ms | 380 ms |
+| CLS | 0 | 0.033 |
+| Speed Index | 1.8 s | 1.6 s |
+| Main thread work | 8.1 s | 4.8 s |
+| JS execution | 0.8 s | 0.5 s |
+| JS bundle | 363 kB (102 kB gzip) | 363 kB |
+
+Before the extraction, `App.jsx` held 32 `useState` and 12 `useEffect` calls in one component. Any state change re-rendered the whole tree, including closed drawers. The team attributes the TBT drop to the extraction: each hook now owns its own state.
+
 ### 4.4 Web Vitals reporting
 
 `src/utils/webVitals.js` reports FCP, LCP and CLS with a Core Web Vitals rating (good / needs-improvement / poor). `src/main.jsx` logs each metric to the console, for example `[web-vitals] FCP: 523 (good)`.
@@ -226,4 +246,4 @@ The music is about 10.6 times smaller. Durations were compared for two tracks on
 | --- | --- |
 | Fair Lighthouse comparison | Select the `minecraft` theme, check out `866aaff`, run `npm run build && npm run preview`, run Lighthouse three times, then add the figures to section 4.2 |
 | Investigate the higher LCP after the change | Compare the "after" build with and without the loading screen |
-| Add the missing theme images | Listed at the end of the README |
+| Add the missing theme images | Tracked as [DEBT-021](../DEBT.md#debt-021-missing-theme-assets-p2-open) |
