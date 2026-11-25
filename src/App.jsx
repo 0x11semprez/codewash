@@ -9,7 +9,7 @@ import AchievementToast from './components/ui/AchievementToast';
 
 import { getMobForSkill, getEncounterType } from './utils/gameUtils';
 import { THEME_CONFIG, SKILL_DATA } from './constants/gameData';
-import { playClick, playAchievement } from './utils/soundManager';
+import { playClick, playAchievement } from './services/soundManager';
 
 import { useGameState } from './hooks/useGameState';
 import { useAudio } from './hooks/useAudio';

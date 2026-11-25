@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { playClick } from '../utils/soundManager';
+import { playClick } from '../services/soundManager';
 
 export const useFullscreen = () => {
     const [isFullscreen, setIsFullscreen] = useState(false);

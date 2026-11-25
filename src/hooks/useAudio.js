@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
-import { getBGMManager, setSfxVolume } from '../utils/soundManager';
+import { getBGMManager, setSfxVolume } from '../services/soundManager';
 
 export const useAudio = () => {
     const [bgmVol, setBgmVol] = useState(0.3);
