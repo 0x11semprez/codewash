@@ -1,116 +1,80 @@
 # Level Up RPG
 
-Educational RPG game built with React 19, Vite, and Tailwind CSS. Players level up skills (math, reading, writing, patterns) by defeating mobs through correctly answering educational challenges.
+Level Up RPG is an educational game for children. The player trains skills (math, reading, writing, patterns, memory, cleaning) by answering short challenges. Each right answer damages a mob and earns XP.
 
-## Prerequisites
+The game was first written by a non-developer with AI tools. This repository is the Epitech CodeWash project: we test, clean and document it without breaking what already works.
 
-- Node.js 20+
-- npm 10+
+## Quick start
 
-## Install
-
-```bash
-npm install --legacy-peer-deps
-```
-
-## Run
+You need Node.js 20 or later and npm 10 or later.
 
 ```bash
-# Web development server
-npm run dev
-
-# Electron desktop app
-npm run electron:dev
-
-# Production build
-npm run build
+npm install --legacy-peer-deps   # install dependencies
+npm run dev                      # start the game at http://localhost:5173
+npm test                         # run all tests
 ```
 
-## Test
+`--legacy-peer-deps` is required: without it, npm refuses to install because of a peer dependency conflict.
+
+## Other commands
+
+| Command | What it does |
+| --- | --- |
+| `npm run build` | Build the web version into `dist/` |
+| `npm run preview` | Serve the built version at http://localhost:4173 |
+| `npm run electron:dev` | Build, then open the game in an Electron window |
+| `npm run electron:build` | Package the desktop app with electron-builder |
+| `npm run test:coverage` | Run the tests and write a coverage report to `coverage/` |
+| `npm run lint` | Run ESLint on `src/` |
+
+To run the game in Docker (nginx on port 80 inside the container):
 
 ```bash
-# Run all tests
-npm run test
-
-# Run tests with coverage report
-npm run test:coverage
+docker build -t codewash .
+docker run --rm -p 8080:80 codewash   # open http://localhost:8080
 ```
 
-## Lint
+The Docker build is broken right now: the `Dockerfile` runs `npm ci` without `--legacy-peer-deps`. See [DEBT-022](https://github.com/0x11semprez/codewash/issues/54).
 
-```bash
-npm run lint
-```
-
-## Project Structure
+## Project structure
 
 ```
 src/
-  components/       # React UI components
-    ui/             # Reusable UI primitives (SafeImage, PixelHeart, MobWithAura)
-    modals/         # Modal dialogs (BugReport, Reset)
-  utils/            # Game logic utilities
-    gameUtils.js    # RPG progression, encounters, math/reading/writing generation
-    achievementUtils.js  # Achievement unlock checks, tier progression
-    mobDisplayUtils.js   # Mob aura system
-    soundManager.js      # BGM/SFX audio manager
-  constants/        # Game data and configuration
-    gameData.jsx    # Mobs, items, difficulty tiers, themes
-    achievements.js # Achievement definitions and tiers
-  __tests__/        # Test suites (136 tests)
-docs/
-  adr/              # Architecture Decision Records
-  DEBT.md           # Technical debt register
+  App.jsx            Main screen: wires the hooks to the components
+  main.jsx           Entry point: error boundary, loading gate, web vitals
+  hooks/             Game state and logic (battle, carousel, voice, audio, fullscreen, save data)
+  components/
+    skills/          SkillCard and one component per mini-game in games/
+    drawers/         Menu, settings and cosmetics side panels
+    modals/          Reset and bug report dialogs
+    profile/         Player profile card
+    ui/              Shared pieces: loading screen, error boundaries, images, toasts
+  utils/             Pure game logic, sound manager, asset preloading
+  constants/         Game data: mobs, themes, skills, achievements
+  __tests__/         Vitest test suites
+docs/                Project documentation (see below)
+electron/            Electron main process
+public/assets/       Images, sounds and music
 ```
 
-## Performance
+## Documentation
 
-Work tracked in issue #12. Full details, figures and open items are in [docs/Performances.md](docs/Performances.md).
+Start with [docs/SUBJECT_MAP.md](docs/SUBJECT_MAP.md). It lists every requirement of the CodeWash subject and the file or pull request that answers it.
 
-### Loading screen
-
-A full-screen loader shows a progress percentage while the theme background, logo, card back, skill icons and visible mob sprites are preloaded, then fades into the game. A failed critical image offers a **Continue** action. The measured load time unlocks the `So... So fast !?` achievement. UI sounds are warmed in the background; background music is not preloaded.
-
-### Performance profiling
-
-React DevTools Profiler captures showed closed drawers re-rendering on every update (8 of 10 commits). After the changes they no longer render, and the maximum commit time went from 277.2 ms to 142.3 ms (development build, not input latency). A first FCP baseline of 522.9 ms was recorded on the production preview; Time to Interactive is still to be measured.
-
-### Optimizations
-
-- `React.memo` on `SafeImage`, `PixelHeart`, `MobWithAura` and the three drawers
-- `React.lazy` + `Suspense` for drawers and modals, mounted on first use
-- Global CSS extracted to `GlobalStyles.css` and loaded under the loading screen
-- Off-screen images loaded lazily, `useMemo` on carousel items
-
-## CI Pipeline
-
-GitHub Actions runs on every PR and push to `main`:
-
-1. Lint (ESLint)
-2. Build (Vite)
-3. Test (Vitest)
-4. Coverage check (thresholds enforced)
-
-## Architecture Decisions
-
-See [docs/adr/](docs/adr/) for recorded decisions.
-
-## Tech Stack
-
-- **Runtime**: React 19 + Vite (rolldown)
-- **Styling**: Tailwind CSS 4
-- **Desktop**: Electron
-- **Testing**: Vitest + jsdom + @testing-library/react
-- **CI**: GitHub Actions
-- **Coverage**: v8 provider, thresholds: 30% lines, 20% functions/branches
-
-## Missing theme assets (to add)
-
-These images are referenced by the game but absent from `public/assets/themes/`. With the matching theme selected, the loading screen reports failed critical images.
-
-| Theme | Missing file |
+| Topic | Where |
 | --- | --- |
-| spy | `spy_logo.png` |
-| spy | `spy_memorycard.jpg` |
-| kpop | `kpop_memorycard.jpg` |
-| pokemon | `pokemon_memorycard.jpg` |
+| Technical debt register: codebase map, debt items, metrics, risk matrix, plan | [docs/DEBT.md](docs/DEBT.md) |
+| Why the architecture is the way it is | [docs/adr/](docs/adr/) |
+| Branches, CI and team workflow | [docs/handover/development-plan.md](docs/handover/development-plan.md) |
+| Performance mission: loading screen, profiling, measurements | [docs/missions/performance.md](docs/missions/performance.md) |
+| Microphone and speech recognition | [docs/features/microphone.md](docs/features/microphone.md) |
+
+## Continuous integration
+
+GitHub Actions runs on every pull request to `main` and on every push to `main`. It installs dependencies, runs ESLint with zero warnings allowed, builds the app, runs the tests and checks coverage. The team rule is to never merge on red. GitHub does not enforce it yet: `main` has no branch protection.
+
+Coverage thresholds live in `vitest.config.js`: 60% of lines and statements, 50% of branches and 40% of functions. The subject asks for 80% on modified code. Raising the thresholds is tracked in [#17](https://github.com/0x11semprez/codewash/issues/17).
+
+## Tech stack
+
+React 19, Vite (rolldown), Tailwind CSS 4, Electron, Vitest with jsdom and Testing Library, ESLint, Docker with nginx, GitHub Actions.
