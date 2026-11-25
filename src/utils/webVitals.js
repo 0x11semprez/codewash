@@ -39,9 +39,13 @@ export const reportWebVitals = (onReport = () => {}) => {
         });
     });
 
-    document.addEventListener('visibilitychange', () => {
-        if (document.visibilityState !== 'hidden') return;
-        if (lcp !== null) report('LCP', lcp);
-        report('CLS', cls);
-    }, { once: true });
+    document.addEventListener(
+        'visibilitychange',
+        () => {
+            if (document.visibilityState !== 'hidden') return;
+            if (lcp !== null) report('LCP', lcp);
+            report('CLS', cls);
+        },
+        { once: true },
+    );
 };

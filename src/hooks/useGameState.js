@@ -1,6 +1,12 @@
 import { useState, useEffect, useRef } from 'react';
 import React from 'react';
-import { getRandomMob, getRandomFriendlyMob, getRandomMiniboss, getRandomBoss, calculateMobHealth } from '../utils/gameUtils';
+import {
+    getRandomMob,
+    getRandomFriendlyMob,
+    getRandomMiniboss,
+    getRandomBoss,
+    calculateMobHealth,
+} from '../utils/gameUtils';
 import { getRandomAura } from '../utils/mobDisplayUtils';
 import { SKILL_DATA } from '../constants/gameData';
 import { getDefaultStats, isAchievementUnlocked } from '../utils/achievementUtils';
@@ -9,15 +15,18 @@ const getStorageKey = (profileId) => `heroSkills_v23_p${profileId}`;
 
 const loadSkills = (profileId) => {
     const initial = {};
-    SKILL_DATA.forEach(skill => {
+    SKILL_DATA.forEach((skill) => {
         const initialDifficulty = 1;
         initial[skill.id] = {
-            level: 1, xp: 0, currentMob: getRandomMob(null),
+            level: 1,
+            xp: 0,
+            currentMob: getRandomMob(null),
             difficulty: initialDifficulty,
             earnedBadges: [],
             mobHealth: calculateMobHealth(initialDifficulty),
             mobMaxHealth: calculateMobHealth(initialDifficulty),
-            lostLevel: false, recoveryDifficulty: null,
+            lostLevel: false,
+            recoveryDifficulty: null,
             memoryMob: skill.id === 'memory' ? getRandomFriendlyMob() : null,
             patternMob: skill.id === 'patterns' ? getRandomMob(null) : null,
             currentMiniboss: getRandomMiniboss(),
@@ -30,7 +39,7 @@ const loadSkills = (profileId) => {
             writingMobAura: skill.id === 'writing' ? getRandomAura() : null,
             patternMobAura: skill.id === 'patterns' ? getRandomAura() : null,
             currentMinibossAura: getRandomAura(),
-            currentBossAura: getRandomAura()
+            currentBossAura: getRandomAura(),
         };
     });
     let saved = localStorage.getItem(getStorageKey(profileId));
@@ -39,7 +48,7 @@ const loadSkills = (profileId) => {
         if (saved) {
             const parsed = JSON.parse(saved);
             const data = parsed.skills || parsed;
-            Object.keys(data).forEach(key => {
+            Object.keys(data).forEach((key) => {
                 initial[key] = { ...initial[key], ...data[key] };
                 if (typeof initial[key].difficulty !== 'number') initial[key].difficulty = 1;
                 if (!Array.isArray(initial[key].earnedBadges)) initial[key].earnedBadges = [];
@@ -77,7 +86,11 @@ const loadSkills = (profileId) => {
 const loadTheme = (profileId) => {
     let saved = localStorage.getItem(getStorageKey(profileId));
     if (!saved && profileId === 1) saved = localStorage.getItem('heroSkills_v23');
-    try { return JSON.parse(saved).theme || 'minecraft'; } catch { return 'minecraft'; }
+    try {
+        return JSON.parse(saved).theme || 'minecraft';
+    } catch {
+        return 'minecraft';
+    }
 };
 
 const loadStats = (profileId) => {
@@ -96,13 +109,17 @@ const loadStats = (profileId) => {
 
 export const useGameState = () => {
     const [currentProfile, setCurrentProfile] = useState(() =>
-        localStorage.getItem('currentProfile_v1') ? parseInt(localStorage.getItem('currentProfile_v1')) : 1
+        localStorage.getItem('currentProfile_v1') ? parseInt(localStorage.getItem('currentProfile_v1')) : 1,
     );
     const [profileNames, setProfileNames] = useState(() =>
-        localStorage.getItem('heroProfileNames_v1') ? JSON.parse(localStorage.getItem('heroProfileNames_v1')) : { 1: "Player 1", 2: "Player 2", 3: "Player 3" }
+        localStorage.getItem('heroProfileNames_v1')
+            ? JSON.parse(localStorage.getItem('heroProfileNames_v1'))
+            : { 1: 'Player 1', 2: 'Player 2', 3: 'Player 3' },
     );
     const [parentStatus, setParentStatus] = useState(() =>
-        localStorage.getItem('heroParentStatus_v1') ? JSON.parse(localStorage.getItem('heroParentStatus_v1')) : { 1: false, 2: false, 3: false }
+        localStorage.getItem('heroParentStatus_v1')
+            ? JSON.parse(localStorage.getItem('heroParentStatus_v1'))
+            : { 1: false, 2: false, 3: false },
     );
 
     const [skills, setSkills] = useState(() => loadSkills(currentProfile));
@@ -138,17 +155,17 @@ export const useGameState = () => {
         const today = new Date().toISOString().split('T')[0];
         const currentDates = stats.loginDates || [];
         if (!currentDates.includes(today)) {
-            setStats(prev => ({ ...prev, loginDates: [...(prev.loginDates || []), today] }));
+            setStats((prev) => ({ ...prev, loginDates: [...(prev.loginDates || []), today] }));
         }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     const unlockedBorders = React.useMemo(() => {
         const unlockedBadges = new Set();
         const tierToBadge = ['Wood', 'Stone', 'Gold', 'Iron', 'Emerald', 'Diamond', 'Netherite', 'Obsidian'];
-        Object.values(skills).forEach(skill => {
+        Object.values(skills).forEach((skill) => {
             if (skill.earnedBadges && Array.isArray(skill.earnedBadges)) {
-                skill.earnedBadges.forEach(tier => {
+                skill.earnedBadges.forEach((tier) => {
                     if (tier >= 1 && tier <= 8) unlockedBadges.add(tierToBadge[tier - 1]);
                 });
             }
@@ -159,7 +176,7 @@ export const useGameState = () => {
 
     const unlockedAchievements = React.useMemo(() => {
         const unlocked = [];
-        ['speed_demon', 'world_ender', 'monster_manual', 'perfectionist', 'full_set'].forEach(id => {
+        ['speed_demon', 'world_ender', 'monster_manual', 'perfectionist', 'full_set'].forEach((id) => {
             if (isAchievementUnlocked(id, stats, skills)) unlocked.push(id);
         });
         return unlocked;
@@ -167,8 +184,9 @@ export const useGameState = () => {
 
     const getProfileStats = (id, liveSkills = null) => {
         if (liveSkills) {
-            let totalLevel = 0, highestLevel = 0;
-            Object.values(liveSkills).forEach(s => {
+            let totalLevel = 0,
+                highestLevel = 0;
+            Object.values(liveSkills).forEach((s) => {
                 if (s && typeof s.level === 'number') {
                     totalLevel += s.level;
                     if (s.level > highestLevel) highestLevel = s.level;
@@ -184,15 +202,18 @@ export const useGameState = () => {
             const data = JSON.parse(saved);
             const skillsData = data.skills || data;
             const theme = data.theme || 'minecraft';
-            let totalLevel = 0, highestLevel = 0;
-            Object.values(skillsData).forEach(s => {
+            let totalLevel = 0,
+                highestLevel = 0;
+            Object.values(skillsData).forEach((s) => {
                 if (s && typeof s.level === 'number') {
                     totalLevel += s.level;
                     if (s.level > highestLevel) highestLevel = s.level;
                 }
             });
             return { totalLevel, highestLevel, skills: skillsData, theme };
-        } catch { return null; }
+        } catch {
+            return null;
+        }
     };
 
     const handleSwitchProfile = (newId) => {
@@ -203,26 +224,27 @@ export const useGameState = () => {
     };
 
     const handleRenameProfile = (id, newName) => {
-        setProfileNames(prev => ({ ...prev, [id]: newName }));
+        setProfileNames((prev) => ({ ...prev, [id]: newName }));
     };
 
     const handleParentVerified = (profileId, verified) => {
-        setParentStatus(prev => ({ ...prev, [profileId]: verified }));
+        setParentStatus((prev) => ({ ...prev, [profileId]: verified }));
         if (verified && profileId === currentProfile) {
-            setSkills(prev => {
+            setSkills((prev) => {
                 const updated = {};
-                Object.keys(prev).forEach(skillId => {
+                Object.keys(prev).forEach((skillId) => {
                     updated[skillId] = {
                         ...prev[skillId],
-                        level: 200, difficulty: 7,
+                        level: 200,
+                        difficulty: 7,
                         earnedBadges: [1, 2, 3, 4, 5, 6, 7, 8],
                         mobHealth: calculateMobHealth(7),
-                        mobMaxHealth: calculateMobHealth(7)
+                        mobMaxHealth: calculateMobHealth(7),
                     };
                 });
                 return updated;
             });
-            setTimeout(() => setSkills(current => ({ ...current })), 0);
+            setTimeout(() => setSkills((current) => ({ ...current })), 0);
         }
     };
 
@@ -230,30 +252,57 @@ export const useGameState = () => {
         localStorage.removeItem(getStorageKey(currentProfile));
         if (currentProfile === 1) localStorage.removeItem('heroSkills_v23');
         const currentParentStatus = localStorage.getItem('heroParentStatus_v1');
-        const parentStatusObj = currentParentStatus ? JSON.parse(currentParentStatus) : { 1: false, 2: false, 3: false };
+        const parentStatusObj = currentParentStatus
+            ? JSON.parse(currentParentStatus)
+            : { 1: false, 2: false, 3: false };
         parentStatusObj[currentProfile] = false;
         localStorage.setItem('heroParentStatus_v1', JSON.stringify(parentStatusObj));
         const currentProfileNames = localStorage.getItem('heroProfileNames_v1');
-        const profileNamesObj = currentProfileNames ? JSON.parse(currentProfileNames) : { 1: "Player 1", 2: "Player 2", 3: "Player 3" };
+        const profileNamesObj = currentProfileNames
+            ? JSON.parse(currentProfileNames)
+            : { 1: 'Player 1', 2: 'Player 2', 3: 'Player 3' };
         profileNamesObj[currentProfile] = `Player ${currentProfile}`;
         localStorage.setItem('heroProfileNames_v1', JSON.stringify(profileNamesObj));
         window.location.reload();
     };
 
     const setSkillDifficulty = (skillId, newDiff) => {
-        setSkills(prev => {
+        setSkills((prev) => {
             const current = prev[skillId];
             const newMobMaxHealth = calculateMobHealth(newDiff);
-            return { ...prev, [skillId]: { ...current, difficulty: newDiff, mobHealth: newMobMaxHealth, mobMaxHealth: newMobMaxHealth } };
+            return {
+                ...prev,
+                [skillId]: {
+                    ...current,
+                    difficulty: newDiff,
+                    mobHealth: newMobMaxHealth,
+                    mobMaxHealth: newMobMaxHealth,
+                },
+            };
         });
     };
 
     return {
-        currentProfile, profileNames, parentStatus, skills, setSkills,
-        activeTheme, setActiveTheme, stats, setStats,
-        selectedBorder, setSelectedBorder, borderColor, setBorderColor,
-        unlockedBorders, unlockedAchievements,
-        getProfileStats, handleSwitchProfile, handleRenameProfile,
-        handleParentVerified, handleReset, setSkillDifficulty
+        currentProfile,
+        profileNames,
+        parentStatus,
+        skills,
+        setSkills,
+        activeTheme,
+        setActiveTheme,
+        stats,
+        setStats,
+        selectedBorder,
+        setSelectedBorder,
+        borderColor,
+        setBorderColor,
+        unlockedBorders,
+        unlockedAchievements,
+        getProfileStats,
+        handleSwitchProfile,
+        handleRenameProfile,
+        handleParentVerified,
+        handleReset,
+        setSkillDifficulty,
     };
 };

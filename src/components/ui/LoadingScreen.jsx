@@ -16,8 +16,11 @@ const LoadingScreen = ({ progress, ready, failedCount = 0, onContinue }) => (
         <div className="loading-screen__progress-area">
             {failedCount > 0 && (
                 <div className="loading-screen__error" role="alert">
-                    {failedCount} CRITICAL IMAGE{failedCount === 1 ? '' : 'S'} COULD NOT LOAD. The game can continue with missing visuals.
-                    <button className="loading-screen__continue" onClick={onContinue}>CONTINUE</button>
+                    {failedCount} CRITICAL IMAGE{failedCount === 1 ? '' : 'S'} COULD NOT LOAD. The game can continue
+                    with missing visuals.
+                    <button className="loading-screen__continue" onClick={onContinue}>
+                        CONTINUE
+                    </button>
                 </div>
             )}
             <div className="loading-screen__status">

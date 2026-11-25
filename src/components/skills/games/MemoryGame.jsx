@@ -39,7 +39,8 @@ const MemoryGame = ({ isBattling, difficulty, onMathSubmit, themeData }) => {
     }, [isBattling, memoryPairs]);
 
     const handleCardClick = (index) => {
-        if (isProcessingMatch || flippedIndices.includes(index) || matchedPairs.includes(memoryCards[index].color)) return;
+        if (isProcessingMatch || flippedIndices.includes(index) || matchedPairs.includes(memoryCards[index].color))
+            return;
         const newFlipped = [...flippedIndices, index];
         setFlippedIndices(newFlipped);
         playClick();
@@ -55,7 +56,7 @@ const MemoryGame = ({ isBattling, difficulty, onMathSubmit, themeData }) => {
                     setMatchedPairs(newMatched);
                     setFlippedIndices([]);
                     setIsProcessingMatch(false);
-                    if (newMatched.length === memoryPairs) setTimeout(() => onMathSubmit("WIN"), 500);
+                    if (newMatched.length === memoryPairs) setTimeout(() => onMathSubmit('WIN'), 500);
                 } else {
                     const mismatchAudio = new Audio(BASE_ASSETS.audio.mismatch);
                     mismatchAudio.volume = getSfxVolume();
@@ -86,8 +87,14 @@ const MemoryGame = ({ isBattling, difficulty, onMathSubmit, themeData }) => {
                         onClick={() => handleCardClick(index)}
                         className={`w-full aspect-[2/3] cursor-pointer transition-all duration-300 perspective-1000 relative transform-style-3d ${isFlipped ? 'rotate-y-180' : ''} ${mismatchShake && isFlipped ? 'animate-shake-flipped border-red-500' : ''}`}
                     >
-                        <div className="absolute inset-0 backface-hidden w-full h-full" style={{ backfaceVisibility: 'hidden' }}>
-                            <SafeImage src={themeData.assets.cardBack} className="w-full h-full object-cover rounded border border-stone-600" />
+                        <div
+                            className="absolute inset-0 backface-hidden w-full h-full"
+                            style={{ backfaceVisibility: 'hidden' }}
+                        >
+                            <SafeImage
+                                src={themeData.assets.cardBack}
+                                className="w-full h-full object-cover rounded border border-stone-600"
+                            />
                         </div>
                         <div
                             className="absolute inset-0 backface-hidden w-full h-full rotate-y-180 bg-slate-800 rounded border border-white/20 flex items-center justify-center"
