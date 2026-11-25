@@ -1,6 +1,6 @@
 # Performance report
 
-Issue [#12](https://github.com/EpitechBachelorPromo2028/B-ING-300-PAR-3-1-codewash-21/issues/12): *Improve performance (loading screen and UX snappiness)*.
+Issue [#12](https://github.com/EpitechBachelorPromo2028/B-ING-300-PAR-3-1-codewash-21/issues/12): *Improve performance (loading screen and UX snappiness)*, tracked in this repository as [#18](https://github.com/0x11semprez/codewash/issues/18).
 
 **Compared versions**
 
