@@ -298,14 +298,14 @@ Each item links to its GitHub issue for full context and to the PR that addresse
 - **Fix:** Extract shared `BorderEffectCard` component.
 - **Effort:** S
 
-### DEBT-009: Hardcoded localStorage keys [P2] [Open]
+### DEBT-009: Hardcoded localStorage keys [P2] [Done ✓]
 
-- **Issue:** [#32](https://github.com/0x11semprez/codewash/issues/32) — **PR:** none yet
-- **Location:** `src/App.jsx` (keys like `heroSkills_v23_p${profileId}`)
+- **Issue:** [#32](https://github.com/0x11semprez/codewash/issues/32) — **PR:** pending
+- **Location (before):** `useGameState.js`, `preloadStartupAssets.js` and `PhantomEvent.jsx` (21 occurrences of key names typed by hand)
 - **Smell:** Scattered magic strings. No central registry. No migration path.
-- **Impact:** Renaming a key silently loses all saved player data. No way to migrate between versions.
-- **Risk:** Medium impact, high likelihood.
-- **Fix:** Extract storage layer with key constants and version-aware migration.
+- **Impact:** Renaming a key silently loses all saved player data.
+- **Fix:** All keys live in `src/utils/storageKeys.js`. `migrateKey` and `migrateStorage` move old data to a new key at startup. The save of the original game is moved to profile 1 by the migration. A test fails if a key name is typed anywhere else.
+- **Evidence:** [bug report](bugs/Bugs.md#debt-009-hardcoded-localstorage-keys), with screenshots of the bug and of the fix.
 - **Effort:** S
 
 ### DEBT-010: No error boundaries [P1] [Done ✓]
@@ -510,13 +510,13 @@ Low Impact    │ DEBT-018, 019  │                 │ DEBT-004 ✓      │
 | 12 | DEBT-020 | Reorganize into feature-based structure | In Progress — Epitech PR #48 (merge `f69df57`) |
 | 13 | DEBT-014 | Fix `perfectMemoryGames` counter | Open |
 
-### Phase 2: break god components (weeks 3-4) — done except DEBT-009
+### Phase 2: break god components (weeks 3-4) — done
 
 | # | Debt | Task | Status |
 |---|------|------|--------|
 | 14 | DEBT-001 | Extract App.jsx into hooks + context | Done ✓ — [#45](https://github.com/0x11semprez/codewash/pull/45) (merged) |
 | 15 | DEBT-003 | Split SkillCard per skill type | Done ✓ — [#48](https://github.com/0x11semprez/codewash/pull/48) (merged) |
-| 16 | DEBT-009 | Extract storage layer | Open |
+| 16 | DEBT-009 | Extract storage layer | Done ✓ |
 
 ### Phase 3: polish (week 5+)
 
@@ -543,7 +543,7 @@ Low Impact    │ DEBT-018, 019  │                 │ DEBT-004 ✓      │
 | DEBT-006 | [#29](https://github.com/0x11semprez/codewash/issues/29) | [#5](https://github.com/0x11semprez/codewash/pull/5) (merged), originally Epitech PR #37 | Done ✓ |
 | DEBT-007 | [#30](https://github.com/0x11semprez/codewash/issues/30) | [#47](https://github.com/0x11semprez/codewash/pull/47) (merged) | Done ✓ |
 | DEBT-008 | [#31](https://github.com/0x11semprez/codewash/issues/31) | — | Open |
-| DEBT-009 | [#32](https://github.com/0x11semprez/codewash/issues/32) | — | Open |
+| DEBT-009 | [#32](https://github.com/0x11semprez/codewash/issues/32) | pending | Done ✓ |
 | DEBT-010 | [#33](https://github.com/0x11semprez/codewash/issues/33) | [#49](https://github.com/0x11semprez/codewash/pull/49) (merged) | Done ✓ |
 | DEBT-011 | [#34](https://github.com/0x11semprez/codewash/issues/34) | — | Open |
 | DEBT-012 | [#35](https://github.com/0x11semprez/codewash/issues/35) | Epitech PR #37 (merged) | Done ✓ |
