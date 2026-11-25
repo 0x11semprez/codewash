@@ -5,14 +5,14 @@ const AURA_TYPES = ['rainbow', 'frost', 'shadow', 'lava', 'gradient', 'sparkle',
 
 // Aura adjectives mapping
 export const AURA_ADJECTIVES = {
-    'frost': 'Frozen',
-    'lava': 'Flaming',
-    'shadow': 'Shadowy',
-    'rainbow': 'Prismatic',
-    'gradient': 'Shifting',
-    'sparkle': 'Glittering',
-    'plasma': 'Volatile',
-    'nature': 'Overgrown'
+    frost: 'Frozen',
+    lava: 'Flaming',
+    shadow: 'Shadowy',
+    rainbow: 'Prismatic',
+    gradient: 'Shifting',
+    sparkle: 'Glittering',
+    plasma: 'Volatile',
+    nature: 'Overgrown',
 };
 
 /**

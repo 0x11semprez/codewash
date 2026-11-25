@@ -21,7 +21,7 @@ const CleaningGame = ({ challenge, onMathSubmit }) => {
                         maxWidth: '100%',
                         wordBreak: 'break-word',
                         textAlign: 'center',
-                        lineHeight: '1.2'
+                        lineHeight: '1.2',
                     }}
                 >
                     {word}

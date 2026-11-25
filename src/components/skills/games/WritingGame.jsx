@@ -7,8 +7,10 @@ const WritingGame = ({ challenge, onMathSubmit }) => {
     const [isWrong, setIsWrong] = useState(false);
     const inputRef = useRef(null);
 
-    // eslint-disable-next-line react-hooks/set-state-in-effect -- reset input on new challenge (pre-existing pattern)
-    useEffect(() => { setMathInput(''); }, [challenge]);
+    useEffect(() => {
+        // eslint-disable-next-line react-hooks/set-state-in-effect -- reset input on new challenge (pre-existing pattern)
+        setMathInput('');
+    }, [challenge]);
 
     const playMismatch = () => {
         const audio = new Audio(BASE_ASSETS.audio.mismatch);
@@ -61,7 +63,7 @@ const WritingGame = ({ challenge, onMathSubmit }) => {
                     return (
                         <div
                             key={i}
-                            className={`${answerLength > 6 ? 'w-7 h-9 text-lg' : 'w-10 h-12 text-2xl'} border-b-4 flex items-center justify-center font-mono font-bold text-white bg-black/20 rounded-t ${isWrong ? 'border-red-500 bg-red-900/30' : (inputIndex < mathInput.length ? 'border-green-500' : 'border-gray-600')}`}
+                            className={`${answerLength > 6 ? 'w-7 h-9 text-lg' : 'w-10 h-12 text-2xl'} border-b-4 flex items-center justify-center font-mono font-bold text-white bg-black/20 rounded-t ${isWrong ? 'border-red-500 bg-red-900/30' : inputIndex < mathInput.length ? 'border-green-500' : 'border-gray-600'}`}
                         >
                             {mathInput[inputIndex] || ''}
                         </div>

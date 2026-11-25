@@ -2,11 +2,11 @@ import { useState, useRef } from 'react';
 import { HOMOPHONES } from '../constants/gameData';
 
 const MIN_SPOKEN_TEXT_LENGTH = 2;
-const MIC_OFF_TEXT = "Mic Off";
+const MIC_OFF_TEXT = 'Mic Off';
 
 export const useVoiceRecognition = (challengeDataRef, onCorrect, onWrong) => {
     const [isListening, setIsListening] = useState(false);
-    const [spokenText, setSpokenText] = useState("");
+    const [spokenText, setSpokenText] = useState('');
     const recognitionRef = useRef(null);
 
     const stopVoiceRecognition = () => {
@@ -32,7 +32,7 @@ export const useVoiceRecognition = (challengeDataRef, onCorrect, onWrong) => {
 
         recognitionRef.current.onstart = () => {
             setIsListening(true);
-            setSpokenText("Listening...");
+            setSpokenText('Listening...');
         };
 
         recognitionRef.current.onend = () => {
@@ -51,13 +51,15 @@ export const useVoiceRecognition = (challengeDataRef, onCorrect, onWrong) => {
 
         recognitionRef.current.onerror = (event) => {
             if (event.error === 'not-allowed') {
-                setSpokenText("Mic permission denied");
+                setSpokenText('Mic permission denied');
                 setIsListening(false);
             }
         };
 
         recognitionRef.current.onresult = (e) => {
-            const t = e.results[e.results.length - 1][0].transcript.toUpperCase().replace(/[.,/#!$%^&*;:{}=\-_`~()]/g, "");
+            const t = e.results[e.results.length - 1][0].transcript
+                .toUpperCase()
+                .replace(/[.,/#!$%^&*;:{}=\-_`~()]/g, '');
             setSpokenText(t);
             const currentChallenge = challengeDataRef.current;
             if (currentChallenge && currentChallenge.type === 'reading') {
@@ -78,7 +80,7 @@ export const useVoiceRecognition = (challengeDataRef, onCorrect, onWrong) => {
 
     const toggleMicListener = (targetId, battlingSkillId) => {
         if (!window.webkitSpeechRecognition) {
-            setSpokenText("Mic not available");
+            setSpokenText('Mic not available');
             return;
         }
         if (recognitionRef.current && isListening) {
@@ -89,7 +91,11 @@ export const useVoiceRecognition = (challengeDataRef, onCorrect, onWrong) => {
     };
 
     return {
-        isListening, spokenText, setSpokenText,
-        startVoiceListener, stopVoiceRecognition, toggleMicListener
+        isListening,
+        spokenText,
+        setSpokenText,
+        startVoiceListener,
+        stopVoiceRecognition,
+        toggleMicListener,
     };
 };

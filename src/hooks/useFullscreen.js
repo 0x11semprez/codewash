@@ -14,11 +14,11 @@ export const useFullscreen = () => {
 
     const toggleFullscreen = () => {
         if (!document.fullscreenElement) {
-            document.documentElement.requestFullscreen().catch(err => {
+            document.documentElement.requestFullscreen().catch((err) => {
                 console.warn('Failed to enter fullscreen:', err);
             });
         } else {
-            document.exitFullscreen().catch(err => {
+            document.exitFullscreen().catch((err) => {
                 console.warn('Failed to exit fullscreen:', err);
             });
         }
