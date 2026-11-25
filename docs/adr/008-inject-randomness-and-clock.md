@@ -42,7 +42,7 @@ We rejected `vi.useFakeTimers` and `vi.spyOn(Math, 'random')`. They patch global
 - Some functions now have one more parameter. A caller that passes a function by reference, like `items.map(getRandomAura)`, would send the index as the random source. No caller does this today. Call these functions with an arrow function.
 - The refactor covers the pure utilities and the login date only. These calls remain and still use the globals directly:
   - `src/hooks/useBattle.js`: damage popup position.
-  - `src/utils/soundManager.js`: random sound pick.
+  - `src/services/soundManager.js`: random sound pick.
   - `src/components/PhantomEvent.jsx`: spawn delay, side and cooldown time.
   - `src/components/skills/games/MemoryGame.jsx`: deck shuffle.
   - `src/components/skills/games/PatternGame.jsx`: color sequence.

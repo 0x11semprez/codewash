@@ -164,7 +164,7 @@ Escalate when the mic fails in Chrome with permission granted, or works in Chrom
 
 ### No sound or no music
 
-How sound works (`src/utils/soundManager.js` and `src/hooks/useAudio.js`):
+How sound works (`src/services/soundManager.js` and `src/hooks/useAudio.js`):
 
 - Music starts the first time a battle starts. There is no music on the menu before that.
 - Music is a random track from six WAV files in `public/assets/sounds/bgm/` (about 190 MB on disk). They are not preloaded, so the first track can take time to start on a slow network.
