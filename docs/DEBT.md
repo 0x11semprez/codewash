@@ -419,6 +419,16 @@ Each item links to its GitHub issue for full context and to the PR that addresse
 - **Fix:** Add the images or point to existing files. Add a test that checks every `THEMES` path exists under `public/`. Fits with the Themes mission (#21).
 - **Effort:** S
 
+### DEBT-022: Docker build fails on `npm ci` [P1] [Open]
+
+- **Issue:** [#54](https://github.com/0x11semprez/codewash/issues/54) — **PR:** none yet
+- **Location:** `Dockerfile` line 4, `package.json` (`vitest`, `@vitest/coverage-v8`)
+- **Smell:** Inconsistent install. CI and the README use `npm ci --legacy-peer-deps`, the `Dockerfile` uses plain `npm ci`. npm stops with `ERESOLVE could not resolve` because `@vitest/coverage-v8@3.2.7` wants `vitest@3.2.7` as a peer.
+- **Impact:** `docker build .` fails, so the container from DEBT-012 cannot be built today.
+- **Risk:** Medium impact, high likelihood: every Docker build fails.
+- **Fix:** Align the two Vitest package versions so no flag is needed, then add a `docker build` step to CI.
+- **Effort:** XS
+
 ---
 
 ## 3. Baseline metrics
@@ -462,6 +472,7 @@ Med Impact    │ DEBT-011       │ DEBT-008        │ DEBT-009        │
               │                │ DEBT-017 ✓      │ DEBT-015 ✓      │
               │                │                 │ DEBT-020        │
               │                │                 │ DEBT-021        │
+              │                │                 │ DEBT-022        │
 ──────────────┼────────────────┼─────────────────┼─────────────────┤
 Low Impact    │ DEBT-018, 019  │                 │ DEBT-004 ✓      │
               │                │                 │ DEBT-007 ✓      │
@@ -514,6 +525,7 @@ Low Impact    │ DEBT-018, 019  │                 │ DEBT-004 ✓      │
 | 19 | DEBT-011 | Refactor sound manager + audio pooling | Open |
 | 20 | DEBT-013 | Add error tracking | Open |
 | 21 | DEBT-021 | Add missing theme images + path test | Open |
+| 22 | DEBT-022 | Fix Docker build + add it to CI | Open |
 
 ---
 
@@ -542,6 +554,7 @@ Low Impact    │ DEBT-018, 019  │                 │ DEBT-004 ✓      │
 | DEBT-019 | [#42](https://github.com/0x11semprez/codewash/issues/42) | — | Open |
 | DEBT-020 | [#11](https://github.com/0x11semprez/codewash/issues/11) | Epitech PR #48 (merge `f69df57`) | In Progress |
 | DEBT-021 | [#53](https://github.com/0x11semprez/codewash/issues/53) | — | Open |
+| DEBT-022 | [#54](https://github.com/0x11semprez/codewash/issues/54) | — | Open |
 
 ---
 
