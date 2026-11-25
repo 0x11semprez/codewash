@@ -58,8 +58,8 @@ Last checked: 2026-11-25.
 | --- | --- | --- | --- |
 | Can a newcomer install, launch and test without help? | Done | [README](../README.md) | |
 | Why is the architecture the way it is? | Partial | [docs/adr/](adr/) (6 ADRs) | The ADRs cover tooling and file layout. No ADR explains the hook design or the loading gate. |
-| What changed between the version received and the one delivered? | Missing | | `CHANGELOG.md` |
-| What should the person on duty do when something breaks? | Missing | | `docs/handover/RUNBOOK.md` |
+| What changed between the version received and the one delivered? | Done | [CHANGELOG.md](../CHANGELOG.md) | |
+| What should the person on duty do when something breaks? | Done | [Runbook](handover/RUNBOOK.md) | |
 | What does the system look like today? | Missing | | Current architecture map (`docs/handover/ARCHITECTURE.md` or DEBT.md section 7). |
 | How does a user discover each added feature? | Partial | [Performance report](missions/performance.md) | One page per mission, written for players. |
 | What was left undone, and why? | Partial | Open items in [DEBT.md](DEBT.md#6-tracking-summary) | A "Residual debt" section for the next team. |

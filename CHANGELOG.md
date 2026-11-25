@@ -29,7 +29,7 @@ Links to pull requests point to this repository. Work done before the move from 
 - `.gitignore` rules for macOS metadata files such as `._*` (DEBT-007). [#47](https://github.com/0x11semprez/codewash/pull/47)
 - `docs/SUBJECT_MAP.md`, which links each requirement of the subject to its evidence. Pending [#55](https://github.com/0x11semprez/codewash/pull/55).
 - Debt items DEBT-021 (missing theme images) and DEBT-022 (Docker build). Pending [#55](https://github.com/0x11semprez/codewash/pull/55).
-- Runbook for the person on duty (`docs/handover/RUNBOOK.md`) and this changelog. Pending (this pull request).
+- Runbook for the person on duty (`docs/handover/RUNBOOK.md`) and this changelog. Pending [#57](https://github.com/0x11semprez/codewash/pull/57).
 
 ### Changed
 
