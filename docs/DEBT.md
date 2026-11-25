@@ -390,16 +390,12 @@ Each item links to its GitHub issue for full context and to the PR that addresse
 - **Fix:** Add try-catch or use a shared safe-parse helper.
 - **Effort:** XS
 
-### DEBT-019: External resources in component render [P3] [Open]
+### DEBT-019: External resources in component render [P3] [Done ✓]
 
-- **Issue:** [#42](https://github.com/0x11semprez/codewash/issues/42) — **PR:** none yet
-- **Location:**
-  - `src/components/ui/GlobalStyles.jsx:5` and `src/index.css:1` — Google Fonts `@import` (the one inside `<style>` re-fetches on every remount)
-  - `ProfileCard.jsx:69`, `SkillCard.jsx:187` — `transparenttextures.com` pattern URLs
+- **Issue:** [#42](https://github.com/0x11semprez/codewash/issues/42) — **PR:** pending
+- **Location (before):** `GlobalStyles.jsx` and `src/index.css` (Google Fonts `@import`), `ProfileCard.jsx` and `SkillCard.jsx` (`transparenttextures.com` pattern URLs), `App.jsx` (unused `placehold.co` fallback URL)
 - **Smell:** External HTTP requests triggered during render. Blocks first paint. Breaks fully-offline promise.
-- **Impact:** Slower load, flaky appearance if CDN is down.
-- **Risk:** Low impact, low likelihood.
-- **Fix:** Move font import to `index.html` `<head>`. Inline or self-host texture images.
+- **Fix:** The VT323 font is self-hosted in `src/assets/fonts/` with a local `@font-face` (SIL Open Font License file included). The two textures are stored in `src/assets/textures/` and imported by the components. The unused `placehold.co` prop was removed. `noExternalResources.test.js` fails if a source file points to an external website again.
 - **Effort:** XS
 
 ### DEBT-020: Flat file structure — no feature boundaries [P1] [In Progress]
@@ -487,7 +483,7 @@ Low Impact    │ DEBT-018, 019  │                 │ DEBT-004 ✓      │
 
 ## 5. Phased plan
 
-### Phase 0: quick wins (week 1) — done except DEBT-018, DEBT-019
+### Phase 0: quick wins (week 1) — done except DEBT-018
 
 | # | Debt | Task | Status |
 |---|------|------|--------|
@@ -499,7 +495,7 @@ Low Impact    │ DEBT-018, 019  │                 │ DEBT-004 ✓      │
 | 6 | DEBT-016 | Fix stale state reads | Done ✓ — Epitech PR #45 (merge `7b82098`) |
 | 7 | DEBT-017 | Replace setTimeout achievement checks | Done ✓ — Epitech PR #44 (merge `7fa5858`) |
 | 8 | DEBT-018 | Add try-catch to handleReset parse | Open |
-| 9 | DEBT-019 | Move font import to `<head>` | Open |
+| 9 | DEBT-019 | Self-host the font and the textures | Done ✓ |
 
 ### Phase 1: safety net + structure (week 2) — done except DEBT-014, DEBT-020
 
@@ -553,7 +549,7 @@ Low Impact    │ DEBT-018, 019  │                 │ DEBT-004 ✓      │
 | DEBT-016 | [#39](https://github.com/0x11semprez/codewash/issues/39) | Epitech PR #45 (merge `7b82098`) | Done ✓ |
 | DEBT-017 | [#40](https://github.com/0x11semprez/codewash/issues/40) | Epitech PR #44 (merge `7fa5858`) | Done ✓ |
 | DEBT-018 | [#41](https://github.com/0x11semprez/codewash/issues/41) | — | Open |
-| DEBT-019 | [#42](https://github.com/0x11semprez/codewash/issues/42) | — | Open |
+| DEBT-019 | [#42](https://github.com/0x11semprez/codewash/issues/42) | pending | Done ✓ |
 | DEBT-020 | [#11](https://github.com/0x11semprez/codewash/issues/11) | Epitech PR #48 (merge `f69df57`) | In Progress |
 | DEBT-021 | [#53](https://github.com/0x11semprez/codewash/issues/53) | — | Open |
 | DEBT-022 | [#54](https://github.com/0x11semprez/codewash/issues/54) | — | Open |
