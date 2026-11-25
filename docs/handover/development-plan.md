@@ -1,5 +1,10 @@
 # Software development plan
 
+> This is the plan the team wrote at the start of the project. Two points differ from what the team does today:
+>
+> - There are no `release/*` branches. Feature and fix branches merge into `main` through a pull request.
+> - The `Dockerfile` is at the repository root, not in `CodeWashGame/`. Its build currently fails ([DEBT-022](../DEBT.md#debt-022-docker-build-fails-on-npm-ci-p1-open)).
+
 ## 1. Project overview
 
 CodeWash: professional cleanup of a vibe-coded React game (CodeWashGame).
@@ -81,7 +86,7 @@ Steps:
 - Multi-stage build: Node for build, Nginx for serve
 - Container runs locally only, no registry push
 - Used for integration validation on release and main branches
-- Dockerfile lives at `CodeWashGame/Dockerfile`
+- Dockerfile lives at the repository root
 
 ## 5. Testing strategy
 
