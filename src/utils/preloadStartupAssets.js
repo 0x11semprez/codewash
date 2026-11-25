@@ -1,4 +1,5 @@
 import { SKILL_DATA, THEME_CONFIG, THEMES_LIST } from '../constants/gameData';
+import { parseJSON } from './storage';
 
 const UI_SOUND_ASSETS = [
     'assets/sounds/ui/ui/actioncard_left.wav',
@@ -17,7 +18,7 @@ const getSavedTheme = () => {
         const saved =
             localStorage.getItem(`heroSkills_v23_p${profile}`) ||
             (profile === 1 ? localStorage.getItem('heroSkills_v23') : null);
-        return JSON.parse(saved || '{}').theme || 'minecraft';
+        return parseJSON(saved, {}, 'saved theme').theme || 'minecraft';
     } catch {
         return 'minecraft';
     }

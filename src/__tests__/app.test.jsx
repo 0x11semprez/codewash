@@ -1,6 +1,7 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import App from '../App.jsx';
+import { SKILL_DATA } from '../constants/gameData';
 
 describe('App', () => {
     beforeEach(() => {
@@ -44,6 +45,20 @@ describe('App', () => {
         await waitFor(() => expect(screen.getAllByText(/volume|profile|reset/i).length).toBeGreaterThan(0), {
             timeout: 5000,
         });
+    });
+
+    it('starts a battle on the centre skill and renders its real mini-game', async () => {
+        localStorage.clear();
+        const consoleError = vi.spyOn(console, 'error');
+        const centre = SKILL_DATA[0];
+        render(<App />);
+        fireEvent.click(screen.getByRole('button', { name: centre.actionName }));
+        await waitFor(() => expect(document.querySelector('.animate-in')?.children.length).toBeGreaterThan(1), {
+            timeout: 5000,
+        });
+        expect(screen.queryByText('Game crashed!')).toBeNull();
+        expect(consoleError.mock.calls.filter((args) => String(args[0]).includes('[GameError]'))).toEqual([]);
+        consoleError.mockRestore();
     });
 
     it('shows the startup achievement toast with the load time', async () => {

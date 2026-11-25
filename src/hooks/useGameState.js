@@ -11,8 +11,29 @@ import { getRandomAura } from '../utils/mobDisplayUtils';
 import { SKILL_DATA } from '../constants/gameData';
 import { getDefaultStats, isAchievementUnlocked } from '../utils/achievementUtils';
 import { now as systemNow, today as getToday } from '../utils/clock';
+import { parseJSON, readJSON, backupCorrupted } from '../utils/storage';
 
 const getStorageKey = (profileId) => `heroSkills_v23_p${profileId}`;
+const DEFAULT_PROFILE_NAMES = { 1: 'Player 1', 2: 'Player 2', 3: 'Player 3' };
+const DEFAULT_PARENT_STATUS = { 1: false, 2: false, 3: false };
+
+// Returns the parsed skills save for a profile, or null when missing or corrupted.
+// A corrupted save is copied to a backup key before the app overwrites it.
+const readSkillsSave = (profileId) => {
+    let key = getStorageKey(profileId);
+    let raw = localStorage.getItem(key);
+    if (!raw && profileId === 1) {
+        key = 'heroSkills_v23';
+        raw = localStorage.getItem(key);
+    }
+    if (!raw) return null;
+    const parsed = parseJSON(raw, null, `"${key}"`);
+    if (parsed === null || typeof parsed !== 'object' || Array.isArray(parsed)) {
+        backupCorrupted(key, raw);
+        return null;
+    }
+    return parsed;
+};
 
 const loadSkills = (profileId) => {
     const initial = {};
@@ -43,11 +64,9 @@ const loadSkills = (profileId) => {
             currentBossAura: getRandomAura(),
         };
     });
-    let saved = localStorage.getItem(getStorageKey(profileId));
-    if (!saved && profileId === 1) saved = localStorage.getItem('heroSkills_v23');
+    const parsed = readSkillsSave(profileId);
     try {
-        if (saved) {
-            const parsed = JSON.parse(saved);
+        if (parsed) {
             const data = parsed.skills || parsed;
             Object.keys(data).forEach((key) => {
                 initial[key] = { ...initial[key], ...data[key] };
@@ -85,25 +104,13 @@ const loadSkills = (profileId) => {
 };
 
 const loadTheme = (profileId) => {
-    let saved = localStorage.getItem(getStorageKey(profileId));
-    if (!saved && profileId === 1) saved = localStorage.getItem('heroSkills_v23');
-    try {
-        return JSON.parse(saved).theme || 'minecraft';
-    } catch {
-        return 'minecraft';
-    }
+    return readSkillsSave(profileId)?.theme || 'minecraft';
 };
 
 const loadStats = (profileId) => {
-    let saved = localStorage.getItem(getStorageKey(profileId));
-    if (!saved && profileId === 1) saved = localStorage.getItem('heroSkills_v23');
-    try {
-        const data = JSON.parse(saved);
-        if (data.stats) {
-            return { ...getDefaultStats(), ...data.stats, battlesThisSession: 0 };
-        }
-    } catch (e) {
-        console.warn('Failed to parse stats:', e);
+    const data = readSkillsSave(profileId);
+    if (data?.stats && typeof data.stats === 'object') {
+        return { ...getDefaultStats(), ...data.stats, battlesThisSession: 0 };
     }
     return getDefaultStats();
 };
@@ -114,14 +121,10 @@ export const useGameState = ({ now = systemNow } = {}) => {
         localStorage.getItem('currentProfile_v1') ? parseInt(localStorage.getItem('currentProfile_v1')) : 1,
     );
     const [profileNames, setProfileNames] = useState(() =>
-        localStorage.getItem('heroProfileNames_v1')
-            ? JSON.parse(localStorage.getItem('heroProfileNames_v1'))
-            : { 1: 'Player 1', 2: 'Player 2', 3: 'Player 3' },
+        readJSON('heroProfileNames_v1', { ...DEFAULT_PROFILE_NAMES }),
     );
     const [parentStatus, setParentStatus] = useState(() =>
-        localStorage.getItem('heroParentStatus_v1')
-            ? JSON.parse(localStorage.getItem('heroParentStatus_v1'))
-            : { 1: false, 2: false, 3: false },
+        readJSON('heroParentStatus_v1', { ...DEFAULT_PARENT_STATUS }),
     );
 
     const [skills, setSkills] = useState(() => loadSkills(currentProfile));
@@ -196,12 +199,9 @@ export const useGameState = ({ now = systemNow } = {}) => {
             });
             return { totalLevel, highestLevel, skills: liveSkills, theme: activeTheme };
         }
-        const key = getStorageKey(id);
-        let saved = localStorage.getItem(key);
-        if (!saved && id === 1) saved = localStorage.getItem('heroSkills_v23');
-        if (!saved) return null;
+        const data = readSkillsSave(id);
+        if (!data) return null;
         try {
-            const data = JSON.parse(saved);
             const skillsData = data.skills || data;
             const theme = data.theme || 'minecraft';
             let totalLevel = 0,
@@ -253,16 +253,10 @@ export const useGameState = ({ now = systemNow } = {}) => {
     const handleReset = () => {
         localStorage.removeItem(getStorageKey(currentProfile));
         if (currentProfile === 1) localStorage.removeItem('heroSkills_v23');
-        const currentParentStatus = localStorage.getItem('heroParentStatus_v1');
-        const parentStatusObj = currentParentStatus
-            ? JSON.parse(currentParentStatus)
-            : { 1: false, 2: false, 3: false };
+        const parentStatusObj = readJSON('heroParentStatus_v1', { ...DEFAULT_PARENT_STATUS });
         parentStatusObj[currentProfile] = false;
         localStorage.setItem('heroParentStatus_v1', JSON.stringify(parentStatusObj));
-        const currentProfileNames = localStorage.getItem('heroProfileNames_v1');
-        const profileNamesObj = currentProfileNames
-            ? JSON.parse(currentProfileNames)
-            : { 1: 'Player 1', 2: 'Player 2', 3: 'Player 3' };
+        const profileNamesObj = readJSON('heroProfileNames_v1', { ...DEFAULT_PROFILE_NAMES });
         profileNamesObj[currentProfile] = `Player ${currentProfile}`;
         localStorage.setItem('heroProfileNames_v1', JSON.stringify(profileNamesObj));
         window.location.reload();
