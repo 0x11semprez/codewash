@@ -1,6 +1,6 @@
 # Technical debt register
 
-> Living document — Last updated: 2026-11-21
+> Living document — Last updated: 2026-11-25
 
 ---
 
@@ -332,9 +332,11 @@ graph TD
 
 Each item links to its GitHub issue for full context and to the PR that addresses it. Convention: every refactoring PR references its debt item with `Fixes #XX` so GitHub closes the issue on merge.
 
-### DEBT-001: God component — App.jsx [P1] [Open]
+> **Numbering.** Issue and PR links point to this repository (`0x11semprez/codewash`). Work done before the move from the Epitech organization repository is cited as "Epitech PR #N" with its merge commit, because those PR numbers do not exist here.
 
-- **Issue:** [#18](https://github.com/0x11semprez/codewash/issues/18) — **PR:** none yet
+### DEBT-001: God component — App.jsx [P1] [Done ✓]
+
+- **Issue:** [#24](https://github.com/0x11semprez/codewash/issues/24) — **PR:** [#45](https://github.com/0x11semprez/codewash/pull/45) (merged)
 - **Location:** `src/App.jsx` (1,492 lines, ~218 decision points)
 - **Smell:** God class. Single component holds all game state, all game logic (battles, XP, voice, carousel, profiles, difficulty, achievements, challenges, fullscreen), and all orchestration.
 - **Impact:** Every feature change touches this file. Merge conflicts on every parallel PR. Impossible to test in isolation.
@@ -344,7 +346,7 @@ Each item links to its GitHub issue for full context and to the PR that addresse
 
 ### DEBT-002: GlobalStyles monolith [P2] [Open]
 
-- **Issue:** [#19](https://github.com/0x11semprez/codewash/issues/19) — **PR:** none yet
+- **Issue:** [#25](https://github.com/0x11semprez/codewash/issues/25) — **PR:** none yet
 - **Location:** `src/components/ui/GlobalStyles.jsx` (1,302 lines)
 - **Smell:** Monolith. All CSS in one `<style>` tag: animations, layouts, themes, aura effects. No scoping, no tree-shaking.
 - **Impact:** Any style change risks breaking unrelated components. No dead-CSS elimination.
@@ -352,9 +354,9 @@ Each item links to its GitHub issue for full context and to the PR that addresse
 - **Fix:** CSS modules or Tailwind utilities per component.
 - **Effort:** M
 
-### DEBT-003: SkillCard does too much [P1] [Open]
+### DEBT-003: SkillCard does too much [P1] [Done ✓]
 
-- **Issue:** [#20](https://github.com/0x11semprez/codewash/issues/20) — **PR:** none yet
+- **Issue:** [#26](https://github.com/0x11semprez/codewash/issues/26) — **PR:** [#48](https://github.com/0x11semprez/codewash/pull/48) (merged)
 - **Location:** `src/components/skills/SkillCard.jsx` (778 lines, ~119 decision points)
 - **Smell:** Divergent change. 6 skill types (patterns, math, reading, writing, memory, cleaning) in one component with complex branching.
 - **Impact:** Adding or modifying one skill type risks breaking others. Hard to test one game mode alone.
@@ -364,7 +366,7 @@ Each item links to its GitHub issue for full context and to the PR that addresse
 
 ### DEBT-004: Dead code [P0] [Done ✓]
 
-- **Issue:** [#21](https://github.com/0x11semprez/codewash/issues/21) — **PR:** [#43](https://github.com/0x11semprez/codewash/pull/43) (merged)
+- **Issue:** [#27](https://github.com/0x11semprez/codewash/issues/27) — **PR:** commit `883e02f` (Epitech PR #43)
 - **Location:** Scattered across 5 files
 - **Items removed:**
   - `getItemsForLength()` — gameUtils.js:321
@@ -378,9 +380,9 @@ Each item links to its GitHub issue for full context and to the PR that addresse
   - `MenuDrawer_old.jsx` — entire dead file
 - **Effort:** XS
 
-### DEBT-005: No tests [P0] [Open]
+### DEBT-005: No tests [P0] [Done ✓]
 
-- **Issue:** [#22](https://github.com/0x11semprez/codewash/issues/22) — **PR:** none yet
+- **Issue:** [#28](https://github.com/0x11semprez/codewash/issues/28) — **PR:** [#3](https://github.com/0x11semprez/codewash/pull/3), [#4](https://github.com/0x11semprez/codewash/pull/4), [#6](https://github.com/0x11semprez/codewash/pull/6), [#46](https://github.com/0x11semprez/codewash/pull/46) (merged). Coverage target of 80% still tracked in [#17](https://github.com/0x11semprez/codewash/issues/17)
 - **Location:** Entire codebase
 - **Smell:** Zero test coverage. No testing framework was present in the original project.
 - **Impact:** No safety net for refactoring. Bugs from DEBT-014, 015, 016 were only caught by manual code review.
@@ -390,16 +392,16 @@ Each item links to its GitHub issue for full context and to the PR that addresse
 
 ### DEBT-006: No CI/CD pipeline [P0] [Done ✓]
 
-- **Issue:** [#23](https://github.com/0x11semprez/codewash/issues/23) — **PR:** [#37](https://github.com/0x11semprez/codewash/pull/37) (merged)
+- **Issue:** [#29](https://github.com/0x11semprez/codewash/issues/29) — **PR:** [#5](https://github.com/0x11semprez/codewash/pull/5) (merged), originally Epitech PR #37
 - **Location:** `.github/workflows/`
 - **Smell:** Only workflow was `build-exe.yml` for Electron packaging. No lint, test, or build verification on push/PR.
 - **Impact:** Broken code could be merged without detection.
 - **Fix:** Added CI workflow: ESLint, Vitest, Vite build on every push and PR.
 - **Effort:** S
 
-### DEBT-007: macOS metadata files [P0] [Open]
+### DEBT-007: macOS metadata files [P0] [Done ✓]
 
-- **Issue:** [#24](https://github.com/0x11semprez/codewash/issues/24) — **PR:** none yet
+- **Issue:** [#30](https://github.com/0x11semprez/codewash/issues/30) — **PR:** [#47](https://github.com/0x11semprez/codewash/pull/47) (merged)
 - **Location:** 112 `._*` files scattered across repo
 - **Smell:** Committed OS artifacts. Cause ESLint parse errors on CI.
 - **Impact:** False positives in lint, noise in git history.
@@ -409,7 +411,7 @@ Each item links to its GitHub issue for full context and to the PR that addresse
 
 ### DEBT-008: Duplicated code [P2] [Open]
 
-- **Issue:** [#25](https://github.com/0x11semprez/codewash/issues/25) — **PR:** [#47](https://github.com/0x11semprez/codewash/pull/47) (closed, not merged)
+- **Issue:** [#31](https://github.com/0x11semprez/codewash/issues/31) — **PR:** none yet
 - **Location:**
   - `CosmeticsDrawer.jsx` lines 108-224 vs 227-314 (near-identical border/achievement effect render blocks)
   - `MenuDrawer.jsx` / `MenuDrawer_old.jsx` (massive overlap, old file now deleted via DEBT-004)
@@ -420,7 +422,7 @@ Each item links to its GitHub issue for full context and to the PR that addresse
 
 ### DEBT-009: Hardcoded localStorage keys [P2] [Open]
 
-- **Issue:** [#26](https://github.com/0x11semprez/codewash/issues/26) — **PR:** none yet
+- **Issue:** [#32](https://github.com/0x11semprez/codewash/issues/32) — **PR:** none yet
 - **Location:** `src/App.jsx` (keys like `heroSkills_v23_p${profileId}`)
 - **Smell:** Scattered magic strings. No central registry. No migration path.
 - **Impact:** Renaming a key silently loses all saved player data. No way to migrate between versions.
@@ -428,9 +430,9 @@ Each item links to its GitHub issue for full context and to the PR that addresse
 - **Fix:** Extract storage layer with key constants and version-aware migration.
 - **Effort:** S
 
-### DEBT-010: No error boundaries [P1] [Open]
+### DEBT-010: No error boundaries [P1] [Done ✓]
 
-- **Issue:** [#27](https://github.com/0x11semprez/codewash/issues/27) — **PR:** none yet
+- **Issue:** [#33](https://github.com/0x11semprez/codewash/issues/33) — **PR:** [#49](https://github.com/0x11semprez/codewash/pull/49) (merged)
 - **Location:** Entire React tree
 - **Smell:** Missing fault isolation. Any render error crashes the whole app to a white screen.
 - **Impact:** Particularly risky with Web Speech API and Audio API, which can throw at runtime.
@@ -440,7 +442,7 @@ Each item links to its GitHub issue for full context and to the PR that addresse
 
 ### DEBT-011: Sound manager — singleton + no audio pooling [P3] [Open]
 
-- **Issue:** [#28](https://github.com/0x11semprez/codewash/issues/28) — **PR:** none yet
+- **Issue:** [#34](https://github.com/0x11semprez/codewash/issues/34) — **PR:** none yet
 - **Location:** `src/utils/soundManager.js` (287 lines)
 - **Smell:** Module-level mutable state (`sfxVolume`, `bgmManager`). Creates a new `Audio()` object on every play call. No pooling.
 - **Impact:** Not testable in isolation. Dozens of `Audio` objects during rapid battles increase memory pressure.
@@ -450,7 +452,7 @@ Each item links to its GitHub issue for full context and to the PR that addresse
 
 ### DEBT-012: No containerization [P0] [Done ✓]
 
-- **Issue:** [#29](https://github.com/0x11semprez/codewash/issues/29) — **PR:** [#37](https://github.com/0x11semprez/codewash/pull/37) (merged)
+- **Issue:** [#35](https://github.com/0x11semprez/codewash/issues/35) — **PR:** Epitech PR #37 (merged)
 - **Location:** Project root
 - **Smell:** No Dockerfile. No reproducible build environment.
 - **Fix:** Added multi-stage Dockerfile (Node build + nginx serve) and docker-compose.
@@ -458,7 +460,7 @@ Each item links to its GitHub issue for full context and to the PR that addresse
 
 ### DEBT-013: No monitoring [P2] [Open]
 
-- **Issue:** [#30](https://github.com/0x11semprez/codewash/issues/30) — **PR:** none yet
+- **Issue:** [#36](https://github.com/0x11semprez/codewash/issues/36) — **PR:** none yet
 - **Location:** Entire app
 - **Smell:** No error tracking, no metrics, no crash reporting. Errors vanish silently.
 - **Impact:** Cannot detect production issues without user reports.
@@ -468,7 +470,7 @@ Each item links to its GitHub issue for full context and to the PR that addresse
 
 ### DEBT-014: `perfectMemoryGames` never incremented [P1] [Open]
 
-- **Issue:** [#31](https://github.com/0x11semprez/codewash/issues/31) — **PR:** none yet
+- **Issue:** [#37](https://github.com/0x11semprez/codewash/issues/37) — **PR:** none yet
 - **Location:** `achievements.js:243` / `App.jsx` (handleCardClick chain)
 - **Smell:** Dead achievement. `stats.perfectMemoryGames >= 1` checked for "Perfectionist" unlock, but no code path increments this counter.
 - **Impact:** Achievement is permanently unreachable for all players.
@@ -478,7 +480,7 @@ Each item links to its GitHub issue for full context and to the PR that addresse
 
 ### DEBT-015: `battlesThisSession` never resets [P2] [Done ✓]
 
-- **Issue:** [#32](https://github.com/0x11semprez/codewash/issues/32) — **PR:** [#46](https://github.com/0x11semprez/codewash/pull/46) (merged)
+- **Issue:** [#38](https://github.com/0x11semprez/codewash/issues/38) — **PR:** Epitech PR #46 (merge `a9e408a`)
 - **Location:** `App.jsx` (stats loading)
 - **Smell:** `speed_demon` achievement checks `battlesThisSession >= 10` per session. Counter persisted to localStorage, never reset on load. Once lifetime battles exceeded 10, achievement unlocked permanently on next app open.
 - **Fix:** Reset counter to 0 on component mount.
@@ -486,7 +488,7 @@ Each item links to its GitHub issue for full context and to the PR that addresse
 
 ### DEBT-016: Stale state in `handleSuccessHit` [P2] [Done ✓]
 
-- **Issue:** [#33](https://github.com/0x11semprez/codewash/issues/33) — **PR:** [#45](https://github.com/0x11semprez/codewash/pull/45) (merged)
+- **Issue:** [#39](https://github.com/0x11semprez/codewash/issues/39) — **PR:** Epitech PR #45 (merge `7b82098`)
 - **Location:** `App.jsx:448`, `App.jsx:532`
 - **Smell:** Reads `skills[battlingSkillId]` outside the `setSkills` updater callback. During rapid answers, React batching causes `skills` to be stale.
 - **Fix:** Moved all reads inside `setSkills(prev => ...)` callback.
@@ -494,7 +496,7 @@ Each item links to its GitHub issue for full context and to the PR that addresse
 
 ### DEBT-017: `setTimeout` for achievement checks [P2] [Done ✓]
 
-- **Issue:** [#34](https://github.com/0x11semprez/codewash/issues/34) — **PR:** [#44](https://github.com/0x11semprez/codewash/pull/44) (merged)
+- **Issue:** [#40](https://github.com/0x11semprez/codewash/issues/40) — **PR:** Epitech PR #44 (merge `7fa5858`)
 - **Location:** `App.jsx` lines 490, 652, 836, 854
 - **Smell:** `setTimeout(() => checkAchievements(...), 100)` used to defer checks after `setStats`. Fragile timing workaround that races with React batching.
 - **Fix:** Replaced with `useEffect` watching `stats` changes.
@@ -502,8 +504,8 @@ Each item links to its GitHub issue for full context and to the PR that addresse
 
 ### DEBT-018: Unsafe JSON.parse in handleReset [P3] [Open]
 
-- **Issue:** [#35](https://github.com/0x11semprez/codewash/issues/35) — **PR:** none yet
-- **Location:** `App.jsx:971-972`
+- **Issue:** [#41](https://github.com/0x11semprez/codewash/issues/41) — **PR:** none yet
+- **Location:** `src/hooks/useGameState.js:233,237` (`handleReset`, moved from `App.jsx:971-972` by DEBT-001)
 - **Smell:** `JSON.parse()` without try-catch. Other parse calls in the same file are wrapped.
 - **Impact:** Corrupted localStorage value crashes the reset flow.
 - **Risk:** Low impact, low likelihood.
@@ -512,10 +514,10 @@ Each item links to its GitHub issue for full context and to the PR that addresse
 
 ### DEBT-019: External resources in component render [P3] [Open]
 
-- **Issue:** [#36](https://github.com/0x11semprez/codewash/issues/36) — **PR:** none yet
+- **Issue:** [#42](https://github.com/0x11semprez/codewash/issues/42) — **PR:** none yet
 - **Location:**
-  - `GlobalStyles.jsx:5` — Google Fonts `@import` inside `<style>` (re-fetches on every remount)
-  - `ProfileCard.jsx:69`, `SkillCard.jsx:440` — `transparenttextures.com` pattern URLs
+  - `src/components/ui/GlobalStyles.jsx:5` and `src/index.css:1` — Google Fonts `@import` (the one inside `<style>` re-fetches on every remount)
+  - `ProfileCard.jsx:69`, `SkillCard.jsx:187` — `transparenttextures.com` pattern URLs
 - **Smell:** External HTTP requests triggered during render. Blocks first paint. Breaks fully-offline promise.
 - **Impact:** Slower load, flaky appearance if CDN is down.
 - **Risk:** Low impact, low likelihood.
@@ -524,7 +526,7 @@ Each item links to its GitHub issue for full context and to the PR that addresse
 
 ### DEBT-020: Flat file structure — no feature boundaries [P1] [In Progress]
 
-- **Issue:** [#5](https://github.com/0x11semprez/codewash/issues/5) — **PR:** [#48](https://github.com/0x11semprez/codewash/pull/48) (open)
+- **Issue:** [#11](https://github.com/0x11semprez/codewash/issues/11) — **PR:** Epitech PR #48 (merge `f69df57`): init graph only; hooks and per-game folders done in [#45](https://github.com/0x11semprez/codewash/pull/45) and [#48](https://github.com/0x11semprez/codewash/pull/48)
 - **Location:** `src/` root
 - **Smell:** All components in flat `src/components/` folders by UI type (drawers, modals, ui). Constants and utils mixed across unrelated domains. No feature boundaries.
 - **Impact:** Cannot reason about which files belong to which feature. Imports cross every boundary.
@@ -618,35 +620,35 @@ Low Impact    │ DEBT-018, 019  │                 │ DEBT-004 ✓      │
 
 ## 5. Phased plan
 
-### Phase 0: quick wins (week 1) — mostly done
+### Phase 0: quick wins (week 1) — done except DEBT-018, DEBT-019
 
 | # | Debt | Task | Status |
 |---|------|------|--------|
-| 1 | DEBT-007 | Remove `._` files + `.gitignore` | Open |
-| 2 | DEBT-004 | Delete dead code (7 functions + 2 files) | Done ✓ PR [#43](https://github.com/0x11semprez/codewash/pull/43) |
-| 3 | DEBT-006 | CI pipeline (lint, test, build) | Done ✓ PR [#37](https://github.com/0x11semprez/codewash/pull/37) |
-| 4 | DEBT-012 | Dockerfile + nginx | Done ✓ PR [#37](https://github.com/0x11semprez/codewash/pull/37) |
-| 5 | DEBT-015 | Fix `battlesThisSession` reset | Done ✓ PR [#46](https://github.com/0x11semprez/codewash/pull/46) |
-| 6 | DEBT-016 | Fix stale state reads | Done ✓ PR [#45](https://github.com/0x11semprez/codewash/pull/45) |
-| 7 | DEBT-017 | Replace setTimeout achievement checks | Done ✓ PR [#44](https://github.com/0x11semprez/codewash/pull/44) |
+| 1 | DEBT-007 | Remove `._` files + `.gitignore` | Done ✓ — [#47](https://github.com/0x11semprez/codewash/pull/47) (merged) |
+| 2 | DEBT-004 | Delete dead code (7 functions + 2 files) | Done ✓ — commit `883e02f` (Epitech PR #43) |
+| 3 | DEBT-006 | CI pipeline (lint, test, build) | Done ✓ — [#5](https://github.com/0x11semprez/codewash/pull/5) (merged), originally Epitech PR #37 |
+| 4 | DEBT-012 | Dockerfile + nginx | Done ✓ — Epitech PR #37 (merged) |
+| 5 | DEBT-015 | Fix `battlesThisSession` reset | Done ✓ — Epitech PR #46 (merge `a9e408a`) |
+| 6 | DEBT-016 | Fix stale state reads | Done ✓ — Epitech PR #45 (merge `7b82098`) |
+| 7 | DEBT-017 | Replace setTimeout achievement checks | Done ✓ — Epitech PR #44 (merge `7fa5858`) |
 | 8 | DEBT-018 | Add try-catch to handleReset parse | Open |
 | 9 | DEBT-019 | Move font import to `<head>` | Open |
 
-### Phase 1: safety net + structure (week 2)
+### Phase 1: safety net + structure (week 2) — done except DEBT-014, DEBT-020
 
 | # | Debt | Task | Status |
 |---|------|------|--------|
-| 10 | DEBT-005 | Vitest + test game logic utils | Open |
-| 11 | DEBT-010 | Error boundaries | Open |
-| 12 | DEBT-020 | Reorganize into feature-based structure | In Progress — PR [#48](https://github.com/0x11semprez/codewash/pull/48) |
+| 10 | DEBT-005 | Vitest + test game logic utils | Done ✓ — [#3](https://github.com/0x11semprez/codewash/pull/3), [#4](https://github.com/0x11semprez/codewash/pull/4), [#6](https://github.com/0x11semprez/codewash/pull/6), [#46](https://github.com/0x11semprez/codewash/pull/46) (merged) |
+| 11 | DEBT-010 | Error boundaries | Done ✓ — [#49](https://github.com/0x11semprez/codewash/pull/49) (merged) |
+| 12 | DEBT-020 | Reorganize into feature-based structure | In Progress — Epitech PR #48 (merge `f69df57`) |
 | 13 | DEBT-014 | Fix `perfectMemoryGames` counter | Open |
 
-### Phase 2: break god components (weeks 3-4)
+### Phase 2: break god components (weeks 3-4) — done except DEBT-009
 
 | # | Debt | Task | Status |
 |---|------|------|--------|
-| 14 | DEBT-001 | Extract App.jsx into hooks + context | Open |
-| 15 | DEBT-003 | Split SkillCard per skill type | Open |
+| 14 | DEBT-001 | Extract App.jsx into hooks + context | Done ✓ — [#45](https://github.com/0x11semprez/codewash/pull/45) (merged) |
+| 15 | DEBT-003 | Split SkillCard per skill type | Done ✓ — [#48](https://github.com/0x11semprez/codewash/pull/48) (merged) |
 | 16 | DEBT-009 | Extract storage layer | Open |
 
 ### Phase 3: polish (week 5+)
@@ -664,26 +666,26 @@ Low Impact    │ DEBT-018, 019  │                 │ DEBT-004 ✓      │
 
 | Debt | Issue | PR | Status |
 |------|-------|----|--------|
-| DEBT-001 | [#18](https://github.com/0x11semprez/codewash/issues/18) | — | Open |
-| DEBT-002 | [#19](https://github.com/0x11semprez/codewash/issues/19) | — | Open |
-| DEBT-003 | [#20](https://github.com/0x11semprez/codewash/issues/20) | — | Open |
-| DEBT-004 | [#21](https://github.com/0x11semprez/codewash/issues/21) | [#43](https://github.com/0x11semprez/codewash/pull/43) | Done ✓ |
-| DEBT-005 | [#22](https://github.com/0x11semprez/codewash/issues/22) | — | Open |
-| DEBT-006 | [#23](https://github.com/0x11semprez/codewash/issues/23) | [#37](https://github.com/0x11semprez/codewash/pull/37) | Done ✓ |
-| DEBT-007 | [#24](https://github.com/0x11semprez/codewash/issues/24) | — | Open |
-| DEBT-008 | [#25](https://github.com/0x11semprez/codewash/issues/25) | [#47](https://github.com/0x11semprez/codewash/pull/47) | Open (PR closed) |
-| DEBT-009 | [#26](https://github.com/0x11semprez/codewash/issues/26) | — | Open |
-| DEBT-010 | [#27](https://github.com/0x11semprez/codewash/issues/27) | — | Open |
-| DEBT-011 | [#28](https://github.com/0x11semprez/codewash/issues/28) | — | Open |
-| DEBT-012 | [#29](https://github.com/0x11semprez/codewash/issues/29) | [#37](https://github.com/0x11semprez/codewash/pull/37) | Done ✓ |
-| DEBT-013 | [#30](https://github.com/0x11semprez/codewash/issues/30) | — | Open |
-| DEBT-014 | [#31](https://github.com/0x11semprez/codewash/issues/31) | — | Open |
-| DEBT-015 | [#32](https://github.com/0x11semprez/codewash/issues/32) | [#46](https://github.com/0x11semprez/codewash/pull/46) | Done ✓ |
-| DEBT-016 | [#33](https://github.com/0x11semprez/codewash/issues/33) | [#45](https://github.com/0x11semprez/codewash/pull/45) | Done ✓ |
-| DEBT-017 | [#34](https://github.com/0x11semprez/codewash/issues/34) | [#44](https://github.com/0x11semprez/codewash/pull/44) | Done ✓ |
-| DEBT-018 | [#35](https://github.com/0x11semprez/codewash/issues/35) | — | Open |
-| DEBT-019 | [#36](https://github.com/0x11semprez/codewash/issues/36) | — | Open |
-| DEBT-020 | [#5](https://github.com/0x11semprez/codewash/issues/5) | [#48](https://github.com/0x11semprez/codewash/pull/48) | In Progress |
+| DEBT-001 | [#24](https://github.com/0x11semprez/codewash/issues/24) | [#45](https://github.com/0x11semprez/codewash/pull/45) (merged) | Done ✓ |
+| DEBT-002 | [#25](https://github.com/0x11semprez/codewash/issues/25) | — | Open |
+| DEBT-003 | [#26](https://github.com/0x11semprez/codewash/issues/26) | [#48](https://github.com/0x11semprez/codewash/pull/48) (merged) | Done ✓ |
+| DEBT-004 | [#27](https://github.com/0x11semprez/codewash/issues/27) | commit `883e02f` (Epitech PR #43) | Done ✓ |
+| DEBT-005 | [#28](https://github.com/0x11semprez/codewash/issues/28) | [#3](https://github.com/0x11semprez/codewash/pull/3), [#4](https://github.com/0x11semprez/codewash/pull/4), [#6](https://github.com/0x11semprez/codewash/pull/6), [#46](https://github.com/0x11semprez/codewash/pull/46) (merged) | Done ✓ |
+| DEBT-006 | [#29](https://github.com/0x11semprez/codewash/issues/29) | [#5](https://github.com/0x11semprez/codewash/pull/5) (merged), originally Epitech PR #37 | Done ✓ |
+| DEBT-007 | [#30](https://github.com/0x11semprez/codewash/issues/30) | [#47](https://github.com/0x11semprez/codewash/pull/47) (merged) | Done ✓ |
+| DEBT-008 | [#31](https://github.com/0x11semprez/codewash/issues/31) | — | Open |
+| DEBT-009 | [#32](https://github.com/0x11semprez/codewash/issues/32) | — | Open |
+| DEBT-010 | [#33](https://github.com/0x11semprez/codewash/issues/33) | [#49](https://github.com/0x11semprez/codewash/pull/49) (merged) | Done ✓ |
+| DEBT-011 | [#34](https://github.com/0x11semprez/codewash/issues/34) | — | Open |
+| DEBT-012 | [#35](https://github.com/0x11semprez/codewash/issues/35) | Epitech PR #37 (merged) | Done ✓ |
+| DEBT-013 | [#36](https://github.com/0x11semprez/codewash/issues/36) | — | Open |
+| DEBT-014 | [#37](https://github.com/0x11semprez/codewash/issues/37) | — | Open |
+| DEBT-015 | [#38](https://github.com/0x11semprez/codewash/issues/38) | Epitech PR #46 (merge `a9e408a`) | Done ✓ |
+| DEBT-016 | [#39](https://github.com/0x11semprez/codewash/issues/39) | Epitech PR #45 (merge `7b82098`) | Done ✓ |
+| DEBT-017 | [#40](https://github.com/0x11semprez/codewash/issues/40) | Epitech PR #44 (merge `7fa5858`) | Done ✓ |
+| DEBT-018 | [#41](https://github.com/0x11semprez/codewash/issues/41) | — | Open |
+| DEBT-019 | [#42](https://github.com/0x11semprez/codewash/issues/42) | — | Open |
+| DEBT-020 | [#11](https://github.com/0x11semprez/codewash/issues/11) | Epitech PR #48 (merge `f69df57`) | In Progress |
 
 ---
 
