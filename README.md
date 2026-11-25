@@ -71,7 +71,7 @@ Start with [docs/SUBJECT_MAP.md](docs/SUBJECT_MAP.md). It lists every requiremen
 
 ## Continuous integration
 
-GitHub Actions runs on every pull request to `main` and on every push to `main`. It installs dependencies, runs ESLint with zero warnings allowed, builds the app, runs the tests and checks coverage. A pull request cannot be merged while the pipeline is red.
+GitHub Actions runs on every pull request to `main` and on every push to `main`. It installs dependencies, runs ESLint with zero warnings allowed, builds the app, runs the tests and checks coverage. The team rule is to never merge on red. GitHub does not enforce it yet: `main` has no branch protection.
 
 Coverage thresholds live in `vitest.config.js`: 60% of lines and statements, 50% of branches and 40% of functions. The subject asks for 80% on modified code. Raising the thresholds is tracked in [#17](https://github.com/0x11semprez/codewash/issues/17).
 
