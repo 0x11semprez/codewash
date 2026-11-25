@@ -1,24 +1,38 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
 import { SKILL_DATA, BASE_ASSETS, HOSTILE_MOBS } from '../constants/gameData';
 import {
-    getRandomMob, getRandomFriendlyMob, getRandomMiniboss, getRandomBoss,
-    getEncounterType, generateMathProblem, getReadingWord, getWordForDifficulty,
-    calculateDamage, calculateMobHealth, calculateXPReward, calculateXPToLevel
+    getRandomMob,
+    getRandomFriendlyMob,
+    getRandomMiniboss,
+    getRandomBoss,
+    getEncounterType,
+    generateMathProblem,
+    getReadingWord,
+    getWordForDifficulty,
+    calculateDamage,
+    calculateMobHealth,
+    calculateXPReward,
+    calculateXPToLevel,
 } from '../utils/gameUtils';
 import { getRandomAura } from '../utils/mobDisplayUtils';
 import {
-    playClick, playDeath, playFail, playLevelUp, playNotification,
-    playSuccessfulHit, playMobHurt, playMobDeath, playAchievement
+    playClick,
+    playDeath,
+    playFail,
+    playLevelUp,
+    playNotification,
+    playSuccessfulHit,
+    playMobHurt,
+    playMobDeath,
+    playAchievement,
 } from '../utils/soundManager';
-import {
-    getNewlyUnlockedAchievements, getNewTierAchievements, addUniqueToArray
-} from '../utils/achievementUtils';
+import { getNewlyUnlockedAchievements, getNewTierAchievements, addUniqueToArray } from '../utils/achievementUtils';
 
 const BOSS_HEALING_ANIMATION_DURATION = 600;
 
 const generateChallenge = (type, diff) => {
     if (type === 'math') return generateMathProblem(diff);
-    if (type === 'patterns') return { type: 'patterns', question: "Simon Says!", answer: "WIN" };
+    if (type === 'patterns') return { type: 'patterns', question: 'Simon Says!', answer: 'WIN' };
     if (type === 'reading') {
         const word = getReadingWord(diff);
         return { type, question: word, answer: word };
@@ -26,10 +40,10 @@ const generateChallenge = (type, diff) => {
     if (type === 'writing') {
         const wordData = getWordForDifficulty(diff);
         const answer = wordData.displayName.toUpperCase();
-        return { type, question: "Spell it!", answer, images: [wordData.image], displayName: wordData.displayName };
+        return { type, question: 'Spell it!', answer, images: [wordData.image], displayName: wordData.displayName };
     }
-    if (type === 'memory') return { type: 'memory', question: "Find Pairs!", answer: "WIN" };
-    return { type: 'manual', question: "Task Complete?", answer: "yes" };
+    if (type === 'memory') return { type: 'memory', question: 'Find Pairs!', answer: 'WIN' };
+    return { type: 'manual', question: 'Task Complete?', answer: 'yes' };
 };
 
 export const useBattle = (skills, setSkills, stats, setStats) => {
@@ -47,9 +61,15 @@ export const useBattle = (skills, setSkills, stats, setStats) => {
     const challengeDataRef = useRef(null);
     const damageIdRef = useRef(0);
 
-    useEffect(() => { challengeDataRef.current = challengeData; }, [challengeData]);
-    useEffect(() => { if (lootBox) setTimeout(() => setLootBox(null), 4000); }, [lootBox]);
-    useEffect(() => { if (achievementToast) setTimeout(() => setAchievementToast(null), 6000); }, [achievementToast]);
+    useEffect(() => {
+        challengeDataRef.current = challengeData;
+    }, [challengeData]);
+    useEffect(() => {
+        if (lootBox) setTimeout(() => setLootBox(null), 4000);
+    }, [lootBox]);
+    useEffect(() => {
+        if (achievementToast) setTimeout(() => setAchievementToast(null), 6000);
+    }, [achievementToast]);
 
     const checkAchievements = useCallback((oldStats, newStats, oldSkills, newSkills) => {
         const newlyUnlocked = getNewlyUnlockedAchievements(oldStats, newStats, oldSkills, newSkills);
@@ -74,7 +94,7 @@ export const useBattle = (skills, setSkills, stats, setStats) => {
     const handleSuccessHit = (skillId, isWrong) => {
         if (isWrong === 'WRONG') {
             if (battlingSkillId) {
-                setSkills(prev => {
+                setSkills((prev) => {
                     const current = prev[battlingSkillId];
                     if (getEncounterType(current.level) === 'boss') {
                         setBossHealing(battlingSkillId);
@@ -82,17 +102,25 @@ export const useBattle = (skills, setSkills, stats, setStats) => {
                         playFail();
                         return { ...prev, [battlingSkillId]: { ...current, mobHealth: current.mobMaxHealth } };
                     }
-                    setPlayerHealth(h => {
+                    setPlayerHealth((h) => {
                         const newH = h - 1;
                         if (newH <= 0) {
                             playDeath();
                             setShowDeathOverlay(true);
-                            setStats(prevStats => {
+                            setStats((prevStats) => {
                                 const newStats = { ...prevStats, totalDeaths: (prevStats.totalDeaths || 0) + 1 };
-                                pendingAchievementChecksRef.current.push({ oldStats: prevStats, newStats, oldSkills: prev, newSkills: prev });
+                                pendingAchievementChecksRef.current.push({
+                                    oldStats: prevStats,
+                                    newStats,
+                                    oldSkills: prev,
+                                    newSkills: prev,
+                                });
                                 return newStats;
                             });
-                            setTimeout(() => { setBattlingSkillId(null); setShowDeathOverlay(false); }, 2000);
+                            setTimeout(() => {
+                                setBattlingSkillId(null);
+                                setShowDeathOverlay(false);
+                            }, 2000);
                             return 10;
                         }
                         playFail();
@@ -104,25 +132,26 @@ export const useBattle = (skills, setSkills, stats, setStats) => {
                         return {
                             ...prev,
                             [battlingSkillId]: {
-                                ...current, level: newLevel,
+                                ...current,
+                                level: newLevel,
                                 lostLevel: current.level > 1,
-                                recoveryDifficulty: Math.max(1, currentDiff - 1)
-                            }
+                                recoveryDifficulty: Math.max(1, currentDiff - 1),
+                            },
                         };
                     }
                     return prev;
                 });
             } else {
-                setPlayerHealth(h => Math.max(0, h - 1));
+                setPlayerHealth((h) => Math.max(0, h - 1));
             }
             return;
         }
 
         if (!skillId) return;
-        const skillConfig = SKILL_DATA.find(s => s.id === skillId);
+        const skillConfig = SKILL_DATA.find((s) => s.id === skillId);
         let skillDifficulty = 1;
 
-        setSkills(prev => {
+        setSkills((prev) => {
             const current = prev[skillId];
             skillDifficulty = current.difficulty || 1;
             const playerLevel = current.level;
@@ -136,9 +165,16 @@ export const useBattle = (skills, setSkills, stats, setStats) => {
 
             if (skillConfig.id !== 'memory') {
                 const id = ++damageIdRef.current;
-                setDamageNumbers(prevNumbers => [...prevNumbers, { id, skillId, val: actualDamage, x: Math.random() * 100 - 50, y: Math.random() * 50 - 25 }]);
-                setTimeout(() => setDamageNumbers(prevNumbers => prevNumbers.filter(n => n.id !== id)), 800);
-                if (willDefeatMob) { playMobDeath(currentMobName); } else { playMobHurt(currentMobName); }
+                setDamageNumbers((prevNumbers) => [
+                    ...prevNumbers,
+                    { id, skillId, val: actualDamage, x: Math.random() * 100 - 50, y: Math.random() * 50 - 25 },
+                ]);
+                setTimeout(() => setDamageNumbers((prevNumbers) => prevNumbers.filter((n) => n.id !== id)), 800);
+                if (willDefeatMob) {
+                    playMobDeath(currentMobName);
+                } else {
+                    playMobHurt(currentMobName);
+                }
                 playSuccessfulHit();
             }
 
@@ -178,36 +214,70 @@ export const useBattle = (skills, setSkills, stats, setStats) => {
                 const xpAlreadyAwarded = hitsDealt * xpPerHit;
                 newXp += totalXPReward - xpAlreadyAwarded;
 
-                setStats(prevStats => {
+                setStats((prevStats) => {
                     const newStats = { ...prevStats };
                     newStats.battlesThisSession = (newStats.battlesThisSession || 0) + 1;
                     if (encounterType === 'boss') {
                         newStats.totalBossesDefeated = (newStats.totalBossesDefeated || 0) + 1;
-                        newStats.uniqueBossesDefeated = addUniqueToArray(newStats.uniqueBossesDefeated || [], current.currentBoss);
+                        newStats.uniqueBossesDefeated = addUniqueToArray(
+                            newStats.uniqueBossesDefeated || [],
+                            current.currentBoss,
+                        );
                     } else if (encounterType === 'miniboss') {
                         newStats.totalMinibossesDefeated = (newStats.totalMinibossesDefeated || 0) + 1;
-                        newStats.uniqueMinibossesDefeated = addUniqueToArray(newStats.uniqueMinibossesDefeated || [], current.currentMiniboss);
+                        newStats.uniqueMinibossesDefeated = addUniqueToArray(
+                            newStats.uniqueMinibossesDefeated || [],
+                            current.currentMiniboss,
+                        );
                     } else {
                         newStats.totalMobsDefeated = (newStats.totalMobsDefeated || 0) + 1;
-                        newStats.uniqueMobsDefeated = addUniqueToArray(newStats.uniqueMobsDefeated || [], current.currentMob);
+                        newStats.uniqueMobsDefeated = addUniqueToArray(
+                            newStats.uniqueMobsDefeated || [],
+                            current.currentMob,
+                        );
                     }
-                    pendingAchievementChecksRef.current.push({ oldStats: prevStats, newStats, oldSkills: prev, newSkills: { ...prev, [skillId]: { ...current, level: newLevel } } });
+                    pendingAchievementChecksRef.current.push({
+                        oldStats: prevStats,
+                        newStats,
+                        oldSkills: prev,
+                        newSkills: { ...prev, [skillId]: { ...current, level: newLevel } },
+                    });
                     return newStats;
                 });
 
                 if (skillConfig.id === 'memory') newMemoryMob = getRandomFriendlyMob();
-                if (skillConfig.id === 'patterns') { newPatternMob = getRandomMob(current.currentMob); newPatternMobAura = getRandomAura(); }
+                if (skillConfig.id === 'patterns') {
+                    newPatternMob = getRandomMob(current.currentMob);
+                    newPatternMobAura = getRandomAura();
+                }
                 const combatUpdates = {
-                    'reading': () => { newReadingMob = getRandomMob(current.readingMob); newReadingMobAura = getRandomAura(); },
-                    'math': () => { newMathMob = getRandomMob(current.mathMob); newMathMobAura = getRandomAura(); },
-                    'writing': () => { newWritingMob = getRandomMob(current.writingMob); newWritingMobAura = getRandomAura(); }
+                    reading: () => {
+                        newReadingMob = getRandomMob(current.readingMob);
+                        newReadingMobAura = getRandomAura();
+                    },
+                    math: () => {
+                        newMathMob = getRandomMob(current.mathMob);
+                        newMathMobAura = getRandomAura();
+                    },
+                    writing: () => {
+                        newWritingMob = getRandomMob(current.writingMob);
+                        newWritingMobAura = getRandomAura();
+                    },
                 };
                 if (combatUpdates[skillConfig.id]) combatUpdates[skillConfig.id]();
-                if (getEncounterType(current.level) === 'miniboss') { newMiniboss = getRandomMiniboss(); newMinibossAura = getRandomAura(); }
-                if (getEncounterType(current.level) === 'boss') { newBoss = getRandomBoss(); newBossAura = getRandomAura(); }
+                if (getEncounterType(current.level) === 'miniboss') {
+                    newMiniboss = getRandomMiniboss();
+                    newMinibossAura = getRandomAura();
+                }
+                if (getEncounterType(current.level) === 'boss') {
+                    newBoss = getRandomBoss();
+                    newBossAura = getRandomAura();
+                }
 
                 if (newLostLevel) {
-                    newLevel += 1; newLostLevel = false; newRecoveryDifficulty = null;
+                    newLevel += 1;
+                    newLostLevel = false;
+                    newRecoveryDifficulty = null;
                     setShowLevelRestored(true);
                     setTimeout(() => setShowLevelRestored(false), 2000);
                     playNotification();
@@ -227,7 +297,12 @@ export const useBattle = (skills, setSkills, stats, setStats) => {
                                 if (newDifficulty < 7) newDifficulty++;
                                 if (!newBadges.includes(newTier) && newTier <= 7) {
                                     newBadges.push(newTier);
-                                    setLootBox({ level: lvl, skillName: skillConfig.fantasyName, item: "New Rank!", img: BASE_ASSETS.badges.Wood });
+                                    setLootBox({
+                                        level: lvl,
+                                        skillName: skillConfig.fantasyName,
+                                        item: 'New Rank!',
+                                        img: BASE_ASSETS.badges.Wood,
+                                    });
                                     playNotification();
                                 }
                             }
@@ -244,17 +319,30 @@ export const useBattle = (skills, setSkills, stats, setStats) => {
             return {
                 ...prev,
                 [skillId]: {
-                    ...current, level: newLevel, xp: newXp, currentMob: newMob,
-                    difficulty: newDifficulty, earnedBadges: newBadges,
-                    mobHealth: newMobHealth, mobMaxHealth: newMobMaxHealth,
-                    lostLevel: newLostLevel, recoveryDifficulty: newRecoveryDifficulty,
-                    memoryMob: newMemoryMob, patternMob: newPatternMob,
-                    currentMiniboss: newMiniboss, currentBoss: newBoss,
-                    readingMob: newReadingMob, mathMob: newMathMob, writingMob: newWritingMob,
-                    readingMobAura: newReadingMobAura, mathMobAura: newMathMobAura,
-                    writingMobAura: newWritingMobAura, patternMobAura: newPatternMobAura,
-                    currentMinibossAura: newMinibossAura, currentBossAura: newBossAura
-                }
+                    ...current,
+                    level: newLevel,
+                    xp: newXp,
+                    currentMob: newMob,
+                    difficulty: newDifficulty,
+                    earnedBadges: newBadges,
+                    mobHealth: newMobHealth,
+                    mobMaxHealth: newMobMaxHealth,
+                    lostLevel: newLostLevel,
+                    recoveryDifficulty: newRecoveryDifficulty,
+                    memoryMob: newMemoryMob,
+                    patternMob: newPatternMob,
+                    currentMiniboss: newMiniboss,
+                    currentBoss: newBoss,
+                    readingMob: newReadingMob,
+                    mathMob: newMathMob,
+                    writingMob: newWritingMob,
+                    readingMobAura: newReadingMobAura,
+                    mathMobAura: newMathMobAura,
+                    writingMobAura: newWritingMobAura,
+                    patternMobAura: newPatternMobAura,
+                    currentMinibossAura: newMinibossAura,
+                    currentBossAura: newBossAura,
+                },
             };
         });
 
@@ -271,10 +359,12 @@ export const useBattle = (skills, setSkills, stats, setStats) => {
     };
 
     const spokenTextSetterRef = useRef(null);
-    const setSpokenTextSetter = (fn) => { spokenTextSetterRef.current = fn; };
+    const setSpokenTextSetter = (fn) => {
+        spokenTextSetterRef.current = fn;
+    };
 
     const startBattle = (id, startVoiceListener, startBGM) => {
-        const skill = SKILL_DATA.find(s => s.id === id);
+        const skill = SKILL_DATA.find((s) => s.id === id);
         setBattlingSkillId(id);
         const currentDiff = skills[id].difficulty || 1;
         const playerLevel = skills[id].level;
@@ -300,22 +390,39 @@ export const useBattle = (skills, setSkills, stats, setStats) => {
     const handlePhantomLevelAward = (skillId) => {
         if (!skillId) return;
         playLevelUp();
-        setSkills(prev => {
+        setSkills((prev) => {
             const current = prev[skillId];
             return { ...prev, [skillId]: { ...current, level: current.level + 1 } };
         });
-        const skillConfig = SKILL_DATA.find(s => s.id === skillId);
+        const skillConfig = SKILL_DATA.find((s) => s.id === skillId);
         if (skillConfig) {
-            setLootBox({ level: skills[skillId].level + 1, skillName: skillConfig.fantasyName, item: "Phantom Bonus!", img: HOSTILE_MOBS['Phantom'] });
+            setLootBox({
+                level: skills[skillId].level + 1,
+                skillName: skillConfig.fantasyName,
+                item: 'Phantom Bonus!',
+                img: HOSTILE_MOBS['Phantom'],
+            });
             playNotification();
         }
     };
 
     return {
-        battlingSkillId, battleDifficulty, challengeData, challengeDataRef,
-        playerHealth, damageNumbers, showDeathOverlay, showLevelRestored,
-        lootBox, bossHealing, achievementToast, setAchievementToast,
-        handleSuccessHit, startBattle, endBattle, handlePhantomLevelAward,
-        setSpokenTextSetter
+        battlingSkillId,
+        battleDifficulty,
+        challengeData,
+        challengeDataRef,
+        playerHealth,
+        damageNumbers,
+        showDeathOverlay,
+        showLevelRestored,
+        lootBox,
+        bossHealing,
+        achievementToast,
+        setAchievementToast,
+        handleSuccessHit,
+        startBattle,
+        endBattle,
+        handlePhantomLevelAward,
+        setSpokenTextSetter,
     };
 };

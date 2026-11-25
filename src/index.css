@@ -1,158 +1,158 @@
 @import url('https://fonts.googleapis.com/css2?family=VT323&display=swap');
 
-@import "tailwindcss";
+@import 'tailwindcss';
 
 .loading-screen {
-  position: fixed;
-  inset: 0;
-  z-index: 1000;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: #ed2939;
-  color: #fff;
-  font-family: 'VT323', 'Courier New', monospace;
-  opacity: 1;
-  transition: opacity 280ms ease-out;
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #ed2939;
+    color: #fff;
+    font-family: 'VT323', 'Courier New', monospace;
+    opacity: 1;
+    transition: opacity 280ms ease-out;
 }
 
 .loading-screen--leaving {
-  opacity: 0;
-  pointer-events: none;
+    opacity: 0;
+    pointer-events: none;
 }
 
 .loading-screen__brand {
-  text-align: center;
-  transform: translateY(-5vh);
+    text-align: center;
+    transform: translateY(-5vh);
 }
 
 .loading-screen__wordmark {
-  font-size: clamp(4rem, 15vw, 15rem);
-  font-weight: 700;
-  line-height: 0.8;
-  letter-spacing: -0.08em;
-  text-shadow: 0.035em 0.035em 0 rgba(0, 0, 0, 0.12);
+    font-size: clamp(4rem, 15vw, 15rem);
+    font-weight: 700;
+    line-height: 0.8;
+    letter-spacing: -0.08em;
+    text-shadow: 0.035em 0.035em 0 rgba(0, 0, 0, 0.12);
 }
 
 .loading-screen__studio {
-  margin-top: 1rem;
-  font-family: Arial, sans-serif;
-  font-size: clamp(0.8rem, 2vw, 1.8rem);
-  font-weight: 700;
-  letter-spacing: 0.8em;
-  padding-left: 0.8em;
+    margin-top: 1rem;
+    font-family: Arial, sans-serif;
+    font-size: clamp(0.8rem, 2vw, 1.8rem);
+    font-weight: 700;
+    letter-spacing: 0.8em;
+    padding-left: 0.8em;
 }
 
 .loading-screen__progress-area {
-  position: absolute;
-  left: 50%;
-  bottom: 9vh;
-  width: min(72vw, 900px);
-  transform: translateX(-50%);
+    position: absolute;
+    left: 50%;
+    bottom: 9vh;
+    width: min(72vw, 900px);
+    transform: translateX(-50%);
 }
 
 .loading-screen__status {
-  display: flex;
-  justify-content: space-between;
-  margin: 0 0 0.65rem;
-  font-size: clamp(1.25rem, 2.5vw, 2rem);
-  letter-spacing: 0.08em;
+    display: flex;
+    justify-content: space-between;
+    margin: 0 0 0.65rem;
+    font-size: clamp(1.25rem, 2.5vw, 2rem);
+    letter-spacing: 0.08em;
 }
 
 .loading-screen__track {
-  height: clamp(18px, 3vw, 30px);
-  padding: 4px;
-  border: 3px solid #fff;
+    height: clamp(18px, 3vw, 30px);
+    padding: 4px;
+    border: 3px solid #fff;
 }
 
 .loading-screen__error {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-  margin-bottom: 1rem;
-  padding: 0.75rem 1rem;
-  border: 2px solid #fff;
-  background: rgba(0, 0, 0, 0.18);
-  font-size: clamp(1rem, 2vw, 1.5rem);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1rem;
+    padding: 0.75rem 1rem;
+    border: 2px solid #fff;
+    background: rgba(0, 0, 0, 0.18);
+    font-size: clamp(1rem, 2vw, 1.5rem);
 }
 
 .loading-screen__continue {
-  flex: none;
-  border: 2px solid #fff;
-  padding: 0.35rem 0.8rem;
-  color: #ed2939;
-  background: #fff;
-  font: inherit;
-  font-weight: 700;
-  cursor: pointer;
+    flex: none;
+    border: 2px solid #fff;
+    padding: 0.35rem 0.8rem;
+    color: #ed2939;
+    background: #fff;
+    font: inherit;
+    font-weight: 700;
+    cursor: pointer;
 }
 
 .loading-screen__continue:focus-visible {
-  outline: 3px solid #111;
-  outline-offset: 3px;
+    outline: 3px solid #111;
+    outline-offset: 3px;
 }
 
 .loading-screen__fill {
-  height: 100%;
-  background: #fff;
-  transition: width 140ms linear;
+    height: 100%;
+    background: #fff;
+    transition: width 140ms linear;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .loading-screen,
-  .loading-screen__fill {
-    transition-duration: 0.01ms;
-  }
+    .loading-screen,
+    .loading-screen__fill {
+        transition-duration: 0.01ms;
+    }
 }
 
 /* Base layer styles - applied before utilities so they can be overridden */
 @layer base {
-  * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-  }
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
 
-  body {
-    margin: 0;
-    font-family: 'VT323', monospace;
-    overflow: hidden;
-  }
+    body {
+        margin: 0;
+        font-family: 'VT323', monospace;
+        overflow: hidden;
+    }
 
-  #root {
-    width: 100vw;
-    height: 100vh;
-  }
+    #root {
+        width: 100vw;
+        height: 100vh;
+    }
 }
 
 /* Utility for hiding scrollbars */
 @layer utilities {
-  .scrollbar-hide::-webkit-scrollbar {
-    display: none;
-  }
+    .scrollbar-hide::-webkit-scrollbar {
+        display: none;
+    }
 
-  .scrollbar-hide {
-    -ms-overflow-style: none;
-    scrollbar-width: none;
-  }
+    .scrollbar-hide {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+    }
 }
 
 /* Phantom fly-by event animations */
 @keyframes phantomFlyLeft {
-  0% {
-    left: -120px;
-  }
-  100% {
-    left: 100vw;
-  }
+    0% {
+        left: -120px;
+    }
+    100% {
+        left: 100vw;
+    }
 }
 
 @keyframes phantomFlyRight {
-  0% {
-    left: 100vw;
-  }
-  100% {
-    left: -120px;
-  }
+    0% {
+        left: 100vw;
+    }
+    100% {
+        left: -120px;
+    }
 }

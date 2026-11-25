@@ -17,10 +17,10 @@ export const useCarousel = (battlingSkillId) => {
         const diff = dragStartX - clientX;
         if (Math.abs(diff) >= 100) {
             if (diff > 0) {
-                setSelectedIndex(p => p + 1);
+                setSelectedIndex((p) => p + 1);
                 playActionCardRight();
             } else {
-                setSelectedIndex(p => p - 1);
+                setSelectedIndex((p) => p - 1);
                 playActionCardLeft();
             }
             setIsDragging(false);
@@ -33,7 +33,7 @@ export const useCarousel = (battlingSkillId) => {
 
     const handleCardClick = (offset) => {
         if (battlingSkillId || offset === 0) return;
-        setSelectedIndex(p => p + offset);
+        setSelectedIndex((p) => p + offset);
         if (offset > 0) {
             playActionCardRight();
         } else {
@@ -42,18 +42,23 @@ export const useCarousel = (battlingSkillId) => {
     };
 
     const navigateLeft = () => {
-        setSelectedIndex(p => p - 1);
+        setSelectedIndex((p) => p - 1);
         playActionCardLeft();
     };
 
     const navigateRight = () => {
-        setSelectedIndex(p => p + 1);
+        setSelectedIndex((p) => p + 1);
         playActionCardRight();
     };
 
     return {
-        selectedIndex, isDragging,
-        handleDragStart, handleDragMove, handleDragEnd,
-        handleCardClick, navigateLeft, navigateRight
+        selectedIndex,
+        isDragging,
+        handleDragStart,
+        handleDragMove,
+        handleDragEnd,
+        handleCardClick,
+        navigateLeft,
+        navigateRight,
     };
 };

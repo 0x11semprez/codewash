@@ -7,14 +7,14 @@ const MAX_TEMPO_DELAY = 800;
 const MIN_TEMPO_DELAY = 200;
 
 const AXOLOTL_NOTE_MAP = {
-    'Pink': 'c4',
-    'Cyan': 'd4',
-    'Gold': 'e4',
-    'Brown': 'f4',
-    'Blue': 'g4',
-    'Red': 'a4',
-    'Green': 'b4',
-    'Black': 'g5'
+    Pink: 'c4',
+    Cyan: 'd4',
+    Gold: 'e4',
+    Brown: 'f4',
+    Blue: 'g4',
+    Red: 'a4',
+    Green: 'b4',
+    Black: 'g5',
 };
 
 const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
@@ -60,27 +60,30 @@ const PatternGame = ({ isBattling, difficulty, onMathSubmit }) => {
         }
     }, []);
 
-    const playSequence = useCallback((sequence) => {
-        setIsShowingSequence(true);
-        setPlayerIndex(0);
-        let i = 0;
-        const { onDelay, offDelay } = getTempoDelays(completedRounds, difficulty);
+    const playSequence = useCallback(
+        (sequence) => {
+            setIsShowingSequence(true);
+            setPlayerIndex(0);
+            let i = 0;
+            const { onDelay, offDelay } = getTempoDelays(completedRounds, difficulty);
 
-        const playNext = () => {
-            if (i < sequence.length) {
-                setLitAxolotl(sequence[i]);
-                playAxolotlNote(sequence[i]);
-                setTimeout(() => {
-                    setLitAxolotl(null);
-                    i++;
-                    setTimeout(playNext, offDelay);
-                }, onDelay);
-            } else {
-                setIsShowingSequence(false);
-            }
-        };
-        setTimeout(playNext, 500);
-    }, [completedRounds, difficulty, playAxolotlNote]);
+            const playNext = () => {
+                if (i < sequence.length) {
+                    setLitAxolotl(sequence[i]);
+                    playAxolotlNote(sequence[i]);
+                    setTimeout(() => {
+                        setLitAxolotl(null);
+                        i++;
+                        setTimeout(playNext, offDelay);
+                    }, onDelay);
+                } else {
+                    setIsShowingSequence(false);
+                }
+            };
+            setTimeout(playNext, 500);
+        },
+        [completedRounds, difficulty, playAxolotlNote],
+    );
 
     const startSimonGame = useCallback(() => {
         const firstColor = axolotlColors[Math.floor(Math.random() * axolotlColors.length)];
@@ -106,7 +109,7 @@ const PatternGame = ({ isBattling, difficulty, onMathSubmit }) => {
                 setCompletedRounds(newRounds);
 
                 const damage = Math.round(newRounds * 1.5);
-                setTimeout(() => onMathSubmit("WIN", damage), 300);
+                setTimeout(() => onMathSubmit('WIN', damage), 300);
 
                 let newSequence;
                 if (shouldResetSequence) {

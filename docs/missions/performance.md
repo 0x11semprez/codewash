@@ -1,6 +1,6 @@
 # Performance report
 
-Issue [#12](https://github.com/EpitechBachelorPromo2028/B-ING-300-PAR-3-1-codewash-21/issues/12): *Improve performance (loading screen and UX snappiness)*, tracked in this repository as [#18](https://github.com/0x11semprez/codewash/issues/18).
+Issue [#18](https://github.com/EpitechBachelorPromo2028/B-ING-300-PAR-3-1-codewash-21/issues/18): *Improve performance (loading screen and UX snappiness)*, tracked in this repository as [#18](https://github.com/0x11semprez/codewash/issues/18).
 
 **Compared versions**
 
@@ -205,6 +205,24 @@ Before the extraction, `App.jsx` held 32 `useState` and 12 `useEffect` calls in 
 | CLS | When the page is hidden, summing shifts without recent user input |
 
 Browsers without `PerformanceObserver`, or without support for an entry type, are ignored silently.
+
+---
+
+### 4.5 Background music
+
+The six background tracks were uncompressed WAV files (44.1 kHz, stereo, 1411 kb/s). They are now MP3 files encoded with LAME (VBR quality 2, about 132 kb/s), with the same durations.
+
+| Track | Duration | WAV | MP3 |
+| --- | --- | --- | --- |
+| `calm1` | 4:20 | 43.8 MB | 4.1 MB |
+| `calm2` | n/a | 33.9 MB | 3.5 MB |
+| `calm3` | n/a | 38.7 MB | 3.6 MB |
+| `piano1` | n/a | 11.5 MB | 0.7 MB |
+| `piano2` | n/a | 15.1 MB | 1.4 MB |
+| `piano3` | 4:41 | 47.3 MB | 4.5 MB |
+| **Total** | | **191 MB** | **18 MB** |
+
+The music is about 10.6 times smaller. Durations were compared for two tracks only, and sound quality was not compared by ear. `soundManager.test.js` checks that the track list points to existing MP3 files under 10 MB.
 
 ---
 
