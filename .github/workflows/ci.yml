@@ -24,6 +24,9 @@ jobs:
       - name: Lint (zero warnings)
         run: npm run lint -- --max-warnings 0
 
+      - name: Format check
+        run: npm run format:check
+
       - name: Static analysis
         run: npx eslint src/ --no-warn-ignored --max-warnings 0
 
