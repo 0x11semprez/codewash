@@ -253,6 +253,7 @@ Each item links to its GitHub issue for full context and to the PR that addresse
   - `WRITING_ITEMS_BY_LENGTH` — gameData.jsx:397
   - `assets.js` — entire dead file
   - `MenuDrawer_old.jsx` — entire dead file
+- **Residual:** commit `883e02f` did not delete `src/constants/assets.js`. Nothing imports it. It still has to be removed.
 - **Effort:** XS
 
 ### DEBT-005: No tests [P0] [Done ✓]
