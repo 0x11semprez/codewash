@@ -1,4 +1,6 @@
 import { describe, it, expect, vi } from 'vitest';
+import { existsSync, statSync } from 'node:fs';
+import { join } from 'node:path';
 import { getBGMManager, setSfxVolume, getSfxVolume, UI_SOUND_NAMES } from '../utils/soundManager';
 
 vi.stubGlobal(
@@ -51,5 +53,26 @@ describe('BGMManager', () => {
         const mgr = getBGMManager();
         mgr.setVolume(0.7);
         expect(mgr.volume).toBe(0.7);
+    });
+});
+
+describe('BGM tracks', () => {
+    const tracks = getBGMManager().tracks;
+    const fromPublic = (track) => join(import.meta.dirname, '..', '..', 'public', track);
+
+    it('lists the six background music tracks', () => {
+        expect(tracks).toHaveLength(6);
+    });
+
+    it('uses compressed MP3 files', () => {
+        tracks.forEach((track) => expect(track).toMatch(/^assets\/sounds\/bgm\/[a-z0-9]+\.mp3$/));
+    });
+
+    it('points to files that exist', () => {
+        tracks.forEach((track) => expect(existsSync(fromPublic(track))).toBe(true));
+    });
+
+    it('keeps every track under 10 MB', () => {
+        tracks.forEach((track) => expect(statSync(fromPublic(track)).size).toBeLessThan(10 * 1024 * 1024));
     });
 });

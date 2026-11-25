@@ -5,12 +5,12 @@
 
 // BGM tracks discovered from public/assets/sounds/bgm/
 const BGM_TRACKS = [
-    'assets/sounds/bgm/calm1.wav',
-    'assets/sounds/bgm/calm2.wav',
-    'assets/sounds/bgm/calm3.wav',
-    'assets/sounds/bgm/piano1.wav',
-    'assets/sounds/bgm/piano2.wav',
-    'assets/sounds/bgm/piano3.wav',
+    'assets/sounds/bgm/calm1.mp3',
+    'assets/sounds/bgm/calm2.mp3',
+    'assets/sounds/bgm/calm3.mp3',
+    'assets/sounds/bgm/piano1.mp3',
+    'assets/sounds/bgm/piano2.mp3',
+    'assets/sounds/bgm/piano3.mp3',
 ];
 
 // UI sound paths
