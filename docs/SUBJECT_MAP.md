@@ -14,10 +14,10 @@ Last checked: 2026-11-25.
 
 | Step | Status | Evidence | Missing |
 | --- | --- | --- | --- |
-| Pre-wash: characterization tests freeze current behavior | Done | `src/__tests__/` (17 files, 170 tests), PR [#3](https://github.com/0x11semprez/codewash/pull/3), [ADR-005](adr/005-characterization-tests-before-refactoring.md) | |
-| Directed jet: separate domain from I/O, inject clock and config, remove globals | Missing | | 36 direct calls to `Math.random`, `Date.now` or `new Date` in 8 source files. Storage is not abstracted ([DEBT-009](DEBT.md#debt-009-hardcoded-localstorage-keys-p2-open)). The sound manager is a module singleton ([DEBT-011](DEBT.md#debt-011-sound-manager--singleton--no-audio-pooling-p3-open)). |
+| Pre-wash: characterization tests freeze current behavior | Done | `src/__tests__/` (17 files and 170 tests at that point, 24 files and 237 tests today), PR [#3](https://github.com/0x11semprez/codewash/pull/3), [ADR-005](adr/005-characterization-tests-before-refactoring.md) | |
+| Directed jet: separate domain from I/O, inject clock and config, remove globals | Partial | [ADR-008](adr/008-inject-randomness-and-clock.md), [#60](https://github.com/0x11semprez/codewash/pull/60) (DEBT-023), `src/utils/storage.js` ([#58](https://github.com/0x11semprez/codewash/pull/58), DEBT-018) | 10 direct calls to `Math.random` or `Date` are left, in `useBattle`, `soundManager`, `PhantomEvent`, `MemoryGame` and `PatternGame`. Storage keys is not abstracted ([DEBT-009](DEBT.md#debt-009-hardcoded-localstorage-keys-p2-open)). The sound manager is a module singleton ([DEBT-011](DEBT.md#debt-011-sound-manager--singleton--no-audio-pooling-p3-open)). |
 | Controlled rinse: CI green, coverage thresholds visible | Partial | `.github/workflows/ci.yml`, `vitest.config.js` | Thresholds are 60/50/40, below the 80% target ([#17](https://github.com/0x11semprez/codewash/issues/17)). |
-| Hot-spot treatment: duplication, coupling, fragile parsers, silent errors | Partial | DEBT-001 ([#45](https://github.com/0x11semprez/codewash/pull/45)), DEBT-003 ([#48](https://github.com/0x11semprez/codewash/pull/48)), DEBT-010 ([#49](https://github.com/0x11semprez/codewash/pull/49)) | DEBT-002, 008, 009 and 018 are open. |
+| Hot-spot treatment: duplication, coupling, fragile parsers, silent errors | Partial | DEBT-001 ([#45](https://github.com/0x11semprez/codewash/pull/45)), DEBT-003 ([#48](https://github.com/0x11semprez/codewash/pull/48)), DEBT-010 ([#49](https://github.com/0x11semprez/codewash/pull/49)) | DEBT-018 is done ([#58](https://github.com/0x11semprez/codewash/pull/58)). DEBT-002 is in progress ([#65](https://github.com/0x11semprez/codewash/pull/65)). DEBT-008 and 009 are open. |
 | Finishing pass: small features, public contracts kept, clean handover | Partial | Performance mission ([#51](https://github.com/0x11semprez/codewash/pull/51)) | Three more missions and the handover documents below. |
 | First push is the project as received | Done | Commit `f12cd74` | |
 
@@ -45,19 +45,19 @@ Last checked: 2026-11-25.
 | Requirement | Status | Evidence | Missing |
 | --- | --- | --- | --- |
 | Test suite in a single command | Done | `npm test` | |
-| CI on every pull request: build, tests, lint, format, coverage | Partial | `.github/workflows/ci.yml` | No format check. Prettier is not configured. |
-| Quality gates block the merge | Partial | CI fails on a test failure, a lint warning or low coverage | `main` has no branch protection, so GitHub still allows a merge on red. |
+| CI on every pull request: build, tests, lint, format, coverage | Done | `.github/workflows/ci.yml`, format check since [#56](https://github.com/0x11semprez/codewash/pull/56) | |
+| Quality gates block the merge | Partial | CI fails on a test failure, a lint warning or low coverage | `main` is protected since 2026-11-25: a pull request is required, the `build-and-test` check must pass on an up-to-date branch, and force pushes and deletion are blocked. Admins can still bypass the rule. |
 | Static analysis in the pipeline | Partial | "Static analysis" step in `ci.yml` | The step is a second ESLint run. There is no dedicated tool. |
 | New code fully covered, 80% of modified lines | Missing | | No diff coverage check. Global thresholds are below 80%. |
 | Lowered thresholds are written down as debt | Done | [ADR-003](adr/003-conservative-coverage-thresholds.md) | |
-| Tests can control the clock and random numbers | Missing | | Same gap as "Directed jet" above. |
+| Tests can control the clock and random numbers | Partial | [ADR-008](adr/008-inject-randomness-and-clock.md), `src/__tests__/gameUtils.deterministic.test.js`, `src/__tests__/useGameState.clock.test.js` | Same 10 calls as in "Directed jet" above. |
 
 ## Hand over cleanly
 
 | Question from the subject | Status | Evidence | Missing |
 | --- | --- | --- | --- |
 | Can a newcomer install, launch and test without help? | Done | [README](../README.md) | |
-| Why is the architecture the way it is? | Partial | [docs/adr/](adr/) (6 ADRs) | The ADRs cover tooling and file layout. No ADR explains the hook design or the loading gate. |
+| Why is the architecture the way it is? | Partial | [docs/adr/](adr/) (8 ADRs) | The ADRs cover tooling and file layout. No ADR explains the hook design or the loading gate. |
 | What changed between the version received and the one delivered? | Done | [CHANGELOG.md](../CHANGELOG.md) | |
 | What should the person on duty do when something breaks? | Done | [Runbook](handover/RUNBOOK.md) | |
 | What does the system look like today? | Missing | | Current architecture map (`docs/handover/ARCHITECTURE.md` or DEBT.md section 7). |

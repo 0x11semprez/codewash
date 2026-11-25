@@ -380,22 +380,23 @@ Each item links to its GitHub issue for full context and to the PR that addresse
 - **Fix:** Replaced with `useEffect` watching `stats` changes.
 - **Effort:** S
 
-### DEBT-018: Unsafe JSON.parse in handleReset [P3] [Open]
+### DEBT-018: Unsafe JSON.parse in handleReset [P3] [Done ✓]
 
-- **Issue:** [#41](https://github.com/0x11semprez/codewash/issues/41) — **PR:** none yet
+- **Issue:** [#41](https://github.com/0x11semprez/codewash/issues/41) — **PR:** [#58](https://github.com/0x11semprez/codewash/pull/58), merged to `main` with [#66](https://github.com/0x11semprez/codewash/pull/66)
 - **Location:** `src/hooks/useGameState.js:233,237` (`handleReset`, moved from `App.jsx:971-972` by DEBT-001)
 - **Smell:** `JSON.parse()` without try-catch. Other parse calls in the same file are wrapped.
 - **Impact:** Corrupted localStorage value crashes the reset flow.
 - **Risk:** Low impact, low likelihood.
 - **Fix:** Add try-catch or use a shared safe-parse helper.
+- **Done:** `src/utils/storage.js` adds `readJSON`, `parseJSON` and `backupCorrupted`. `useGameState.js` and `preloadStartupAssets.js` read every saved value through them. A corrupted save now falls back to defaults and is copied once to `<key>_corrupted_backup` before the game overwrites it. New tests also render the six mini-games for real, so a broken import in a game fails CI.
 - **Effort:** XS
 
 ### DEBT-019: External resources in component render [P3] [Open]
 
 - **Issue:** [#42](https://github.com/0x11semprez/codewash/issues/42) — **PR:** none yet
 - **Location:**
-  - `src/components/ui/GlobalStyles.jsx:5` and `src/index.css:1` — Google Fonts `@import` (the one inside `<style>` re-fetches on every remount)
-  - `ProfileCard.jsx:69`, `SkillCard.jsx:187` — `transparenttextures.com` pattern URLs
+  - `src/index.css:1` — Google Fonts `@import`. A second copy lived in `GlobalStyles.jsx` and was fetched again on every remount. That file is now deleted (DEBT-002).
+  - `ProfileCard.jsx:81`, `SkillCard.jsx:277` — `transparenttextures.com` pattern URLs
 - **Smell:** External HTTP requests triggered during render. Blocks first paint. Breaks fully-offline promise.
 - **Impact:** Slower load, flaky appearance if CDN is down.
 - **Risk:** Low impact, low likelihood.
@@ -430,6 +431,18 @@ Each item links to its GitHub issue for full context and to the PR that addresse
 - **Risk:** Medium impact, high likelihood: every Docker build fails.
 - **Fix:** Align the two Vitest package versions so no flag is needed, then add a `docker build` step to CI.
 - **Effort:** XS
+
+### DEBT-023: Game logic calls `Math.random` and `Date` directly [P2] [Done ✓]
+
+- **Issue:** [#59](https://github.com/0x11semprez/codewash/issues/59) — **PR:** [#60](https://github.com/0x11semprez/codewash/pull/60), merged to `main` with [#66](https://github.com/0x11semprez/codewash/pull/66)
+- **Location:** 36 calls to `Math.random`, `Date.now` or `new Date` in 8 files under `src/`, mostly in `gameUtils.js` and `mobDisplayUtils.js`
+- **Smell:** Hidden I/O. Tests cannot choose the random value or the time, so they cannot check the first or last item of a pool.
+- **Impact:** Edge cases are tested only by luck. One known bug hides in such a corner: at difficulty 3 and up, a subtraction can give `0 - 1 = -1`.
+- **Risk:** Medium impact, medium likelihood.
+- **Fix:** Pass the random source and the clock as arguments, with the real ones as defaults ([ADR-008](adr/008-inject-randomness-and-clock.md)).
+- **Done:** `src/utils/random.js` and `src/utils/clock.js`. Game utilities take an optional `random`, and `useGameState` takes an optional `{ now }`. Direct calls went from 36 to 10. A named test pins the `-1` subtraction bug, which is not fixed yet.
+- **Remaining:** the 10 calls left in `useBattle`, `soundManager`, `PhantomEvent`, `MemoryGame` and `PatternGame`.
+- **Effort:** M
 
 ---
 
@@ -476,7 +489,7 @@ Med Impact    │ DEBT-011       │ DEBT-008        │ DEBT-009        │
               │                │                 │ DEBT-021        │
               │                │                 │ DEBT-022        │
 ──────────────┼────────────────┼─────────────────┼─────────────────┤
-Low Impact    │ DEBT-018, 019  │                 │ DEBT-004 ✓      │
+Low Impact    │ DEBT-018 ✓, 019│                 │ DEBT-004 ✓      │
               │                │                 │ DEBT-007 ✓      │
 ──────────────┴────────────────┴─────────────────┴─────────────────┘
 ```
@@ -487,7 +500,7 @@ Low Impact    │ DEBT-018, 019  │                 │ DEBT-004 ✓      │
 
 ## 5. Phased plan
 
-### Phase 0: quick wins (week 1) — done except DEBT-018, DEBT-019
+### Phase 0: quick wins (week 1) — done except DEBT-019
 
 | # | Debt | Task | Status |
 |---|------|------|--------|
@@ -498,7 +511,7 @@ Low Impact    │ DEBT-018, 019  │                 │ DEBT-004 ✓      │
 | 5 | DEBT-015 | Fix `battlesThisSession` reset | Done ✓ — Epitech PR #46 (merge `a9e408a`) |
 | 6 | DEBT-016 | Fix stale state reads | Done ✓ — Epitech PR #45 (merge `7b82098`) |
 | 7 | DEBT-017 | Replace setTimeout achievement checks | Done ✓ — Epitech PR #44 (merge `7fa5858`) |
-| 8 | DEBT-018 | Add try-catch to handleReset parse | Open |
+| 8 | DEBT-018 | Add try-catch to handleReset parse | Done ✓ — [#58](https://github.com/0x11semprez/codewash/pull/58), [#66](https://github.com/0x11semprez/codewash/pull/66) |
 | 9 | DEBT-019 | Move font import to `<head>` | Open |
 
 ### Phase 1: safety net + structure (week 2) — done except DEBT-014, DEBT-020
@@ -536,7 +549,7 @@ Low Impact    │ DEBT-018, 019  │                 │ DEBT-004 ✓      │
 | Debt | Issue | PR | Status |
 |------|-------|----|--------|
 | DEBT-001 | [#24](https://github.com/0x11semprez/codewash/issues/24) | [#45](https://github.com/0x11semprez/codewash/pull/45) (merged) | Done ✓ |
-| DEBT-002 | [#25](https://github.com/0x11semprez/codewash/issues/25) | — | In Progress |
+| DEBT-002 | [#25](https://github.com/0x11semprez/codewash/issues/25) | [#65](https://github.com/0x11semprez/codewash/pull/65) (merged) | In Progress |
 | DEBT-003 | [#26](https://github.com/0x11semprez/codewash/issues/26) | [#48](https://github.com/0x11semprez/codewash/pull/48) (merged) | Done ✓ |
 | DEBT-004 | [#27](https://github.com/0x11semprez/codewash/issues/27) | commit `883e02f` (Epitech PR #43) | Done ✓ |
 | DEBT-005 | [#28](https://github.com/0x11semprez/codewash/issues/28) | [#3](https://github.com/0x11semprez/codewash/pull/3), [#4](https://github.com/0x11semprez/codewash/pull/4), [#6](https://github.com/0x11semprez/codewash/pull/6), [#46](https://github.com/0x11semprez/codewash/pull/46) (merged) | Done ✓ |
@@ -552,11 +565,12 @@ Low Impact    │ DEBT-018, 019  │                 │ DEBT-004 ✓      │
 | DEBT-015 | [#38](https://github.com/0x11semprez/codewash/issues/38) | Epitech PR #46 (merge `a9e408a`) | Done ✓ |
 | DEBT-016 | [#39](https://github.com/0x11semprez/codewash/issues/39) | Epitech PR #45 (merge `7b82098`) | Done ✓ |
 | DEBT-017 | [#40](https://github.com/0x11semprez/codewash/issues/40) | Epitech PR #44 (merge `7fa5858`) | Done ✓ |
-| DEBT-018 | [#41](https://github.com/0x11semprez/codewash/issues/41) | — | Open |
+| DEBT-018 | [#41](https://github.com/0x11semprez/codewash/issues/41) | [#58](https://github.com/0x11semprez/codewash/pull/58), [#66](https://github.com/0x11semprez/codewash/pull/66) (merged) | Done ✓ |
 | DEBT-019 | [#42](https://github.com/0x11semprez/codewash/issues/42) | — | Open |
 | DEBT-020 | [#11](https://github.com/0x11semprez/codewash/issues/11) | Epitech PR #48 (merge `f69df57`) | In Progress |
 | DEBT-021 | [#53](https://github.com/0x11semprez/codewash/issues/53) | — | Open |
 | DEBT-022 | [#54](https://github.com/0x11semprez/codewash/issues/54) | — | Open |
+| DEBT-023 | [#59](https://github.com/0x11semprez/codewash/issues/59) | [#60](https://github.com/0x11semprez/codewash/pull/60), [#66](https://github.com/0x11semprez/codewash/pull/66) (merged) | Done ✓ |
 
 ---
 

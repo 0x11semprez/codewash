@@ -52,7 +52,7 @@ A full-screen loader is displayed over the game while critical assets are preloa
 | --- | --- | --- |
 | Images | Yes | Selected theme background, logo, card back, six skill icons, mob sprites inside the initial viewport |
 | UI sounds | No | Eight short sound effects, warmed in the background |
-| Background music | No | Not preloaded: the six WAV files weigh about 201 MB |
+| Background music | No | Not preloaded. The six tracks weighed about 201 MB as WAV at the time; they are MP3 files since [#64](https://github.com/0x11semprez/codewash/pull/64) |
 
 ### Files
 
@@ -86,7 +86,7 @@ A full-screen loader is displayed over the game while critical assets are preloa
 | Capture | Commits | Median | Maximum | Drawers rendered |
 | --- | --- | --- | --- | --- |
 | Before optimizations | 10 | 79.35 ms | 277.2 ms | In 8 of 10 commits (`MenuDrawer`, `CosmeticsDrawer`, `SettingsDrawer`, profile cards) |
-| After optimizations (`scripts/profil Skip.json`) | 13 | 85.0 ms | 142.3 ms | In none; `App` and `SkillCard` still render |
+| After optimizations (profile file not kept in the repository) | 13 | 85.0 ms | 142.3 ms | In none; `App` and `SkillCard` still render |
 
 Reading the table:
 

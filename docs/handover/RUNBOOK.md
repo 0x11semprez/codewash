@@ -132,7 +132,7 @@ Fix:
 - If `heroSkills_v23_p{id}` is broken, the game starts that profile from zero and then saves over the broken value. The old progress is gone unless you have a backup. Restore the backup, or accept the reset.
 - `localStorage.clear()` deletes all three profiles. Only use it when the player agrees to lose everything.
 
-Known bug: the "DELETE PROFILE PROGRESS" button in Settings reads `heroParentStatus_v1` and `heroProfileNames_v1` with `JSON.parse` and no error handling ([DEBT-018](../DEBT.md#debt-018-unsafe-jsonparse-in-handlereset-p3-open), issue [#41](https://github.com/0x11semprez/codewash/issues/41)). If one of them is broken, the reset fails and the Console shows `Uncaught SyntaxError`. Delete the broken key first, then reset again.
+Since [DEBT-018](../DEBT.md#debt-018-unsafe-jsonparse-in-handlereset-p3-done-) ([#58](https://github.com/0x11semprez/codewash/pull/58)), a broken saved value no longer crashes the game. The game starts with default values and the Console shows a `[storage] Ignoring corrupted ...` warning. A broken skills save is copied once to `<key>_corrupted_backup` before the game overwrites it. Use that key to recover the player's progress by hand.
 
 Escalate when saves disappear without any of the causes above. Include the backup text (with the player's permission), the browser, the address, and what the player did just before.
 
@@ -167,7 +167,7 @@ Escalate when the mic fails in Chrome with permission granted, or works in Chrom
 How sound works (`src/utils/soundManager.js` and `src/hooks/useAudio.js`):
 
 - Music starts the first time a battle starts. There is no music on the menu before that.
-- Music is a random track from six WAV files in `public/assets/sounds/bgm/` (about 190 MB on disk). They are not preloaded, so the first track can take time to start on a slow network.
+- Music is a random track from six MP3 files in `public/assets/sounds/bgm/` (they were WAV files of about 190 MB before [#64](https://github.com/0x11semprez/codewash/pull/64)). They are not preloaded, so the first track can take time to start on a slow network.
 - Every sound call ends with `.catch(() => {})`. When the browser refuses to play a sound, for example because of its autoplay rules, nothing appears in the Console.
 - After the first attempt to start the music, the game counts the music as playing, even if the browser refused. It does not try again until the page is reloaded.
 
@@ -204,7 +204,7 @@ Escalate when the ratings are `poor` on the built version. Include the `[web-vit
 
 ### CI is red on a pull request
 
-CI is the GitHub Actions workflow in `.github/workflows/ci.yml`. It runs on every pull request to `main` and every push to `main`, with Node 20. `main` has no branch protection, so GitHub still lets you merge on red. Do not do it.
+CI is the GitHub Actions workflow in `.github/workflows/ci.yml`. It runs on every pull request to `main` and every push to `main`, with Node 20. `main` is protected: GitHub blocks the merge until `build-and-test` passes on a branch that is up to date with `main`. Admins can bypass the rule. Do not do it.
 
 Quick check:
 
