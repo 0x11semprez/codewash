@@ -13,26 +13,27 @@ import {
     WRITING_WORD_INDEX,
     WRITING_DIFFICULTY_POOLS,
 } from '../constants/gameData';
+import { pickRandom, randomInt, randomIntBetween } from './random';
 
-export const getRandomMob = (exclude) => {
+export const getRandomMob = (exclude, random = Math.random) => {
     const pool = Object.keys(HOSTILE_MOBS).filter((m) => m !== exclude);
-    return pool.length > 0 ? pool[Math.floor(Math.random() * pool.length)] : 'Zombie';
+    return pool.length > 0 ? pickRandom(pool, random) : 'Zombie';
 };
 
 // Get a random friendly mob key for the Memory skill
-export const getRandomFriendlyMob = () => {
+export const getRandomFriendlyMob = (random = Math.random) => {
     const friendlyMobKeys = Object.keys(FRIENDLY_MOBS);
-    return friendlyMobKeys.length > 0 ? friendlyMobKeys[Math.floor(Math.random() * friendlyMobKeys.length)] : 'Allay';
+    return friendlyMobKeys.length > 0 ? pickRandom(friendlyMobKeys, random) : 'Allay';
 };
 
-export const getRandomMiniboss = () => {
+export const getRandomMiniboss = (random = Math.random) => {
     const minibossKeys = Object.keys(MINIBOSS_MOBS);
-    return minibossKeys.length > 0 ? minibossKeys[Math.floor(Math.random() * minibossKeys.length)] : 'Wither Skeleton';
+    return minibossKeys.length > 0 ? pickRandom(minibossKeys, random) : 'Wither Skeleton';
 };
 
-export const getRandomBoss = () => {
+export const getRandomBoss = (random = Math.random) => {
     const bossKeys = Object.keys(BOSS_MOBS);
-    return bossKeys.length > 0 ? bossKeys[Math.floor(Math.random() * bossKeys.length)] : 'Wither';
+    return bossKeys.length > 0 ? pickRandom(bossKeys, random) : 'Wither';
 };
 
 // Determines encounter type based on level cycle pattern
@@ -44,7 +45,7 @@ export const getEncounterType = (level) => {
     return 'hostile';
 };
 
-export const getMobForSkill = (skillConfig, userSkill) => {
+export const getMobForSkill = (skillConfig, userSkill, random = Math.random) => {
     // Cleaning skill is exempt from miniboss cycles - uses original logic
     if (skillConfig.id === 'cleaning') {
         if (userSkill.level % 20 === 0) return 'Ender Chest';
@@ -54,7 +55,7 @@ export const getMobForSkill = (skillConfig, userSkill) => {
     }
     // Memory skill: Return stored memoryMob to prevent random changes on re-render
     if (skillConfig.id === 'memory') {
-        return userSkill.memoryMob || getRandomFriendlyMob();
+        return userSkill.memoryMob || getRandomFriendlyMob(random);
     }
 
     // Determine encounter type based on level cycle
@@ -62,12 +63,12 @@ export const getMobForSkill = (skillConfig, userSkill) => {
 
     if (encounterType === 'boss') {
         // Return stored boss to prevent random changes on re-render
-        return userSkill.currentBoss || getRandomBoss();
+        return userSkill.currentBoss || getRandomBoss(random);
     }
 
     if (encounterType === 'miniboss') {
         // Return stored miniboss to prevent random changes on re-render
-        return userSkill.currentMiniboss || getRandomMiniboss();
+        return userSkill.currentMiniboss || getRandomMiniboss(random);
     }
 
     // Combat skills (reading, math, writing, patterns) at hostile mob levels:
@@ -80,7 +81,7 @@ export const getMobForSkill = (skillConfig, userSkill) => {
     };
 
     if (skillConfig.id in combatSkillMobs) {
-        return combatSkillMobs[skillConfig.id] || getRandomMob(null);
+        return combatSkillMobs[skillConfig.id] || getRandomMob(null, random);
     }
 
     // Fallback for any other skills
@@ -90,7 +91,7 @@ export const getMobForSkill = (skillConfig, userSkill) => {
     return currentMobIsValid
         ? userSkill.currentMob
         : hostileMobKeys.length > 0
-          ? hostileMobKeys[Math.floor(Math.random() * hostileMobKeys.length)]
+          ? pickRandom(hostileMobKeys, random)
           : 'Zombie';
 };
 
@@ -186,20 +187,20 @@ export const calculateXPToLevel = (difficulty, playerLevel) => {
 // ===== Reading Word Selection =====
 
 // Get a reading word based on difficulty level
-export const getReadingWord = (difficulty) => {
+export const getReadingWord = (difficulty, random = Math.random) => {
     if (difficulty === 7) {
-        return FUNNY_LONG_WORDS[Math.floor(Math.random() * FUNNY_LONG_WORDS.length)];
+        return pickRandom(FUNNY_LONG_WORDS, random);
     }
     const config = DIFFICULTY_CONTENT.reading[difficulty] || DIFFICULTY_CONTENT.reading[1];
     const charLength = config.charLength || 3;
     const words = READING_WORDS[charLength] || READING_WORDS[3];
-    return words[Math.floor(Math.random() * words.length)];
+    return pickRandom(words, random);
 };
 
 // ===== Math Problem Generation =====
 
 // Generate a math problem based on difficulty tier
-export const generateMathProblem = (difficulty) => {
+export const generateMathProblem = (difficulty, random = Math.random) => {
     const config = DIFFICULTY_CONTENT.math[difficulty] || DIFFICULTY_CONTENT.math[1];
 
     // Difficulty 7: Nightmare - Extremely complex multi-step PEMDAS expressions
@@ -231,7 +232,7 @@ export const generateMathProblem = (difficulty) => {
             { question: '((84 ÷ 7 + 18) × 2 - 16) ÷ 4', answer: '11' },
             { question: '250 - ((18 + 12) × 4 - 25)', answer: '155' },
         ];
-        const problem = nightmareProblems[Math.floor(Math.random() * nightmareProblems.length)];
+        const problem = pickRandom(nightmareProblems, random);
         return { type: 'math', question: `${problem.question} = ?`, answer: problem.answer, isNightmare: true };
     }
 
@@ -251,35 +252,35 @@ export const generateMathProblem = (difficulty) => {
             { question: '(8 - 3) × 2', answer: '10' },
             { question: '4 × 2 - 1', answer: '7' },
         ];
-        const problem = pemdasProblems[Math.floor(Math.random() * pemdasProblems.length)];
+        const problem = pickRandom(pemdasProblems, random);
         return { type: 'math', question: `${problem.question} = ?`, answer: problem.answer, isPemdas: true };
     }
 
     // Difficulties 1-5: Standard operations
     const operations = config.operations || ['+'];
     const [minVal, maxVal] = config.range || [1, 9];
-    const operation = operations[Math.floor(Math.random() * operations.length)];
+    const operation = pickRandom(operations, random);
 
     let a, b, question, answer;
 
     switch (operation) {
         case '+':
-            a = Math.floor(Math.random() * (maxVal - minVal + 1)) + minVal;
-            b = Math.floor(Math.random() * (maxVal - minVal + 1)) + minVal;
+            a = randomIntBetween(minVal, maxVal, random);
+            b = randomIntBetween(minVal, maxVal, random);
             question = `${a} + ${b} = ?`;
             answer = (a + b).toString();
             break;
         case '-':
             // Ensure positive result
-            a = Math.floor(Math.random() * (maxVal - minVal + 1)) + minVal;
-            b = Math.floor(Math.random() * a) + 1; // b is always less than or equal to a
+            a = randomIntBetween(minVal, maxVal, random);
+            b = randomInt(a, random) + 1; // b is always less than or equal to a
             question = `${a} - ${b} = ?`;
             answer = (a - b).toString();
             break;
         case '*': {
             const [multMin, multMax] = config.multiplyRange || [1, 12];
-            a = Math.floor(Math.random() * (multMax - multMin + 1)) + multMin;
-            b = Math.floor(Math.random() * (multMax - multMin + 1)) + multMin;
+            a = randomIntBetween(multMin, multMax, random);
+            b = randomIntBetween(multMin, multMax, random);
             question = `${a} × ${b} = ?`;
             answer = (a * b).toString();
             break;
@@ -287,16 +288,16 @@ export const generateMathProblem = (difficulty) => {
         case '/': {
             // Ensure clean division
             const [divMin, divMax] = config.divisionRange || [1, 12];
-            b = Math.floor(Math.random() * (divMax - divMin + 1)) + divMin;
-            const quotient = Math.floor(Math.random() * 10) + 1;
+            b = randomIntBetween(divMin, divMax, random);
+            const quotient = randomIntBetween(1, 10, random);
             a = b * quotient;
             question = `${a} ÷ ${b} = ?`;
             answer = quotient.toString();
             break;
         }
         default:
-            a = Math.floor(Math.random() * 9) + 1;
-            b = Math.floor(Math.random() * 9) + 1;
+            a = randomIntBetween(1, 9, random);
+            b = randomIntBetween(1, 9, random);
             question = `${a} + ${b} = ?`;
             answer = (a + b).toString();
     }
@@ -308,7 +309,7 @@ export const generateMathProblem = (difficulty) => {
 
 // Get a word from the appropriate difficulty pool
 // Uses difficulty pools with overlapping character ranges to ensure variety
-export const getWordForDifficulty = (difficulty) => {
+export const getWordForDifficulty = (difficulty, random = Math.random) => {
     // Map difficulty (1-7) to pool (1-5), with difficulties 6-7 using pool 5
     const poolNumber = Math.min(difficulty, 5);
     const pool = WRITING_DIFFICULTY_POOLS[poolNumber];
@@ -316,7 +317,7 @@ export const getWordForDifficulty = (difficulty) => {
     if (!pool || pool.length === 0) {
         // Fallback to difficulty 1 pool if something goes wrong
         const fallbackPool = WRITING_DIFFICULTY_POOLS[1];
-        const item = fallbackPool[Math.floor(Math.random() * fallbackPool.length)];
+        const item = pickRandom(fallbackPool, random);
         return {
             word: item.word.toUpperCase(),
             displayName: item.displayName,
@@ -325,7 +326,7 @@ export const getWordForDifficulty = (difficulty) => {
     }
 
     // Select a random word from the pool
-    const item = pool[Math.floor(Math.random() * pool.length)];
+    const item = pickRandom(pool, random);
     return {
         word: item.word.toUpperCase(),
         displayName: item.displayName,
