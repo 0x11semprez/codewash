@@ -1,8 +1,9 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { HOSTILE_MOBS } from '../constants/gameData';
 import { playSuccessfulHit } from '../utils/soundManager';
+import { STORAGE_KEYS } from '../utils/storageKeys';
 
-const PHANTOM_COOLDOWN_KEY = 'phantomEvent_lastSpawn_v1';
+const PHANTOM_COOLDOWN_KEY = STORAGE_KEYS.phantomLastSpawn;
 const MIN_COOLDOWN_MS = 5 * 60 * 1000; // 5 minutes
 const MAX_COOLDOWN_MS = 10 * 60 * 1000; // 10 minutes
 const FLIGHT_DURATION_MS = 8000; // 8 seconds to cross the screen (slow enough for a child to click)
