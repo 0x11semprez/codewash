@@ -68,6 +68,8 @@ Start with [docs/SUBJECT_MAP.md](docs/SUBJECT_MAP.md). It lists every requiremen
 | Branches, CI and team workflow | [docs/handover/development-plan.md](docs/handover/development-plan.md) |
 | Performance mission: loading screen, profiling, measurements | [docs/missions/performance.md](docs/missions/performance.md) |
 | Microphone and speech recognition | [docs/features/microphone.md](docs/features/microphone.md) |
+| What to do when something breaks | [docs/handover/RUNBOOK.md](docs/handover/RUNBOOK.md) |
+| What changed since the received version | [CHANGELOG.md](CHANGELOG.md) |
 
 ## Continuous integration
 
