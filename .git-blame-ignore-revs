@@ -1,0 +1,5 @@
+# Commits that only reformat code. git blame skips them.
+# Enable locally: git config blame.ignoreRevsFile .git-blame-ignore-revs
+
+# style: format src/ with Prettier (ADR-007)
+23bef498b90c683cdc18a67884d9f809537d0933
