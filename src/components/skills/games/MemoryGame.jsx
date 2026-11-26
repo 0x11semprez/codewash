@@ -10,6 +10,7 @@ const MemoryGame = ({ isBattling, difficulty, onMathSubmit, themeData }) => {
     const [isProcessingMatch, setIsProcessingMatch] = useState(false);
     const [mismatchShake, setMismatchShake] = useState(false);
     const memorySessionStartedRef = useRef(false);
+    const mismatchCountRef = useRef(0);
 
     const memoryConfig = DIFFICULTY_CONTENT.memory[difficulty] || DIFFICULTY_CONTENT.memory[1];
     const memoryPairs = memoryConfig.pairs || 3;
@@ -18,6 +19,7 @@ const MemoryGame = ({ isBattling, difficulty, onMathSubmit, themeData }) => {
     useEffect(() => {
         if (isBattling && !memorySessionStartedRef.current) {
             memorySessionStartedRef.current = true;
+            mismatchCountRef.current = 0;
             // The cards show the friendly creatures of the active theme.
             const friends = themeData.friends;
             const allMobKeys = Object.keys(friends);
@@ -56,9 +58,13 @@ const MemoryGame = ({ isBattling, difficulty, onMathSubmit, themeData }) => {
                     setMatchedPairs(newMatched);
                     setFlippedIndices([]);
                     setIsProcessingMatch(false);
-                    if (newMatched.length === memoryPairs) setTimeout(() => onMathSubmit('WIN'), 500);
+                    if (newMatched.length === memoryPairs) {
+                        const perfect = mismatchCountRef.current === 0;
+                        setTimeout(() => onMathSubmit('WIN', { perfect }), 500);
+                    }
                 } else {
                     playMismatch();
+                    mismatchCountRef.current += 1;
                     setMismatchShake(true);
                     setTimeout(() => {
                         setMismatchShake(false);
