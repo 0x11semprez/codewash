@@ -6,9 +6,9 @@ Bugs found in the code, with the proof, the cause, the fix and a before/after co
 
 | Bug | Issue | Status | Outcome |
 | --- | --- | --- | --- |
-| Hardcoded localStorage keys | [#32](https://github.com/0x11semprez/codewash/issues/32) (DEBT-009) | Fixed, PR pending | One file lists every key, and a migration moves old data |
+| Hardcoded localStorage keys | [#32](https://github.com/0x11semprez/codewash/issues/32) (DEBT-009) | Fixed (PR [#70](https://github.com/0x11semprez/codewash/pull/70)) | One file lists every key, and a migration moves old data |
 | Corrupted save crashes the game | [#41](https://github.com/0x11semprez/codewash/issues/41) (DEBT-018) | Fixed (PR [#58](https://github.com/0x11semprez/codewash/pull/58), [#66](https://github.com/0x11semprez/codewash/pull/66)) | Not detailed here yet |
-| `perfectMemoryGames` never incremented | [#37](https://github.com/0x11semprez/codewash/issues/37) (DEBT-014) | Open | Not started |
+| `perfectMemoryGames` never incremented | [#37](https://github.com/0x11semprez/codewash/issues/37) (DEBT-014) | Fixed, PR pending | A memory game won without a mismatch is counted, and "Perfectionist" can be unlocked |
 | Missing theme images | [#53](https://github.com/0x11semprez/codewash/issues/53) (DEBT-021) | Fixed | Themes mission (#21), not merged yet |
 | Docker build fails on `npm ci` | [#54](https://github.com/0x11semprez/codewash/issues/54) (DEBT-022) | Open | Not started |
 
@@ -92,9 +92,60 @@ In this run, the storage held only `heroSkills_v23` before the reload. After the
 
 ---
 
+## DEBT-014: `perfectMemoryGames` never incremented
+
+### Problem
+
+The achievement "Perfectionist" (`src/constants/achievements.js`) says "Complete a memory game without any mismatches". It unlocks when `stats.perfectMemoryGames` is at least 1.
+
+Nothing in the game ever raised that counter. Before the fix, the name appeared in two places only: the achievement that reads it, and the default value `0` in `src/utils/achievementUtils.js`. The memory game (`MemoryGame.jsx`) did not even count the mismatches of a game, and it reported a win with a bare `'WIN'`, so the battle code could not know whether the game was perfect.
+
+Consequence: "Perfectionist" was impossible to unlock, for every player, however well they played.
+
+### Reproduction
+
+A perfect memory game is played in the game (all pairs found, no mismatch), then the menu is opened on the achievements. Production build of `main` before the fix, headless Chromium, new save, "Blocks" theme.
+
+| | Before the fix | After the fix |
+| --- | --- | --- |
+| `stats.perfectMemoryGames` after the game | 0 | 1 |
+| Achievements unlocked | 3 of 20 | 4 of 20 |
+
+**Before the fix: the game was perfect, the counter stays at 0 and the Perfectionist icon (circle with a check mark) stays locked.**
+
+![Achievements after a perfect memory game, before the fix: 3 of 20](screens/debt-014-1-before-perfect-game-not-counted.png)
+
+**After the fix: the same game unlocks the Perfectionist achievement (4 of 20, the check mark icon is lit).**
+
+![Achievements after a perfect memory game, after the fix: 4 of 20](screens/debt-014-2-after-perfect-game-counted.png)
+
+### Fix
+
+| Change | File |
+| --- | --- |
+| The memory game counts its mismatches (reset at the start of each game) and reports `onMathSubmit('WIN', { perfect })`, with `perfect` true when there was none | `src/components/skills/games/MemoryGame.jsx` |
+| The result is passed on to the battle logic | `src/App.jsx` |
+| When a memory game is won with `perfect: true`, `perfectMemoryGames` goes up by one. Other skills, and a win with no result, never change it | `src/hooks/useBattle.js` (`handleSuccessHit`) |
+
+### Tests
+
+| Test file | What it protects |
+| --- | --- |
+| `components/MemoryGame.test.jsx` | A game without a mismatch reports `perfect: true`; one mismatch makes it `perfect: false`; nothing is reported before every pair is found |
+| `hooks/useBattle.perfectMemory.test.js` | The counter starts at 0, goes up on a perfect memory win, adds up over several games, ignores an imperfect win, a win with no result and other skills; "Perfectionist" unlocks |
+
+The two test files failed before the fix (5 tests) and pass after.
+
+### Limits
+
+- The counter is raised when the game is won, so a game that is abandoned or lost is not counted, which is the intended rule.
+- Players who already won perfect games before this fix are not credited: the game never recorded them, so there is nothing to recover.
+- The screenshots use a headless browser that plays the game by itself, on a new save.
+
+---
+
 ## Open work
 
 | Item | Notes |
 | --- | --- |
-| [#37](https://github.com/0x11semprez/codewash/issues/37) `perfectMemoryGames` never incremented | The "Perfectionist" achievement cannot be unlocked |
 | [#54](https://github.com/0x11semprez/codewash/issues/54) Docker build fails | The `Dockerfile` runs `npm ci` without `--legacy-peer-deps` |

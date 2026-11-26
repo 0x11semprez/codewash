@@ -93,7 +93,7 @@ export const useBattle = (skills, setSkills, stats, setStats, theme = getTheme()
         });
     }, [stats, checkAchievements]);
 
-    const handleSuccessHit = (skillId, isWrong) => {
+    const handleSuccessHit = (skillId, isWrong, result) => {
         if (isWrong === 'WRONG') {
             if (battlingSkillId) {
                 setSkills((prev) => {
@@ -220,6 +220,9 @@ export const useBattle = (skills, setSkills, stats, setStats, theme = getTheme()
                 setStats((prevStats) => {
                     const newStats = { ...prevStats };
                     newStats.battlesThisSession = (newStats.battlesThisSession || 0) + 1;
+                    if (skillConfig.id === 'memory' && result?.perfect === true) {
+                        newStats.perfectMemoryGames = (newStats.perfectMemoryGames || 0) + 1;
+                    }
                     if (encounterType === 'boss') {
                         newStats.totalBossesDefeated = (newStats.totalBossesDefeated || 0) + 1;
                         newStats.uniqueBossesDefeated = addUniqueToArray(

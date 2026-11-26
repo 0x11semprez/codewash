@@ -346,14 +346,14 @@ Each item links to its GitHub issue for full context and to the PR that addresse
 - **Fix:** Add basic error tracking (window.onerror / React ErrorBoundary reporting).
 - **Effort:** M
 
-### DEBT-014: `perfectMemoryGames` never incremented [P1] [Open]
+### DEBT-014: `perfectMemoryGames` never incremented [P1] [Done ✓]
 
-- **Issue:** [#37](https://github.com/0x11semprez/codewash/issues/37) — **PR:** none yet
-- **Location:** `achievements.js:243` / `App.jsx` (handleCardClick chain)
+- **Issue:** [#37](https://github.com/0x11semprez/codewash/issues/37) — **PR:** pending
+- **Location (before):** `achievements.js` read the counter, but no code raised it
 - **Smell:** Dead achievement. `stats.perfectMemoryGames >= 1` checked for "Perfectionist" unlock, but no code path increments this counter.
-- **Impact:** Achievement is permanently unreachable for all players.
-- **Risk:** Medium impact, high likelihood.
-- **Fix:** Track zero-mismatch memory game completions in the battle success handler.
+- **Impact:** Achievement was unreachable for all players.
+- **Fix:** `MemoryGame` counts its mismatches and reports `{ perfect }` with the win. `handleSuccessHit` adds one to `perfectMemoryGames` for a perfect memory win. Tests cover both.
+- **Evidence:** [bug report](bugs/Bugs.md#debt-014-perfectmemorygames-never-incremented), with screenshots before and after.
 - **Effort:** XS
 
 ### DEBT-015: `battlesThisSession` never resets [P2] [Done ✓]
@@ -515,14 +515,14 @@ Low Impact    │ DEBT-018 ✓, 019│                 │ DEBT-004 ✓      │
 | 8 | DEBT-018 | Add try-catch to handleReset parse | Done ✓ — [#58](https://github.com/0x11semprez/codewash/pull/58), [#66](https://github.com/0x11semprez/codewash/pull/66) |
 | 9 | DEBT-019 | Move font import to `<head>` | Open |
 
-### Phase 1: safety net + structure (week 2) — done except DEBT-014, DEBT-020
+### Phase 1: safety net + structure (week 2) — done except DEBT-020
 
 | # | Debt | Task | Status |
 |---|------|------|--------|
 | 10 | DEBT-005 | Vitest + test game logic utils | Done ✓ — [#3](https://github.com/0x11semprez/codewash/pull/3), [#4](https://github.com/0x11semprez/codewash/pull/4), [#6](https://github.com/0x11semprez/codewash/pull/6), [#46](https://github.com/0x11semprez/codewash/pull/46) (merged) |
 | 11 | DEBT-010 | Error boundaries | Done ✓ — [#49](https://github.com/0x11semprez/codewash/pull/49) (merged) |
 | 12 | DEBT-020 | Reorganize into feature-based structure | In Progress — Epitech PR #48 (merge `f69df57`) |
-| 13 | DEBT-014 | Fix `perfectMemoryGames` counter | Open |
+| 13 | DEBT-014 | Fix `perfectMemoryGames` counter | Done ✓ |
 
 ### Phase 2: break god components (weeks 3-4) — done
 
@@ -562,7 +562,7 @@ Low Impact    │ DEBT-018 ✓, 019│                 │ DEBT-004 ✓      │
 | DEBT-011 | [#34](https://github.com/0x11semprez/codewash/issues/34) | — | Open |
 | DEBT-012 | [#35](https://github.com/0x11semprez/codewash/issues/35) | Epitech PR #37 (merged) | Done ✓ |
 | DEBT-013 | [#36](https://github.com/0x11semprez/codewash/issues/36) | — | Open |
-| DEBT-014 | [#37](https://github.com/0x11semprez/codewash/issues/37) | — | Open |
+| DEBT-014 | [#37](https://github.com/0x11semprez/codewash/issues/37) | pending | Done ✓ |
 | DEBT-015 | [#38](https://github.com/0x11semprez/codewash/issues/38) | Epitech PR #46 (merge `a9e408a`) | Done ✓ |
 | DEBT-016 | [#39](https://github.com/0x11semprez/codewash/issues/39) | Epitech PR #45 (merge `7b82098`) | Done ✓ |
 | DEBT-017 | [#40](https://github.com/0x11semprez/codewash/issues/40) | Epitech PR #44 (merge `7fa5858`) | Done ✓ |
