@@ -36,6 +36,7 @@ We wrote our own module in `src/i18n/`, with no new dependency.
 - A key with `_one` and `_other` forms is a plural. `t` picks the form with `Intl.PluralRules`.
 - The context has an English default value. A component rendered without the provider still shows English, so the existing tests did not need a wrapper.
 - `LanguageSelector` sits at the top of the settings drawer. It is a button that opens a list of languages. The button has `aria-expanded`, each language has `aria-pressed`, and each language name has its own `lang` attribute.
+- The subject asks for a new input in the main menu. `LanguageMenuButton` is an icon button in the bottom left corner of the main screen, styled like the other corner buttons. It opens the same list of languages above it. Escape and a click outside close the list, and focus goes back to the button. The settings drawer keeps its `LanguageSelector`.
 
 ### What we translate
 

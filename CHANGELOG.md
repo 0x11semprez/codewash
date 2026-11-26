@@ -10,6 +10,7 @@ Links to pull requests point to this repository. Work done before the move from 
 
 ### Added
 
+- Language button on the main screen, in the bottom left corner. It opens the list of languages, and picking one changes the language and closes the list. It works with the keyboard (Escape closes it). The selector in the settings drawer stays.
 - Characterization tests that freeze the current behavior of the utilities and constants, before any refactoring (114 tests). [#3](https://github.com/0x11semprez/codewash/pull/3)
 - Component smoke tests with Testing Library for `SafeImage`, `PixelHeart`, `BugReportModal`, `ResetModal` and `MobWithAura`. [#4](https://github.com/0x11semprez/codewash/pull/4)
 - Vitest, jsdom and coverage packages, with a first `vitest.config.js`. Commit `881859e` (no pull request).

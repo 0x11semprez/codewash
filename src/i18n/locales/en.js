@@ -12,6 +12,7 @@ export default {
             openCosmetics: 'Open themes and cosmetics',
             openAchievements: 'Open achievements',
             reportBug: 'Report a bug',
+            changeLanguage: 'Change language (current: {{language}})',
             enterFullscreen: 'Enter fullscreen',
             exitFullscreen: 'Exit fullscreen',
             previousSkill: 'Previous skill',
