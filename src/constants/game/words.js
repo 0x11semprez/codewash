@@ -235,15 +235,27 @@ export const WRITING_WORD_INDEX = [
     { word: 'wool', displayName: 'Wool', length: 4, imagePath: 'assets/items/wool.png' },
 ];
 
-// Difficulty pools with overlapping character ranges
-
-export const WRITING_DIFFICULTY_POOLS = {
-    1: WRITING_WORD_INDEX.filter((w) => w.length >= 3 && w.length <= 5), // Easy: 3-5 chars
-    2: WRITING_WORD_INDEX.filter((w) => w.length >= 5 && w.length <= 7), // Normal: 5-7 chars
-    3: WRITING_WORD_INDEX.filter((w) => w.length >= 6 && w.length <= 8), // Medium: 6-8 chars
-    4: WRITING_WORD_INDEX.filter((w) => w.length >= 7 && w.length <= 10), // Hard: 7-10 chars
-    5: WRITING_WORD_INDEX.filter((w) => w.length >= 9 && w.length <= 15), // Expert: 9-15 chars
+// Difficulty pools with overlapping character ranges.
+// Pools 6 and 7 do not exist: getWordForDifficulty uses pool 5 for them.
+export const WRITING_POOL_RANGES = {
+    1: [3, 5], // Easy
+    2: [5, 7], // Normal
+    3: [6, 8], // Medium
+    4: [7, 10], // Hard
+    5: [9, 15], // Expert
 };
+
+// Splits a word index into the five difficulty pools. An empty pool gets the whole index,
+// so a small theme still has a word for every difficulty.
+export const buildWritingPools = (wordIndex) =>
+    Object.fromEntries(
+        Object.entries(WRITING_POOL_RANGES).map(([pool, [min, max]]) => {
+            const words = wordIndex.filter((w) => w.length >= min && w.length <= max);
+            return [pool, words.length > 0 ? words : [...wordIndex]];
+        }),
+    );
+
+export const WRITING_DIFFICULTY_POOLS = buildWritingPools(WRITING_WORD_INDEX);
 
 // Writing items organized by length for quick lookup
 

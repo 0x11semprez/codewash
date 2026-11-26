@@ -6,8 +6,9 @@ import * as difficulty from '../constants/game/difficulty';
 import * as themes from '../constants/game/themes';
 import * as words from '../constants/game/words';
 import * as skills from '../constants/game/skills';
+import * as audio from '../constants/game/audio';
 
-const modules = { items, mobs, difficulty, themes, words, skills };
+const modules = { items, mobs, difficulty, themes, words, skills, audio };
 
 describe('game data modules', () => {
     it('re-exports every topic module from gameData', () => {

@@ -19,6 +19,12 @@ import {
     Users,
     Gem,
 } from 'lucide-react';
+import { THEME_CONFIG } from './gameData';
+
+// True when the player defeated every creature of one group (bosses, minibosses or enemies)
+// in at least one theme. Each theme has its own creatures, so any complete theme counts.
+export const hasDefeatedWholeGroup = (defeated, group) =>
+    Object.values(THEME_CONFIG).some((theme) => Object.keys(theme[group]).every((name) => defeated.includes(name)));
 
 /**
  * Achievement Definitions
@@ -86,7 +92,7 @@ export const ACHIEVEMENTS = {
     phantom_hunter: {
         id: 'phantom_hunter',
         name: 'Ghost Buster',
-        description: 'Catch Phantoms',
+        description: 'Catch the flying bonus creature',
         icon: Ghost,
         category: 'combat',
         isTiered: true,
@@ -203,67 +209,31 @@ export const ACHIEVEMENTS = {
     mini_master: {
         id: 'mini_master',
         name: 'Mini Master',
-        description: 'Defeat all mini-bosses at least once',
+        description: 'Defeat all mini-bosses of one theme at least once',
         icon: Swords,
         category: 'completion',
         isTiered: false,
-        checkUnlock: (stats) => {
-            // 4 minibosses: Creaking, Elder Guardian, Ravager, Wither Skeleton
-            const requiredMinibosses = ['Creaking', 'Elder Guardian', 'Ravager', 'Wither Skeleton'];
-            const defeated = stats.uniqueMinibossesDefeated || [];
-            return requiredMinibosses.every((mb) => defeated.includes(mb));
-        },
+        checkUnlock: (stats) => hasDefeatedWholeGroup(stats.uniqueMinibossesDefeated || [], 'minibosses'),
     },
 
     world_ender: {
         id: 'world_ender',
         name: 'World Ender',
-        description: 'Defeat all bosses at least once',
+        description: 'Defeat all bosses of one theme at least once',
         icon: Trophy,
         category: 'completion',
         isTiered: false,
-        checkUnlock: (stats) => {
-            // 4 bosses: Ender Dragon, Herobrine, Warden, Wither
-            const requiredBosses = ['Ender Dragon', 'Herobrine', 'Warden', 'Wither'];
-            const defeated = stats.uniqueBossesDefeated || [];
-            return requiredBosses.every((b) => defeated.includes(b));
-        },
+        checkUnlock: (stats) => hasDefeatedWholeGroup(stats.uniqueBossesDefeated || [], 'bosses'),
     },
 
     monster_manual: {
         id: 'monster_manual',
         name: 'Monster Manual',
-        description: 'Defeat all regular mobs at least once',
+        description: 'Defeat all regular enemies of one theme at least once',
         icon: Users,
         category: 'completion',
         isTiered: false,
-        checkUnlock: (stats) => {
-            // 20 hostile mobs from HOSTILE_MOBS
-            const requiredMobs = [
-                'Blaze',
-                'Bogged',
-                'Breeze',
-                'Creeper',
-                'Drowned',
-                'Enderman',
-                'Evoker',
-                'Ghast',
-                'Guardian',
-                'Hoglin',
-                'Magma Cube',
-                'Parched',
-                'Phantom',
-                'Piglin',
-                'Pillager',
-                'Skeleton',
-                'Slime',
-                'Spider',
-                'Witch',
-                'Zombie',
-            ];
-            const defeated = stats.uniqueMobsDefeated || [];
-            return requiredMobs.every((m) => defeated.includes(m));
-        },
+        checkUnlock: (stats) => hasDefeatedWholeGroup(stats.uniqueMobsDefeated || [], 'enemies'),
     },
 
     perfectionist: {

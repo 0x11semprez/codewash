@@ -26,8 +26,8 @@ const BORDER_EFFECTS = [
     { id: 'electric', name: 'Lightning Rod', badge: 'Iron', description: 'Thunderous plasma surge', icon: Zap },
     { id: 'lifestream', name: 'Lifestream', badge: 'Emerald', description: 'Flowing ethereal energy', icon: Activity },
     { id: 'frost', name: 'Frost', badge: 'Diamond', description: 'Glacial crystal majesty', icon: Snowflake },
-    { id: 'fire', name: 'Lava', badge: 'Netherite', description: 'Infernal blazing fury', icon: Flame },
-    { id: 'shadow', name: 'Nether Portal', badge: 'Obsidian', description: 'Abyssal void whispers', icon: Skull },
+    { id: 'fire', name: 'Lava', badge: 'Titanium', description: 'Infernal blazing fury', icon: Flame },
+    { id: 'shadow', name: 'Shadow Portal', badge: 'Obsidian', description: 'Abyssal void whispers', icon: Skull },
     { id: 'rainbow', name: 'Legendary!', badge: 'Star', description: 'Prismatic legendary aura', icon: Gem },
 ];
 
@@ -97,13 +97,20 @@ const CosmeticsDrawer = ({
                     <h3 className="text-xl text-blue-300 mb-5 font-bold flex items-center gap-3 uppercase tracking-wider">
                         <Sparkles size={20} /> Theme Select
                     </h3>
-                    <div className="grid grid-cols-2 gap-4">
+                    {/* Two rows are visible. The bar on the right scrolls to the other themes. */}
+                    <div
+                        data-testid="theme-list"
+                        role="group"
+                        aria-label="Themes"
+                        className="theme-scroll grid grid-cols-2 gap-4 max-h-[14.5rem] overflow-y-auto p-2 pr-3"
+                    >
                         {THEMES_LIST.map((theme) => (
                             <button
                                 key={theme.id}
                                 onClick={() => setActiveTheme(theme.id)}
                                 disabled={activeTheme === theme.id}
-                                className={`h-24 rounded-lg border-2 overflow-hidden relative transition-all duration-300 shadow-lg group ${
+                                aria-pressed={activeTheme === theme.id}
+                                className={`h-24 shrink-0 rounded-lg border-2 overflow-hidden relative transition-all duration-300 shadow-lg group ${
                                     activeTheme === theme.id
                                         ? 'border-yellow-400 ring-2 ring-yellow-400/20 opacity-100 cursor-default'
                                         : 'border-slate-600 hover:scale-105 hover:border-white opacity-60 hover:opacity-100'

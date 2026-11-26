@@ -36,9 +36,11 @@ describe('UI_SOUND_NAMES', () => {
         expect(UI_SOUND_NAMES).toContain('click');
         expect(UI_SOUND_NAMES).toContain('death');
         expect(UI_SOUND_NAMES).toContain('fail');
-        expect(UI_SOUND_NAMES).toContain('levelup');
+        expect(UI_SOUND_NAMES).toContain('levelUp');
         expect(UI_SOUND_NAMES).toContain('notification');
-        expect(UI_SOUND_NAMES).toContain('successful_hit');
+        expect(UI_SOUND_NAMES).toContain('hit');
+        expect(UI_SOUND_NAMES).toContain('match');
+        expect(UI_SOUND_NAMES).toContain('mismatch');
     });
 });
 

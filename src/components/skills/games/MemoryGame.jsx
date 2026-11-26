@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import SafeImage from '../../ui/SafeImage';
-import { BASE_ASSETS, FRIENDLY_MOBS, DIFFICULTY_CONTENT } from '../../../constants/gameData';
-import { playClick, getSfxVolume } from '../../../services/soundManager';
+import { DIFFICULTY_CONTENT } from '../../../constants/gameData';
+import { playClick, playMatch, playMismatch } from '../../../services/soundManager';
 
 const MemoryGame = ({ isBattling, difficulty, onMathSubmit, themeData }) => {
     const [memoryCards, setMemoryCards] = useState([]);
@@ -18,12 +18,14 @@ const MemoryGame = ({ isBattling, difficulty, onMathSubmit, themeData }) => {
     useEffect(() => {
         if (isBattling && !memorySessionStartedRef.current) {
             memorySessionStartedRef.current = true;
-            const allMobKeys = Object.keys(FRIENDLY_MOBS);
+            // The cards show the friendly creatures of the active theme.
+            const friends = themeData.friends;
+            const allMobKeys = Object.keys(friends);
             const shuffledMobs = [...allMobKeys].sort(() => Math.random() - 0.5);
             const selectedMobs = shuffledMobs.slice(0, memoryPairs);
             let deck = [...selectedMobs, ...selectedMobs].sort(() => Math.random() - 0.5);
             // eslint-disable-next-line react-hooks/set-state-in-effect -- initialize game deck on battle start (pre-existing pattern)
-            setMemoryCards(deck.map((mobKey, i) => ({ id: i, color: mobKey, img: FRIENDLY_MOBS[mobKey] })));
+            setMemoryCards(deck.map((mobKey, i) => ({ id: i, color: mobKey, img: friends[mobKey] })));
             setFlippedIndices([]);
             setMatchedPairs([]);
             setIsProcessingMatch(false);
@@ -36,7 +38,7 @@ const MemoryGame = ({ isBattling, difficulty, onMathSubmit, themeData }) => {
             setIsProcessingMatch(false);
             setMismatchShake(false);
         }
-    }, [isBattling, memoryPairs]);
+    }, [isBattling, memoryPairs, themeData]);
 
     const handleCardClick = (index) => {
         if (isProcessingMatch || flippedIndices.includes(index) || matchedPairs.includes(memoryCards[index].color))
@@ -49,18 +51,14 @@ const MemoryGame = ({ isBattling, difficulty, onMathSubmit, themeData }) => {
             setIsProcessingMatch(true);
             setTimeout(() => {
                 if (memoryCards[newFlipped[0]].color === memoryCards[newFlipped[1]].color) {
-                    const matchAudio = new Audio(BASE_ASSETS.audio.match);
-                    matchAudio.volume = getSfxVolume();
-                    matchAudio.play().catch(() => {});
+                    playMatch();
                     const newMatched = [...matchedPairs, memoryCards[newFlipped[0]].color];
                     setMatchedPairs(newMatched);
                     setFlippedIndices([]);
                     setIsProcessingMatch(false);
                     if (newMatched.length === memoryPairs) setTimeout(() => onMathSubmit('WIN'), 500);
                 } else {
-                    const mismatchAudio = new Audio(BASE_ASSETS.audio.mismatch);
-                    mismatchAudio.volume = getSfxVolume();
-                    mismatchAudio.play().catch(() => {});
+                    playMismatch();
                     setMismatchShake(true);
                     setTimeout(() => {
                         setMismatchShake(false);

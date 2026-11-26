@@ -1,7 +1,7 @@
 import React from 'react';
 import { Lock } from 'lucide-react';
 import SafeImage from '../ui/SafeImage';
-import { BADGE_TIERS, BASE_ASSETS, SKILL_DATA } from '../../constants/gameData';
+import { BADGE_TIERS, BASE_ASSETS, SKILL_DATA, getTheme } from '../../constants/gameData';
 import { ACHIEVEMENTS, TIER_COLORS, TIER_NAMES } from '../../constants/achievements';
 import {
     isAchievementUnlocked,
@@ -16,7 +16,7 @@ import { calculateXPToLevel } from '../../utils/gameUtils';
 const ACHIEVEMENT_GRID_COLUMNS = 6;
 const TOOLTIP_POSITION_THRESHOLD = 4; // Columns >= this show tooltip on left
 
-const MenuDrawer = ({ isOpen, skills, stats }) => {
+const MenuDrawer = ({ isOpen, skills, stats, themeData = getTheme() }) => {
     const totalLevels = Object.values(skills).reduce((acc, s) => acc + s.level, 0);
 
     // Calculate total badges earned
@@ -81,7 +81,7 @@ const MenuDrawer = ({ isOpen, skills, stats }) => {
                                     <div className="flex items-center gap-3 mb-3">
                                         {skillConfig && (
                                             <SafeImage
-                                                src={skillConfig.img}
+                                                src={themeData.skillIcons[key] || skillConfig.img}
                                                 alt={key}
                                                 className="w-12 h-12 object-contain shrink-0"
                                             />

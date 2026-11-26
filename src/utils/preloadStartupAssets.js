@@ -1,25 +1,14 @@
-import { SKILL_DATA, THEME_CONFIG, THEMES_LIST } from '../constants/gameData';
+import { getTheme, DEFAULT_THEME_ID } from '../constants/gameData';
 import { parseJSON } from '../services/storage';
 import { STORAGE_KEYS, skillsKey } from '../services/storageKeys';
-
-const UI_SOUND_ASSETS = [
-    'assets/sounds/ui/ui/actioncard_left.wav',
-    'assets/sounds/ui/ui/actioncard_right.wav',
-    'assets/sounds/ui/ui/click.wav',
-    'assets/sounds/ui/ui/death.wav',
-    'assets/sounds/ui/ui/fail.wav',
-    'assets/sounds/ui/ui/levelup.wav',
-    'assets/sounds/ui/ui/notification.wav',
-    'assets/sounds/ui/ui/successful_hit.wav',
-];
 
 const getSavedTheme = () => {
     try {
         const profile = Number.parseInt(localStorage.getItem(STORAGE_KEYS.currentProfile) || '1', 10) || 1;
         const saved = localStorage.getItem(skillsKey(profile));
-        return parseJSON(saved, {}, 'saved theme').theme || 'minecraft';
+        return parseJSON(saved, {}, 'saved theme').theme || DEFAULT_THEME_ID;
     } catch {
-        return 'minecraft';
+        return DEFAULT_THEME_ID;
     }
 };
 
@@ -54,13 +43,9 @@ const preloadAudio = (src) =>
     });
 
 export const preloadStartupAssets = async (onProgress = () => {}) => {
-    const themeId = getSavedTheme();
-    const theme = THEME_CONFIG[themeId] || THEME_CONFIG.minecraft;
-    const themeListEntry = THEMES_LIST.find((item) => item.id === themeId) || THEMES_LIST[0];
-    const background = theme.style?.backgroundImage?.match(/url\(['"]?(.*?)['"]?\)/)?.[1] || themeListEntry?.img;
-    const logo = theme.assets?.logo;
-    const cardBack = theme.assets?.cardBack;
-    const skillIcons = SKILL_DATA.map((skill) => skill.img);
+    const theme = getTheme(getSavedTheme());
+    const { background, logo, cardBack } = theme.assets;
+    const skillIcons = Object.values(theme.skillIcons);
     const renderedSprites = [...document.querySelectorAll('#root main img')]
         .filter((image) => {
             const bounds = image.getBoundingClientRect();
@@ -88,7 +73,7 @@ export const preloadStartupAssets = async (onProgress = () => {}) => {
 
     // Sound effects are useful, but are not required to show or operate the menu.
     // Warm them in the background so a slow audio decoder cannot hold startup open.
-    Promise.all(UI_SOUND_ASSETS.map(preloadAudio)).then((audioResults) => {
+    Promise.all([...new Set(Object.values(theme.sounds))].map(preloadAudio)).then((audioResults) => {
         const failedOptional = audioResults.filter((result) => !result.ok).map((result) => result.src);
         if (failedOptional.length > 0) {
             console.warn('Optional startup sounds failed to preload:', failedOptional);

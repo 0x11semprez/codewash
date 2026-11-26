@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { BASE_ASSETS } from '../../../constants/gameData';
-import { getSfxVolume } from '../../../services/soundManager';
+import { playMismatch } from '../../../services/soundManager';
 
 const MathGame = ({ challenge, onMathSubmit }) => {
     const [mathInput, setMathInput] = useState('');
@@ -11,12 +10,6 @@ const MathGame = ({ challenge, onMathSubmit }) => {
         // eslint-disable-next-line react-hooks/set-state-in-effect -- reset input on new challenge (pre-existing pattern)
         setMathInput('');
     }, [challenge]);
-
-    const playMismatch = () => {
-        const audio = new Audio(BASE_ASSETS.audio.mismatch);
-        audio.volume = getSfxVolume();
-        audio.play().catch(() => {});
-    };
 
     const handleChange = (e) => {
         const val = e.target.value.replace(/[^0-9-]/g, '');

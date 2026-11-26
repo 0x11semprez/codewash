@@ -54,7 +54,7 @@ const MobWithAura = ({
                 className={`
                     mob-image
                     relative z-10
-                    max-w-full max-h-full
+                    w-full h-full
                     object-contain drop-shadow-[4px_4px_0_rgba(0,0,0,0.5)] transition-transform duration-100 
                     ${isHit ? 'animate-knockback' : bossHealing ? 'animate-shake' : 'animate-bob'} 
                     ${bossHealing ? 'brightness-150 hue-rotate-90' : ''}

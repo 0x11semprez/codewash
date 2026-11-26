@@ -1,0 +1,15 @@
+{
+    "name": "Spy",
+    "order": 4,
+    "background": "background.webp",
+    "logo": "logo.webp",
+    "cardBack": "card-back.webp",
+    "skills": {
+        "reading": { "name": "Intel Analysis" },
+        "math": { "name": "Gadgetry" },
+        "writing": { "name": "Forgery" },
+        "cleaning": { "name": "Evidence" },
+        "memory": { "name": "Identities" },
+        "patterns": { "name": "Code Breaking" }
+    }
+}

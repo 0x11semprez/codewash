@@ -14,6 +14,23 @@ body {
     scrollbar-width: none;
 }
 
+/* Visible scroll bar for the theme menu */
+.theme-scroll {
+    scrollbar-width: thin;
+    scrollbar-color: #facc15 #1e293b;
+}
+.theme-scroll::-webkit-scrollbar {
+    width: 10px;
+}
+.theme-scroll::-webkit-scrollbar-track {
+    background: #1e293b;
+    border-radius: 9999px;
+}
+.theme-scroll::-webkit-scrollbar-thumb {
+    background: #facc15;
+    border-radius: 9999px;
+}
+
 /* Animations */
 @keyframes toast-slide {
     0% {

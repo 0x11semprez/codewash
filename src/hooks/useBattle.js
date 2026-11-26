@@ -1,11 +1,12 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
-import { SKILL_DATA, BASE_ASSETS, HOSTILE_MOBS } from '../constants/gameData';
+import { SKILL_DATA, BASE_ASSETS, getTheme } from '../constants/gameData';
 import {
     getRandomMob,
     getRandomFriendlyMob,
     getRandomMiniboss,
     getRandomBoss,
     getEncounterType,
+    getMobForSkill,
     generateMathProblem,
     getReadingWord,
     getWordForDifficulty,
@@ -30,7 +31,8 @@ import { getNewlyUnlockedAchievements, getNewTierAchievements, addUniqueToArray 
 
 const BOSS_HEALING_ANIMATION_DURATION = 600;
 
-const generateChallenge = (type, diff) => {
+// The writing game shows pictures from the active theme (theme.writingPools).
+const generateChallenge = (type, diff, theme) => {
     if (type === 'math') return generateMathProblem(diff);
     if (type === 'patterns') return { type: 'patterns', question: 'Simon Says!', answer: 'WIN' };
     if (type === 'reading') {
@@ -38,7 +40,7 @@ const generateChallenge = (type, diff) => {
         return { type, question: word, answer: word };
     }
     if (type === 'writing') {
-        const wordData = getWordForDifficulty(diff);
+        const wordData = getWordForDifficulty(diff, Math.random, theme.writingPools);
         const answer = wordData.displayName.toUpperCase();
         return { type, question: 'Spell it!', answer, images: [wordData.image], displayName: wordData.displayName };
     }
@@ -46,7 +48,7 @@ const generateChallenge = (type, diff) => {
     return { type: 'manual', question: 'Task Complete?', answer: 'yes' };
 };
 
-export const useBattle = (skills, setSkills, stats, setStats) => {
+export const useBattle = (skills, setSkills, stats, setStats, theme = getTheme()) => {
     const [battlingSkillId, setBattlingSkillId] = useState(null);
     const [battleDifficulty, setBattleDifficulty] = useState(null);
     const [challengeData, setChallengeData] = useState(null);
@@ -155,7 +157,8 @@ export const useBattle = (skills, setSkills, stats, setStats) => {
             const current = prev[skillId];
             skillDifficulty = current.difficulty || 1;
             const playerLevel = current.level;
-            const currentMobName = current.currentMob;
+            // The creature on screen, as the theme shows it. Sounds and stats use this name.
+            const currentMobName = getMobForSkill(skillConfig, current, Math.random, theme);
             const damage = calculateDamage(playerLevel, skillDifficulty);
             const encounterType = getEncounterType(playerLevel);
             const isMiniboss = encounterType === 'miniboss' && skillConfig.id !== 'cleaning';
@@ -221,19 +224,19 @@ export const useBattle = (skills, setSkills, stats, setStats) => {
                         newStats.totalBossesDefeated = (newStats.totalBossesDefeated || 0) + 1;
                         newStats.uniqueBossesDefeated = addUniqueToArray(
                             newStats.uniqueBossesDefeated || [],
-                            current.currentBoss,
+                            currentMobName,
                         );
                     } else if (encounterType === 'miniboss') {
                         newStats.totalMinibossesDefeated = (newStats.totalMinibossesDefeated || 0) + 1;
                         newStats.uniqueMinibossesDefeated = addUniqueToArray(
                             newStats.uniqueMinibossesDefeated || [],
-                            current.currentMiniboss,
+                            currentMobName,
                         );
                     } else {
                         newStats.totalMobsDefeated = (newStats.totalMobsDefeated || 0) + 1;
                         newStats.uniqueMobsDefeated = addUniqueToArray(
                             newStats.uniqueMobsDefeated || [],
-                            current.currentMob,
+                            currentMobName,
                         );
                     }
                     pendingAchievementChecksRef.current.push({
@@ -245,32 +248,32 @@ export const useBattle = (skills, setSkills, stats, setStats) => {
                     return newStats;
                 });
 
-                if (skillConfig.id === 'memory') newMemoryMob = getRandomFriendlyMob();
+                if (skillConfig.id === 'memory') newMemoryMob = getRandomFriendlyMob(Math.random, theme);
                 if (skillConfig.id === 'patterns') {
-                    newPatternMob = getRandomMob(current.currentMob);
+                    newPatternMob = getRandomMob(current.currentMob, Math.random, theme);
                     newPatternMobAura = getRandomAura();
                 }
                 const combatUpdates = {
                     reading: () => {
-                        newReadingMob = getRandomMob(current.readingMob);
+                        newReadingMob = getRandomMob(current.readingMob, Math.random, theme);
                         newReadingMobAura = getRandomAura();
                     },
                     math: () => {
-                        newMathMob = getRandomMob(current.mathMob);
+                        newMathMob = getRandomMob(current.mathMob, Math.random, theme);
                         newMathMobAura = getRandomAura();
                     },
                     writing: () => {
-                        newWritingMob = getRandomMob(current.writingMob);
+                        newWritingMob = getRandomMob(current.writingMob, Math.random, theme);
                         newWritingMobAura = getRandomAura();
                     },
                 };
                 if (combatUpdates[skillConfig.id]) combatUpdates[skillConfig.id]();
                 if (getEncounterType(current.level) === 'miniboss') {
-                    newMiniboss = getRandomMiniboss();
+                    newMiniboss = getRandomMiniboss(Math.random, theme);
                     newMinibossAura = getRandomAura();
                 }
                 if (getEncounterType(current.level) === 'boss') {
-                    newBoss = getRandomBoss();
+                    newBoss = getRandomBoss(Math.random, theme);
                     newBossAura = getRandomAura();
                 }
 
@@ -299,7 +302,7 @@ export const useBattle = (skills, setSkills, stats, setStats) => {
                                     newBadges.push(newTier);
                                     setLootBox({
                                         level: lvl,
-                                        skillName: skillConfig.fantasyName,
+                                        skillName: theme.skills[skillId].fantasyName,
                                         item: 'New Rank!',
                                         img: BASE_ASSETS.badges.Wood,
                                     });
@@ -308,12 +311,14 @@ export const useBattle = (skills, setSkills, stats, setStats) => {
                             }
                         }
                     }
-                    if (newLevel % 20 !== 0 && (newLevel - 1) % 20 !== 0) newMob = getRandomMob(current.currentMob);
+                    if (newLevel % 20 !== 0 && (newLevel - 1) % 20 !== 0) {
+                        newMob = getRandomMob(current.currentMob, Math.random, theme);
+                    }
                     if (leveledUp) playLevelUp();
                 }
                 newMobMaxHealth = calculateMobHealth(newDifficulty);
                 newMobHealth = newMobMaxHealth;
-                if (newLevel % 20 !== 0) newMob = getRandomMob(current.currentMob);
+                if (newLevel % 20 !== 0) newMob = getRandomMob(current.currentMob, Math.random, theme);
             }
 
             return {
@@ -348,7 +353,7 @@ export const useBattle = (skills, setSkills, stats, setStats) => {
 
         if (skillConfig.hasChallenge && skillConfig.id !== 'memory') {
             const challengeDiff = battleDifficulty || skillDifficulty;
-            setChallengeData(generateChallenge(skillConfig.challengeType, challengeDiff));
+            setChallengeData(generateChallenge(skillConfig.challengeType, challengeDiff, theme));
             if (skillConfig.challengeType === 'reading' && spokenTextSetterRef.current) {
                 spokenTextSetterRef.current('');
             }
@@ -371,7 +376,7 @@ export const useBattle = (skills, setSkills, stats, setStats) => {
         const encounterType = getEncounterType(playerLevel);
         const challengeDiff = encounterType === 'miniboss' ? Math.min(7, currentDiff + 1) : currentDiff;
         setBattleDifficulty(challengeDiff);
-        setChallengeData(generateChallenge(skill.challengeType, challengeDiff));
+        setChallengeData(generateChallenge(skill.challengeType, challengeDiff, theme));
         playClick();
         if (startBGM) startBGM();
         if (skill.challengeType === 'reading' && window.webkitSpeechRecognition && startVoiceListener) {
@@ -398,9 +403,9 @@ export const useBattle = (skills, setSkills, stats, setStats) => {
         if (skillConfig) {
             setLootBox({
                 level: skills[skillId].level + 1,
-                skillName: skillConfig.fantasyName,
-                item: 'Phantom Bonus!',
-                img: HOSTILE_MOBS['Phantom'],
+                skillName: theme.skills[skillId].fantasyName,
+                item: 'Bonus Level!',
+                img: theme.bonusCreature,
             });
             playNotification();
         }

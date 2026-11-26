@@ -1,0 +1,15 @@
+{
+    "name": "K-Pop Demon Hunters",
+    "order": 2,
+    "background": "background.webp",
+    "logo": "logo.webp",
+    "cardBack": "card-back.webp",
+    "skills": {
+        "reading": { "name": "Decryption" },
+        "math": { "name": "Engineering" },
+        "writing": { "name": "Hacking" },
+        "cleaning": { "name": "Waste Mgmt" },
+        "memory": { "name": "Droid Repair" },
+        "patterns": { "name": "Navigation" }
+    }
+}

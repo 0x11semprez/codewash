@@ -1,0 +1,45 @@
+{
+    "name": "Minecraft",
+    "order": 1,
+    "background": "background.webp",
+    "logo": "logo.webp",
+    "cardBack": "card-back.webp",
+    "skills": {
+        "reading": {
+            "name": "Reading",
+            "title": "Enchanting Table",
+            "action": "Enchant!",
+            "description": "Speak the ancient words to channel enchantments and vanquish your foes!"
+        },
+        "math": {
+            "name": "Math",
+            "title": "Redstone",
+            "action": "Calculate!",
+            "description": "Power up your redstone circuits to activate traps and outsmart hostile mobs!"
+        },
+        "writing": {
+            "name": "Writing",
+            "title": "Crafting Table",
+            "action": "Craft!",
+            "description": "Spell out the recipe to forge legendary weapons and armor!"
+        },
+        "cleaning": {
+            "name": "Cleaning",
+            "title": "Chest Management",
+            "action": "Organize!",
+            "description": "Sort your loot and prepare your inventory for the adventures ahead!"
+        },
+        "memory": {
+            "name": "Memory",
+            "title": "Match n' Hatch",
+            "action": "Match!",
+            "description": "Find the matching pairs to hatch rare creatures for your farm!"
+        },
+        "patterns": {
+            "name": "Pattern Recognition",
+            "title": "Logic Building",
+            "action": "Solve!",
+            "description": "Decipher the sequence to unlock ancient mechanisms and hidden treasures!"
+        }
+    }
+}

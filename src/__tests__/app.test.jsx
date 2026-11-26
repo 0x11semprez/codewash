@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import App from '../App.jsx';
-import { SKILL_DATA } from '../constants/gameData';
+import { SKILL_DATA, getTheme } from '../constants/gameData';
 
 describe('App', () => {
     beforeEach(() => {
@@ -52,7 +52,8 @@ describe('App', () => {
         const consoleError = vi.spyOn(console, 'error');
         const centre = SKILL_DATA[0];
         render(<App />);
-        fireEvent.click(screen.getByRole('button', { name: centre.actionName }));
+        // The button text comes from the default theme.
+        fireEvent.click(screen.getByRole('button', { name: getTheme().skills[centre.id].actionName }));
         await waitFor(() => expect(document.querySelector('.animate-in')?.children.length).toBeGreaterThan(1), {
             timeout: 5000,
         });

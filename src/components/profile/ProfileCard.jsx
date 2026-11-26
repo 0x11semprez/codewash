@@ -3,7 +3,7 @@ import { Pencil, Check, Heart, Crown } from 'lucide-react';
 import SafeImage from '../ui/SafeImage';
 import ParentalVerificationModal from '../ui/ParentalVerificationModal';
 import diamondsTexture from '../../assets/textures/diagmonds-light.png';
-import { THEMES_LIST, SKILL_DATA } from '../../constants/gameData';
+import { SKILL_DATA, getTheme } from '../../constants/gameData';
 import { pauseWhenOffscreen } from '../../hooks/useAnimationPause';
 
 const ProfileCard = ({ id, name, stats, isCurrent, onSwitch, onRename, isParent, onParentVerified }) => {
@@ -16,12 +16,10 @@ const ProfileCard = ({ id, name, stats, isCurrent, onSwitch, onRename, isParent,
         if (!isCurrent) setIsEditing(false);
     }, [isCurrent]);
 
-    let themeBg = null;
-
-    if (stats && stats.theme) {
-        const themeObj = THEMES_LIST.find((t) => t.id === stats.theme);
-        if (themeObj) themeBg = themeObj.img;
-    }
+    // The card shows the background and skill icons of the theme this profile uses.
+    const profileTheme = stats?.theme ? getTheme(stats.theme) : null;
+    const themeBg = profileTheme?.assets.background || null;
+    const skillIcons = (profileTheme || getTheme()).skillIcons;
 
     const getLevelColors = (level) => {
         if (level >= 160) return 'text-rainbow border-purple-500';
@@ -187,7 +185,7 @@ const ProfileCard = ({ id, name, stats, isCurrent, onSwitch, onRename, isParent,
                                                 className={`relative z-10 w-full h-full p-2 transition-all duration-300 ${isUnlocked ? 'opacity-100' : 'opacity-20 grayscale'}`}
                                             >
                                                 <SafeImage
-                                                    src={skillConfig.img}
+                                                    src={skillIcons[skillConfig.id] || skillConfig.img}
                                                     className="w-full h-full object-contain drop-shadow-xl"
                                                 />
                                                 {isUnlocked && (

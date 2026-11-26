@@ -9,15 +9,6 @@ const PUBLIC_DIR = join(SRC_DIR, '..', 'public');
 // GIFs above this size must be converted to animated WebP (see docs/adr/011).
 const GIF_SIZE_LIMIT = 200 * 1024;
 
-// Theme images that are referenced but were never added to the repository.
-// Tracked in https://github.com/0x11semprez/codewash/issues/53 (DEBT-021).
-const KNOWN_MISSING = new Set([
-    'assets/themes/spy_logo.png',
-    'assets/themes/spy_memorycard.jpg',
-    'assets/themes/kpop_memorycard.jpg',
-    'assets/themes/pokemon_memorycard.jpg',
-]);
-
 const IMAGE_PATH = /assets\/[\w./-]+?\.(?:png|jpe?g|gif|webp|svg)/g;
 
 const collectStrings = (value, out = []) => {
@@ -50,12 +41,13 @@ const sourcePaths = [
 
 // Files under public/ are served as is. Files under src/assets/ are imported and bundled by Vite.
 const exists = (path) => existsSync(join(PUBLIC_DIR, path)) || existsSync(join(SRC_DIR, path));
-const missing = (paths) => paths.filter((path) => !KNOWN_MISSING.has(path) && !exists(path));
+const missing = (paths) => paths.filter((path) => !exists(path));
 
 describe('referenced image assets', () => {
     it('finds image paths to check', () => {
+        // Theme pictures are listed in src/themes/*.json and only appear in gameData.
         expect(gameDataPaths.length).toBeGreaterThan(50);
-        expect(sourcePaths.length).toBeGreaterThanOrEqual(gameDataPaths.length);
+        expect(sourcePaths.length).toBeGreaterThan(50);
     });
 
     it('every image path in gameData exists under public/', () => {
@@ -64,13 +56,6 @@ describe('referenced image assets', () => {
 
     it('every image path written in src/ exists under public/', () => {
         expect(missing(sourcePaths)).toEqual([]);
-    });
-
-    it('the known missing allowlist is still accurate', () => {
-        KNOWN_MISSING.forEach((path) => {
-            expect(sourcePaths).toContain(path);
-            expect(existsSync(join(PUBLIC_DIR, path))).toBe(false);
-        });
     });
 
     it(`no referenced image is a GIF above ${GIF_SIZE_LIMIT / 1024} KB`, () => {

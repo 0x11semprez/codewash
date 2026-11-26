@@ -1,40 +1,39 @@
 import {
-    HOSTILE_MOBS,
-    FRIENDLY_MOBS,
-    CHEST_BLOCKS,
-    SPECIAL_CHESTS,
-    MINIBOSS_MOBS,
-    BOSS_MOBS,
     READING_WORDS,
     FUNNY_LONG_WORDS,
-    SPELLING_ITEMS,
     DIFFICULTY_CONTENT,
-    BASE_ASSETS,
-    WRITING_WORD_INDEX,
     WRITING_DIFFICULTY_POOLS,
+    getTheme,
 } from '../constants/gameData';
 import { pickRandom, randomInt, randomIntBetween } from './random';
 
-export const getRandomMob = (exclude, random = Math.random) => {
-    const pool = Object.keys(HOSTILE_MOBS).filter((m) => m !== exclude);
-    return pool.length > 0 ? pickRandom(pool, random) : 'Zombie';
+// Most helpers take an optional theme. Without one they use the default theme.
+const themeOrDefault = (theme) => theme || getTheme();
+
+// Always gives the same answer for the same name, so a saved enemy from another theme
+// maps to one fixed enemy of the current theme instead of changing on every render.
+export const pickStable = (name, names) => {
+    if (names.length === 0) return name;
+    if (names.includes(name)) return name;
+    const hash = [...String(name)].reduce((sum, char) => (sum * 31 + char.charCodeAt(0)) >>> 0, 7);
+    return names[hash % names.length];
 };
 
-// Get a random friendly mob key for the Memory skill
-export const getRandomFriendlyMob = (random = Math.random) => {
-    const friendlyMobKeys = Object.keys(FRIENDLY_MOBS);
-    return friendlyMobKeys.length > 0 ? pickRandom(friendlyMobKeys, random) : 'Allay';
+export const getRandomMob = (exclude, random = Math.random, theme) => {
+    const names = Object.keys(themeOrDefault(theme).enemies);
+    const pool = names.filter((m) => m !== exclude);
+    return pool.length > 0 ? pickRandom(pool, random) : names[0];
 };
 
-export const getRandomMiniboss = (random = Math.random) => {
-    const minibossKeys = Object.keys(MINIBOSS_MOBS);
-    return minibossKeys.length > 0 ? pickRandom(minibossKeys, random) : 'Wither Skeleton';
-};
+// Get a random friendly creature for the Memory skill
+export const getRandomFriendlyMob = (random = Math.random, theme) =>
+    pickRandom(Object.keys(themeOrDefault(theme).friends), random);
 
-export const getRandomBoss = (random = Math.random) => {
-    const bossKeys = Object.keys(BOSS_MOBS);
-    return bossKeys.length > 0 ? pickRandom(bossKeys, random) : 'Wither';
-};
+export const getRandomMiniboss = (random = Math.random, theme) =>
+    pickRandom(Object.keys(themeOrDefault(theme).minibosses), random);
+
+export const getRandomBoss = (random = Math.random, theme) =>
+    pickRandom(Object.keys(themeOrDefault(theme).bosses), random);
 
 // Determines encounter type based on level cycle pattern
 // Level cycle: 1-9 = hostile, 10 = miniboss, 11-19 = hostile, 20 = boss (repeats)
@@ -45,54 +44,49 @@ export const getEncounterType = (level) => {
     return 'hostile';
 };
 
-export const getMobForSkill = (skillConfig, userSkill, random = Math.random) => {
-    // Cleaning skill is exempt from miniboss cycles - uses original logic
-    if (skillConfig.id === 'cleaning') {
-        if (userSkill.level % 20 === 0) return 'Ender Chest';
-        if (userSkill.level % 5 === 0) return 'Shulker Box';
-        const standardChests = Object.keys(CHEST_BLOCKS).filter((k) => !SPECIAL_CHESTS.includes(k));
-        return standardChests[(userSkill.level - 1) % standardChests.length];
-    }
-    // Memory skill: Return stored memoryMob to prevent random changes on re-render
+// Container shown by the Cleaning skill: a special one every 20 and every 5 levels,
+// otherwise the normal containers in turn.
+const getContainerForLevel = (level, theme) => {
+    if (level % 20 === 0) return theme.bossContainer;
+    if (level % 5 === 0) return theme.milestoneContainer;
+    const special = [theme.bossContainer, theme.milestoneContainer];
+    const standard = Object.keys(theme.containers).filter((name) => !special.includes(name));
+    return standard[(level - 1) % standard.length];
+};
+
+// Returns the name of the creature shown on a skill card. Saved names that do not belong
+// to the theme are mapped to one of its own creatures with pickStable.
+export const getMobForSkill = (skillConfig, userSkill, random = Math.random, theme) => {
+    const current = themeOrDefault(theme);
+    const keep = (name, group, pickNew) => (name ? pickStable(name, Object.keys(current[group])) : pickNew());
+
+    if (skillConfig.id === 'cleaning') return getContainerForLevel(userSkill.level, current);
     if (skillConfig.id === 'memory') {
-        return userSkill.memoryMob || getRandomFriendlyMob(random);
+        return keep(userSkill.memoryMob, 'friends', () => getRandomFriendlyMob(random, current));
     }
 
-    // Determine encounter type based on level cycle
     const encounterType = getEncounterType(userSkill.level);
-
     if (encounterType === 'boss') {
-        // Return stored boss to prevent random changes on re-render
-        return userSkill.currentBoss || getRandomBoss(random);
+        return keep(userSkill.currentBoss, 'bosses', () => getRandomBoss(random, current));
     }
-
     if (encounterType === 'miniboss') {
-        // Return stored miniboss to prevent random changes on re-render
-        return userSkill.currentMiniboss || getRandomMiniboss(random);
+        return keep(userSkill.currentMiniboss, 'minibosses', () => getRandomMiniboss(random, current));
     }
 
-    // Combat skills (reading, math, writing, patterns) at hostile mob levels:
-    // Return stored mob to prevent random changes on re-render
+    // Combat skills keep their stored enemy so it does not change on re-render.
     const combatSkillMobs = {
         reading: userSkill.readingMob,
         math: userSkill.mathMob,
         writing: userSkill.writingMob,
         patterns: userSkill.patternMob,
     };
-
     if (skillConfig.id in combatSkillMobs) {
-        return combatSkillMobs[skillConfig.id] || getRandomMob(null, random);
+        return keep(combatSkillMobs[skillConfig.id], 'enemies', () => getRandomMob(null, random, current));
     }
 
-    // Fallback for any other skills
-    // Normal hostile mob
-    const hostileMobKeys = Object.keys(HOSTILE_MOBS);
-    const currentMobIsValid = userSkill.currentMob && hostileMobKeys.includes(userSkill.currentMob);
-    return currentMobIsValid
-        ? userSkill.currentMob
-        : hostileMobKeys.length > 0
-          ? pickRandom(hostileMobKeys, random)
-          : 'Zombie';
+    // Fallback for any other skill
+    const enemyNames = Object.keys(current.enemies);
+    return enemyNames.includes(userSkill.currentMob) ? userSkill.currentMob : pickRandom(enemyNames, random);
 };
 
 // ===== RPG Progression Utility Functions =====
@@ -308,25 +302,14 @@ export const generateMathProblem = (difficulty, random = Math.random) => {
 // ===== Writing/Spelling Item Selection =====
 
 // Get a word from the appropriate difficulty pool
-// Uses difficulty pools with overlapping character ranges to ensure variety
-export const getWordForDifficulty = (difficulty, random = Math.random) => {
+// Uses difficulty pools with overlapping character ranges to ensure variety.
+// pools comes from the theme (theme.writingPools), so the pictures follow the theme.
+export const getWordForDifficulty = (difficulty, random = Math.random, pools = WRITING_DIFFICULTY_POOLS) => {
     // Map difficulty (1-7) to pool (1-5), with difficulties 6-7 using pool 5
     const poolNumber = Math.min(difficulty, 5);
-    const pool = WRITING_DIFFICULTY_POOLS[poolNumber];
-
-    if (!pool || pool.length === 0) {
-        // Fallback to difficulty 1 pool if something goes wrong
-        const fallbackPool = WRITING_DIFFICULTY_POOLS[1];
-        const item = pickRandom(fallbackPool, random);
-        return {
-            word: item.word.toUpperCase(),
-            displayName: item.displayName,
-            image: item.imagePath,
-        };
-    }
-
-    // Select a random word from the pool
-    const item = pickRandom(pool, random);
+    const pool = pools[poolNumber];
+    // Fallback to the difficulty 1 pool if something goes wrong
+    const item = pickRandom(pool && pool.length > 0 ? pool : pools[1], random);
     return {
         word: item.word.toUpperCase(),
         displayName: item.displayName,
