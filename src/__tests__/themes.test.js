@@ -15,6 +15,7 @@ import {
     DEFAULT_MUSIC,
     DEFAULT_SOUNDS,
     buildWritingPools,
+    THEME_SPRITE_GROUPS,
 } from '../constants/gameData';
 import { hasDefeatedWholeGroup } from '../constants/achievements';
 
@@ -45,8 +46,8 @@ describe('buildTheme with only the required fields', () => {
         expect(theme.friends).toBe(FRIENDLY_MOBS);
         expect(theme.patternPieces).toBe(BASE_ASSETS.axolotls);
         expect(theme.bonusCreature).toBe(HOSTILE_MOBS.Phantom);
-        expect(theme.milestoneContainer).toBe('Shulker Box');
-        expect(theme.bossContainer).toBe('Ender Chest');
+        expect(theme.milestoneContainer).toBe('Shell Box');
+        expect(theme.bossContainer).toBe('Magic Chest');
         expect(theme.music).toBe(DEFAULT_MUSIC);
         expect(theme.sounds).toEqual(DEFAULT_SOUNDS);
         expect(theme.writingPools).toBe(WRITING_DIFFICULTY_POOLS);
@@ -140,7 +141,7 @@ describe('buildWritingPools', () => {
 
 describe('theme registry', () => {
     it('loads every theme JSON file, in menu order', () => {
-        expect(THEMES_LIST.map((theme) => theme.id)).toEqual(['minecraft', 'kpop', 'pokemon', 'spy', 'space', 'ocean']);
+        expect(THEMES_LIST.map((theme) => theme.id)).toEqual(['blocks', 'idols', 'monsters', 'spy', 'space', 'ocean']);
         THEMES_LIST.forEach((item) => expect(item.img).toBe(THEME_CONFIG[item.id].assets.background));
     });
 
@@ -148,26 +149,51 @@ describe('theme registry', () => {
         expect(resolveThemeId('space')).toBe('space');
         expect(resolveThemeId('removed-theme')).toBe(DEFAULT_THEME_ID);
         expect(resolveThemeId(undefined)).toBe(DEFAULT_THEME_ID);
-        expect(getTheme('removed-theme')).toBe(THEME_CONFIG.minecraft);
-        expect(getTheme()).toBe(THEME_CONFIG.minecraft);
+        expect(getTheme('removed-theme')).toBe(THEME_CONFIG.blocks);
+        expect(getTheme()).toBe(THEME_CONFIG.blocks);
     });
 
-    it('gives the new themes their own creatures, sounds and music', () => {
-        ['space', 'ocean'].forEach((id) => {
-            const theme = THEME_CONFIG[id];
-            expect(Object.values(theme.enemies).every((path) => path.startsWith(`assets/themes/${id}/`))).toBe(true);
-            expect(Object.values(theme.friends).every((path) => path.startsWith(`assets/themes/${id}/`))).toBe(true);
-            expect(theme.music.every((path) => path.startsWith(`assets/themes/${id}/music/`))).toBe(true);
-            expect(theme.sounds.enemyHurt).toMatch(`assets/themes/${id}/sounds/`);
-            expect(theme.skills.writing.fantasyName).not.toBe('Crafting Table');
+    it('resolves the old theme ids to the renamed themes', () => {
+        expect(resolveThemeId('minecraft')).toBe('blocks');
+        expect(resolveThemeId('pokemon')).toBe('monsters');
+        expect(resolveThemeId('kpop')).toBe('idols');
+    });
+
+    it('gives every theme its own pictures, sounds and music', () => {
+        Object.values(THEME_CONFIG).forEach((theme) => {
+            const own = `assets/themes/${theme.id}/`;
+            expect(theme.assets.background.startsWith(own)).toBe(true);
+            expect(theme.assets.logo.startsWith(own)).toBe(true);
+            expect(theme.music.every((path) => path.startsWith(`${own}music/`))).toBe(true);
+            expect(Object.values(theme.sounds).every((path) => path.startsWith(`${own}sounds/`))).toBe(true);
         });
     });
 
-    it('keeps the Minecraft wording inside the Minecraft theme only', () => {
-        expect(THEME_CONFIG.minecraft.skills.writing.fantasyName).toBe('Crafting Table');
-        expect(THEME_CONFIG.kpop.skills.writing.fantasyName).toBe('Workshop');
+    it('gives every theme except Blocks its own creatures', () => {
+        Object.values(THEME_CONFIG)
+            .filter((theme) => theme.id !== 'blocks')
+            .forEach((theme) => {
+                const own = `assets/themes/${theme.id}/`;
+                ['enemies', 'minibosses', 'bosses', 'friends', 'containers', 'patternPieces'].forEach((group) => {
+                    expect(Object.values(theme[group]).every((path) => path.startsWith(own))).toBe(true);
+                });
+                expect(theme.bonusCreature.startsWith(own)).toBe(true);
+            });
+    });
+
+    it('uses no Minecraft wording in any theme or default text', () => {
+        const words = /minecraft|redstone|enchanting table|crafting table|creeper|\bender|herobrine|wither|shulker/i;
+        Object.values(THEME_CONFIG).forEach((theme) => {
+            expect(theme.name).not.toMatch(words);
+            Object.values(theme.skills).forEach((text) => {
+                expect(`${text.fantasyName} ${text.taskDescription}`).not.toMatch(words);
+            });
+            THEME_SPRITE_GROUPS.forEach((group) => {
+                Object.keys(theme[group]).forEach((name) => expect(name).not.toMatch(words));
+            });
+        });
         SKILL_DATA.forEach((skill) => {
-            expect(`${skill.fantasyName} ${skill.taskDescription}`).not.toMatch(/redstone|enchant|crafting table/i);
+            expect(`${skill.fantasyName} ${skill.taskDescription}`).not.toMatch(words);
         });
     });
 });
@@ -175,7 +201,7 @@ describe('theme registry', () => {
 describe('hasDefeatedWholeGroup', () => {
     it('is true once every boss of one theme is defeated', () => {
         expect(hasDefeatedWholeGroup(Object.keys(THEME_CONFIG.space.bosses), 'bosses')).toBe(true);
-        expect(hasDefeatedWholeGroup(Object.keys(THEME_CONFIG.minecraft.bosses), 'bosses')).toBe(true);
+        expect(hasDefeatedWholeGroup(Object.keys(THEME_CONFIG.blocks.bosses), 'bosses')).toBe(true);
     });
 
     it('does not mix themes', () => {

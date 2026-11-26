@@ -41,21 +41,23 @@ class FakeAudio {
 vi.stubGlobal('Audio', FakeAudio);
 
 const space = THEME_CONFIG.space;
-const minecraft = THEME_CONFIG.minecraft;
+// A theme with no sounds and no music uses the default files.
+const plain = {};
+const blocks = THEME_CONFIG.blocks;
 
 beforeEach(() => {
     played.length = 0;
-    setSoundTheme(minecraft);
+    setSoundTheme(plain);
     const bgm = getBGMManager();
     bgm.pause();
     bgm.audio = null;
     played.length = 0;
 });
 
-afterAll(() => setSoundTheme(minecraft));
+afterAll(() => setSoundTheme(blocks));
 
 describe('UI sounds follow the theme', () => {
-    it('plays the default files with the default theme', () => {
+    it('plays the default files for a theme without sounds', () => {
         playClick();
         playMatch();
         playMismatch();
@@ -142,7 +144,7 @@ describe('music follows the theme', () => {
         const bgm = getBGMManager();
         bgm.play();
         const audio = bgm.audio;
-        setSoundTheme(minecraft);
+        setSoundTheme(plain);
         expect(bgm.audio).toBe(audio);
     });
 

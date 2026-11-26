@@ -6,8 +6,9 @@ import { BOSS_MOBS, CHEST_BLOCKS, FRIENDLY_MOBS, HOSTILE_MOBS, MINIBOSS_MOBS } f
 import { SKILL_DATA } from './skills';
 import { WRITING_DIFFICULTY_POOLS, buildWritingPools } from './words';
 import { DEFAULT_MUSIC, DEFAULT_SOUNDS } from './audio';
+import { THEME_ID_RENAMES } from '../../services/storageKeys';
 
-export const DEFAULT_THEME_ID = 'minecraft';
+export const DEFAULT_THEME_ID = 'blocks';
 
 // Content used when a theme does not list its own. The groups are swapped as a whole,
 // so a theme never mixes its own enemies with default enemies.
@@ -18,8 +19,8 @@ const DEFAULT_CONTENT = {
     friends: FRIENDLY_MOBS,
     craftItems: {},
     containers: CHEST_BLOCKS,
-    milestoneContainer: 'Shulker Box',
-    bossContainer: 'Ender Chest',
+    milestoneContainer: 'Shell Box',
+    bossContainer: 'Magic Chest',
     patternPieces: BASE_ASSETS.axolotls,
     bonusCreature: HOSTILE_MOBS.Phantom,
 };
@@ -125,7 +126,11 @@ export const THEMES_LIST = Object.values(THEME_CONFIG).map((theme) => ({
     img: theme.assets.background,
 }));
 
-// A saved theme can point to a theme that no longer exists. Fall back to the default one.
-export const resolveThemeId = (id) => (id && THEME_CONFIG[id] ? id : DEFAULT_THEME_ID);
+// A saved theme can use an old id (see THEME_ID_RENAMES) or point to a theme that no longer exists.
+// Old ids give the renamed theme. Unknown ids give the default theme.
+export const resolveThemeId = (id) => {
+    const current = THEME_ID_RENAMES[id] || id;
+    return current && THEME_CONFIG[current] ? current : DEFAULT_THEME_ID;
+};
 
 export const getTheme = (id) => THEME_CONFIG[resolveThemeId(id)];

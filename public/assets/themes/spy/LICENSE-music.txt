@@ -1,0 +1,16 @@
+Music files in this folder. Both tracks are public domain (CC0 1.0).
+License text: https://creativecommons.org/publicdomain/zero/1.0/
+
+music/spy-loop.mp3
+  Title: Spy Loop
+  Author: wipics
+  Source: https://opengameart.org/content/spy-loop
+  License: CC0 1.0
+  Change: re-encoded to MP3 at 96 kbps.
+
+music/covert-action.mp3
+  Title: Covert Action
+  Author: congusbongus
+  Source: https://opengameart.org/content/covert-action
+  License: CC0 1.0
+  Change: converted from OGG to MP3 at 96 kbps.

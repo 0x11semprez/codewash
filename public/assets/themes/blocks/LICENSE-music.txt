@@ -1,0 +1,16 @@
+Music files in this folder. Both tracks are public domain (CC0 1.0).
+License text: https://creativecommons.org/publicdomain/zero/1.0/
+
+music/flowerbed-fields.mp3
+  Title: Flowerbed Fields [Loop]
+  Author: Zane Little Music
+  Source: https://opengameart.org/content/flowerbed-fields-loop
+  License: CC0 1.0
+  Change: converted from OGG to MP3 at 96 kbps.
+
+music/town-theme.mp3
+  Title: Town Theme RPG
+  Author: cynicmusic
+  Source: https://opengameart.org/content/town-theme-rpg
+  License: CC0 1.0
+  Change: re-encoded to MP3 at 96 kbps.
