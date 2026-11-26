@@ -59,15 +59,7 @@ Quick check:
 
 1. Open the Network tab, filter on "Img" and look for 404 errors.
 2. Open the Console. A failed sound shows `Optional startup sounds failed to preload:`. A failed style file shows `Global game styles failed to load:`. A crash of the preload step shows `Startup asset preload failed:`.
-3. Look at the saved theme. Four theme images do not exist in `public/assets/themes/` ([DEBT-021](../DEBT.md#debt-021-missing-theme-assets-p2-open), issue [#53](https://github.com/0x11semprez/codewash/issues/53)):
-
-   | Theme | Missing files |
-   | --- | --- |
-   | Spy | `spy_logo.png`, `spy_memorycard.jpg` |
-   | K-Pop Demon Hunters | `kpop_memorycard.jpg` |
-   | Pokemon | `pokemon_memorycard.jpg` |
-
-   With one of these themes, the loading screen always reports 1 or 2 failed images. This is known and expected until DEBT-021 is fixed.
+3. Look at the saved theme. Every theme lists its files in `src/themes/<id>.json` and keeps them in `public/assets/themes/<id>/`. Run `npx vitest run src/__tests__/themeFiles.test.js`: it names any missing file. See [the themes guide](../features/themes.md).
 
 Fix:
 
@@ -75,7 +67,7 @@ Fix:
 2. To stop the message, open the Cosmetics panel and pick the Minecraft theme. The next start will not report failed images.
 3. If the percentage is stuck on a slow network, wait. There is no timeout on images, so the screen waits until the browser gives up on each one. If it never ends, reload.
 
-Escalate when a theme other than the three above reports failed images, or when the screen stays stuck after a reload on a normal network. Include the list of 404 files from the Network tab and the theme name.
+Escalate when a theme reports failed images, or when the screen stays stuck after a reload on a normal network. Include the list of 404 files from the Network tab and the theme name.
 
 ### Saved data is broken or lost
 

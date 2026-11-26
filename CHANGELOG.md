@@ -34,6 +34,12 @@ Links to pull requests point to this repository. Work done before the move from 
 - `src/utils/random.js` and `src/utils/clock.js`. Game utilities and `useGameState` accept an injected random source and clock, so tests can fix them ([ADR-008](docs/adr/008-inject-randomness-and-clock.md), DEBT-023). [#60](https://github.com/0x11semprez/codewash/pull/60), [#66](https://github.com/0x11semprez/codewash/pull/66)
 - Tests that render each of the six mini-games for real, so a broken import in a game fails CI. [#58](https://github.com/0x11semprez/codewash/pull/58), [#66](https://github.com/0x11semprez/codewash/pull/66)
 - Branch protection on `main`: a pull request and a green `build-and-test` check are required. No pull request (GitHub setting).
+- Space and Ocean themes, made from CC0 assets (Kenney packs and OpenGameArt music and sounds). Credits are in `docs/features/themes.md`. Issue [#21](https://github.com/0x11semprez/codewash/issues/21).
+- Themes are data: one folder in `public/assets/themes/<id>/` and one JSON file in `src/themes/<id>.json` per theme. The game loads every JSON file, so adding a theme needs no code ([ADR-013](docs/adr/013-themes-as-data-folders.md)). Issue [#21](https://github.com/0x11semprez/codewash/issues/21).
+- Per-theme music and sound effects. The music switches as soon as the player changes theme. Issue [#21](https://github.com/0x11semprez/codewash/issues/21).
+- A scroll bar in the theme menu. Issue [#21](https://github.com/0x11semprez/codewash/issues/21).
+- `src/__tests__/themeFiles.test.js`, which checks every theme for missing files, wrong sizes, bad names and missing licenses, and names the file to fix. Issue [#21](https://github.com/0x11semprez/codewash/issues/21).
+- A step-by-step guide to add a theme, for non-technical readers, and the audit of the old themes: `docs/features/themes.md`. Issue [#21](https://github.com/0x11semprez/codewash/issues/21).
 
 ### Changed
 
@@ -47,6 +53,10 @@ Links to pull requests point to this repository. Work done before the move from 
 - Documentation reorganized around the subject: `docs/handover/`, `docs/missions/`, `docs/features/`. [#55](https://github.com/0x11semprez/codewash/pull/55), [#67](https://github.com/0x11semprez/codewash/pull/67).
 - Background music compressed from WAV (about 191 MB) to MP3. [#64](https://github.com/0x11semprez/codewash/pull/64)
 - Global CSS split into five files by topic under `src/styles/` (DEBT-002, in progress). [#65](https://github.com/0x11semprez/codewash/pull/65)
+- Every mini-game follows the theme: the memory cards, the pattern pieces, the spelling ("crafting table") pictures, the cleaning containers, the enemies and bosses, the bonus creature, the skill icons and the skill texts. Issue [#21](https://github.com/0x11semprez/codewash/issues/21).
+- Theme pictures have standard sizes (background 1280 x 720, logo 1200 x 300, card back 400 x 600, sprites 256 x 256) and fixed boxes on screen, so changing theme no longer moves or stretches anything. Issue [#21](https://github.com/0x11semprez/codewash/issues/21).
+- Minecraft-only names that are not part of a theme were renamed: the "Netherite" badge is "Titanium", the "Nether Portal" border is "Shadow Portal", and the default skill texts are neutral. The Minecraft theme keeps its own wording. The list and the reasons are in ADR-013. Issue [#21](https://github.com/0x11semprez/codewash/issues/21).
+- The "Mini Master", "World Ender" and "Monster Manual" achievements unlock when the player beats every creature of the group in any one theme. Issue [#21](https://github.com/0x11semprez/codewash/issues/21).
 
 ### Fixed
 
@@ -58,11 +68,14 @@ Links to pull requests point to this repository. Work done before the move from 
 - Two ESLint warnings about unneeded `useCallback` dependencies in `App.jsx`. [#50](https://github.com/0x11semprez/codewash/pull/50)
 - A corrupted save in `localStorage` no longer crashes the game. It falls back to defaults and is backed up once to `<key>_corrupted_backup` (DEBT-018). [#58](https://github.com/0x11semprez/codewash/pull/58), [#66](https://github.com/0x11semprez/codewash/pull/66)
 - Unused imports in test files that failed lint. Commit `9916a52` (no pull request).
+- The four missing theme images (Spy logo, Spy, K-Pop Demon Hunters and Pokemon card backs) exist, and the Spy theme uses its own background instead of the Minecraft one (DEBT-021). Issue [#53](https://github.com/0x11semprez/codewash/issues/53).
+- The match and mismatch sounds of the memory, pattern, math and spelling games play again. They pointed to files that do not exist. Issue [#21](https://github.com/0x11semprez/codewash/issues/21).
 
 ### Removed
 
 - Dead code: seven unused functions, the unused `WRITING_ITEMS_BY_LENGTH` constant and `MenuDrawer_old.jsx` (DEBT-004). Commit `883e02f`, merged with Epitech PR #44 (merge `7fa5858`). `src/constants/assets.js` was not removed and is still unused.
 - The `build-exe.yml` workflow that packaged the Electron app, and the first CI workflow from Epitech PR #37, which ran in a `CodeWashGame/` folder that does not exist. Commit `881859e` (no pull request).
+- Unused theme files `fantasy.png`, `Scifi.png`, `pokemon_logo.svg` and an empty `text` file, and the unused `boss` and `mobType` fields of the skill and theme data. Issue [#21](https://github.com/0x11semprez/codewash/issues/21).
 
 ## [0.0.0] - 2026-11-18
 

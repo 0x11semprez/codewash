@@ -51,6 +51,7 @@ src/
     ui/              Shared pieces: loading screen, error boundaries, images, toasts
   utils/             Pure game logic, sound manager, asset preloading
   constants/         Game data: mobs, themes, skills, achievements
+  themes/            One JSON file per theme (see docs/features/themes.md)
   __tests__/         Vitest test suites
 docs/                Project documentation (see below)
 electron/            Electron main process
@@ -68,6 +69,7 @@ Start with [docs/SUBJECT_MAP.md](docs/SUBJECT_MAP.md). It lists every requiremen
 | Branches, CI and team workflow | [docs/handover/development-plan.md](docs/handover/development-plan.md) |
 | Performance mission: loading screen, profiling, measurements | [docs/missions/performance.md](docs/missions/performance.md) |
 | Microphone and speech recognition | [docs/features/microphone.md](docs/features/microphone.md) |
+| Themes: how to add a theme, audit, credits | [docs/features/themes.md](docs/features/themes.md) |
 | What to do when something breaks | [docs/handover/RUNBOOK.md](docs/handover/RUNBOOK.md) |
 | What changed since the received version | [CHANGELOG.md](CHANGELOG.md) |
 

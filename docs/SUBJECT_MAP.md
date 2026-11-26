@@ -71,6 +71,6 @@ Last checked: 2026-11-25.
 | Improve performance | Partial | [#51](https://github.com/0x11semprez/codewash/pull/51), [performance report](missions/performance.md) | A fair Lighthouse comparison on the same theme ([#18](https://github.com/0x11semprez/codewash/issues/18)). |
 | Bug reporting | Missing | | `BugReportModal.jsx` is a 19-line stub ([#19](https://github.com/0x11semprez/codewash/issues/19)). |
 | Translation | Missing | | No i18n code. Issue [#20](https://github.com/0x11semprez/codewash/issues/20) was closed without a pull request. |
-| Themes | Missing | | [#21](https://github.com/0x11semprez/codewash/issues/21). Four theme images are missing ([DEBT-021](DEBT.md#debt-021-missing-theme-assets-p2-open)). |
+| Themes | Done, not merged yet | [themes guide and audit](features/themes.md), [ADR-013](adr/013-themes-as-data-folders.md), `src/__tests__/themeFiles.test.js` | [#21](https://github.com/0x11semprez/codewash/issues/21). K-Pop Demon Hunters, Pokemon and Spy still use the default creatures, music and sounds. |
 | New game (trivia) | Missing | | No issue yet. |
 | New game+ | Missing | | Needs the trivia game first. |
