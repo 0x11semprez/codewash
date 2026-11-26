@@ -1,11 +1,7 @@
-// Default music and sound effects. A theme that lists no music or no sound uses these files.
+// Default music: the playlist of the default theme (Blocks). A theme that lists no music plays it.
 export const DEFAULT_MUSIC = [
-    'assets/sounds/bgm/calm1.mp3',
-    'assets/sounds/bgm/calm2.mp3',
-    'assets/sounds/bgm/calm3.mp3',
-    'assets/sounds/bgm/piano1.mp3',
-    'assets/sounds/bgm/piano2.mp3',
-    'assets/sounds/bgm/piano3.mp3',
+    'assets/themes/blocks/music/flowerbed-fields.mp3',
+    'assets/themes/blocks/music/town-theme.mp3',
 ];
 
 // Keys a theme can set in its "sounds" list. enemyHurt and enemyDefeat have no default:

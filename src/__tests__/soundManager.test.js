@@ -62,12 +62,12 @@ describe('BGM tracks', () => {
     const tracks = getBGMManager().tracks;
     const fromPublic = (track) => join(import.meta.dirname, '..', '..', 'public', track);
 
-    it('lists the six background music tracks', () => {
-        expect(tracks).toHaveLength(6);
+    it('starts with the music of the default theme', () => {
+        expect(tracks).toHaveLength(2);
     });
 
-    it('uses compressed MP3 files', () => {
-        tracks.forEach((track) => expect(track).toMatch(/^assets\/sounds\/bgm\/[a-z0-9]+\.mp3$/));
+    it('uses compressed MP3 files from the default theme folder', () => {
+        tracks.forEach((track) => expect(track).toMatch(/^assets\/themes\/blocks\/music\/[a-z0-9-]+\.mp3$/));
     });
 
     it('points to files that exist', () => {
