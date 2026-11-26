@@ -1,13 +1,24 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Mic } from 'lucide-react';
 import { HOMOPHONES } from '../../../constants/gameData';
+import { useTranslation } from '../../../i18n/useTranslation';
 
 const MIN_SPOKEN_TEXT_LENGTH = 2;
+
+// useVoiceRecognition reports its state with these English status strings.
+// They are compared as values, so they are mapped to dictionary keys only for display.
+const MIC_STATUS_KEYS = {
+    'Listening...': 'games.listening',
+    'Mic Off': 'games.micOff',
+    'Mic permission denied': 'games.micDenied',
+    'Mic not available': 'games.micUnavailable',
+};
 
 const ReadingGame = ({ challenge, isListening, spokenText, onMicClick, onMathSubmit }) => {
     const [isReadingWrong, setIsReadingWrong] = useState(false);
     const prevSpokenTextRef = useRef('');
     const readingWordRef = useRef(null);
+    const { t } = useTranslation();
 
     useEffect(() => {
         if (spokenText && spokenText !== 'Listening...' && spokenText !== 'Mic Off') {
@@ -48,7 +59,11 @@ const ReadingGame = ({ challenge, isListening, spokenText, onMicClick, onMathSub
                     {word}
                 </span>
                 <div className={`absolute bottom-1 text-xs ${isReadingWrong ? 'text-red-400' : 'text-gray-400'}`}>
-                    {spokenText || (isListening ? 'Listening...' : 'Mic Off')}
+                    {spokenText
+                        ? MIC_STATUS_KEYS[spokenText]
+                            ? t(MIC_STATUS_KEYS[spokenText])
+                            : spokenText
+                        : t(isListening ? 'games.listening' : 'games.micOff')}
                 </div>
             </div>
             <button
@@ -60,7 +75,7 @@ const ReadingGame = ({ challenge, isListening, spokenText, onMicClick, onMathSub
                 ) : (
                     <>
                         <Mic className="inline text-gray-500" />
-                        <span className="text-xs uppercase font-bold text-stone-400">Tap to Speak</span>
+                        <span className="text-xs uppercase font-bold text-stone-400">{t('games.tapToSpeak')}</span>
                     </>
                 )}
             </button>
@@ -68,7 +83,7 @@ const ReadingGame = ({ challenge, isListening, spokenText, onMicClick, onMathSub
                 onClick={() => onMathSubmit(challenge?.answer)}
                 className="mt-auto text-xs text-gray-500 underline hover:text-white self-center"
             >
-                Skip / Manual Success
+                {t('games.skip')}
             </button>
         </>
     );
