@@ -53,19 +53,12 @@ const PixelHeart = ({ size = 32, filled = true }) => {
         [_, _, _, _, _, _, _, _, _],
     ];
 
-    const getColor = (value) => {
-        switch (value) {
-            case PIXEL.OUTLINE:
-                return COLORS.OUTLINE;
-            case PIXEL.FILL:
-                return palette.fill;
-            case PIXEL.DARK:
-                return palette.dark;
-            case PIXEL.HIGHLIGHT:
-                return palette.highlight;
-            default:
-                return 'transparent';
-        }
+    // Color of each pixel type. Empty pixels are not drawn.
+    const pixelColors = {
+        [PIXEL.OUTLINE]: COLORS.OUTLINE,
+        [PIXEL.FILL]: palette.fill,
+        [PIXEL.DARK]: palette.dark,
+        [PIXEL.HIGHLIGHT]: palette.highlight,
     };
 
     return (
@@ -86,7 +79,7 @@ const PixelHeart = ({ size = 32, filled = true }) => {
                             y={y * pixelSize}
                             width={pixelSize}
                             height={pixelSize}
-                            fill={getColor(pixel)}
+                            fill={pixelColors[pixel]}
                         />
                     );
                 }),

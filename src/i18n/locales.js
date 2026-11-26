@@ -13,10 +13,13 @@ export const LOCALES = Object.fromEntries(
         .map((locale) => [locale.code, locale]),
 );
 
-// Default language first, then the others in alphabetical order of their code.
+// Sort order of the language menu: default language first, then the others in alphabetical order of their code.
+export const compareLanguages = (a, b) =>
+    a.code === DEFAULT_LOCALE ? -1 : b.code === DEFAULT_LOCALE ? 1 : a.code.localeCompare(b.code);
+
 export const LANGUAGES = Object.values(LOCALES)
     .map(({ code, name }) => ({ code, name }))
-    .sort((a, b) => (a.code === DEFAULT_LOCALE ? -1 : b.code === DEFAULT_LOCALE ? 1 : a.code.localeCompare(b.code)));
+    .sort(compareLanguages);
 
 export const LANGUAGE_CODES = LANGUAGES.map(({ code }) => code);
 
