@@ -133,5 +133,58 @@
         "mismatch": "sounds/mismatch.ogg",
         "enemyHurt": "sounds/enemy-hurt.ogg",
         "enemyDefeat": "sounds/enemy-defeat.ogg"
+    },
+    "translations": {
+        "fr": {
+            "name": "Idoles",
+            "skills": {
+                "reading": {
+                    "name": "Chant",
+                    "title": "Carnet de chansons",
+                    "action": "Chanter !",
+                    "description": "Lis les paroles à voix haute pour chasser les démons du bruit !"
+                },
+                "math": {
+                    "name": "Rythme",
+                    "title": "Compteur de temps",
+                    "action": "Compter !",
+                    "description": "Résous les calculs pour garder le rythme et lancer le spectacle !"
+                },
+                "writing": {
+                    "name": "Composition",
+                    "title": "Studio",
+                    "action": "Écrire !",
+                    "description": "Épelle le nom pour l'ajouter à ta prochaine chanson !"
+                },
+                "cleaning": {
+                    "name": "Coulisses",
+                    "title": "Loge",
+                    "action": "Ranger !",
+                    "description": "Range la loge avant le concert !"
+                },
+                "memory": {
+                    "name": "Fans",
+                    "title": "Fan-club",
+                    "action": "Associer !",
+                    "description": "Trouve les paires pour accueillir de nouveaux fans !"
+                },
+                "patterns": {
+                    "name": "Danse",
+                    "title": "Piste de danse",
+                    "action": "Danser !",
+                    "description": "Répète les pas de danse pour illuminer la scène !"
+                }
+            },
+            "patternPieces": {
+                "Blue": "Bleu",
+                "Green": "Vert",
+                "Pink": "Rose",
+                "Purple": "Violet",
+                "Red": "Rouge",
+                "Yellow": "Jaune",
+                "Star": "Étoile",
+                "Heart": "Cœur"
+            }
+        }
     }
 }

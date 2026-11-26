@@ -2,6 +2,7 @@ import { describe, it, expect, vi } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import BugReportModal from '../../components/modals/BugReportModal';
 import { createLogBuffer } from '../../utils/bugReport/logBuffer.js';
+import I18nProvider from '../../i18n/I18nProvider';
 
 const makeLogs = (...messages) => {
     const buffer = createLogBuffer({ clock: () => 0 });
@@ -158,5 +159,23 @@ describe('BugReportModal', () => {
         expect(await screen.findByRole('status')).toHaveTextContent('Your report was sent');
         expect(fetchSpy).toHaveBeenCalledWith('https://example.test/bugs', expect.objectContaining({ method: 'POST' }));
         fetchSpy.mockRestore();
+    });
+});
+
+describe('BugReportModal in French', () => {
+    const inFrench = (ui) => render(<I18nProvider initialLanguage="fr">{ui}</I18nProvider>);
+
+    it('shows the form and its messages in French', () => {
+        inFrench(<BugReportModal isOpen={true} onClose={() => {}} logBuffer={makeLogs()} />);
+        expect(screen.getByRole('heading', { name: 'Tu as trouvé un bug ?' })).toBeTruthy();
+        fireEvent.click(screen.getByRole('button', { name: /Envoyer/ }));
+        expect(screen.getByRole('alert').textContent).toBe("Décris le bug, s'il te plaît.");
+    });
+
+    it('translates the message for a rejected file', () => {
+        inFrench(<BugReportModal isOpen={true} onClose={() => {}} logBuffer={makeLogs()} />);
+        const file = new File(['x'], 'virus.exe', { type: 'application/x-msdownload' });
+        fireEvent.change(screen.getByLabelText(/Captures/), { target: { files: [file] } });
+        expect(screen.getByRole('alert').textContent).toContain('virus.exe : seuls les images');
     });
 });

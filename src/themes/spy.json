@@ -131,5 +131,58 @@
         "mismatch": "sounds/mismatch.ogg",
         "enemyHurt": "sounds/enemy-hurt.ogg",
         "enemyDefeat": "sounds/enemy-defeat.ogg"
+    },
+    "translations": {
+        "fr": {
+            "name": "Espion",
+            "skills": {
+                "reading": {
+                    "name": "Analyse de renseignements",
+                    "title": "Dossiers secrets",
+                    "action": "Décoder !",
+                    "description": "Lis les mots secrets à voix haute pour arrêter les gardes robots !"
+                },
+                "math": {
+                    "name": "Gadgets",
+                    "title": "Serrure à code",
+                    "action": "Craquer !",
+                    "description": "Résous les calculs pour craquer le code et ouvrir le coffre-fort !"
+                },
+                "writing": {
+                    "name": "Falsification",
+                    "title": "Labo des gadgets",
+                    "action": "Fabriquer !",
+                    "description": "Épelle le nom de chaque gadget pour le fabriquer !"
+                },
+                "cleaning": {
+                    "name": "Preuves",
+                    "title": "Salle des preuves",
+                    "action": "Ranger !",
+                    "description": "Range les preuves avant la prochaine mission !"
+                },
+                "memory": {
+                    "name": "Identités",
+                    "title": "Contrôle des gadgets",
+                    "action": "Associer !",
+                    "description": "Trouve les paires pour vérifier tes gadgets d'espion !"
+                },
+                "patterns": {
+                    "name": "Décodage",
+                    "title": "Salle des codes",
+                    "action": "Résoudre !",
+                    "description": "Répète le signal secret pour ouvrir la cachette !"
+                }
+            },
+            "patternPieces": {
+                "Hearts": "Cœurs",
+                "Diamonds": "Carreaux",
+                "Clubs": "Trèfles",
+                "Spades": "Piques",
+                "King": "Roi",
+                "Queen": "Reine",
+                "Knight": "Cavalier",
+                "Rook": "Tour"
+            }
+        }
     }
 }

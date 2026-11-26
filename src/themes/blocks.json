@@ -56,5 +56,48 @@
         "mismatch": "sounds/mismatch.ogg",
         "enemyHurt": "sounds/enemy-hurt.ogg",
         "enemyDefeat": "sounds/enemy-defeat.ogg"
+    },
+    "translations": {
+        "fr": {
+            "name": "Blocs",
+            "skills": {
+                "reading": {
+                    "name": "Lecture",
+                    "title": "Table magique",
+                    "action": "Enchanter !",
+                    "description": "Prononce les mots anciens pour lancer des sorts et vaincre tes ennemis !"
+                },
+                "math": {
+                    "name": "Maths",
+                    "title": "Labo d'énergie",
+                    "action": "Calculer !",
+                    "description": "Alimente tes circuits pour activer des pièges et déjouer les ennemis !"
+                },
+                "writing": {
+                    "name": "Écriture",
+                    "title": "Établi",
+                    "action": "Fabriquer !",
+                    "description": "Épelle la recette pour forger des armes et armures légendaires !"
+                },
+                "cleaning": {
+                    "name": "Rangement",
+                    "title": "Gestion des coffres",
+                    "action": "Ranger !",
+                    "description": "Trie ton butin et prépare ton inventaire pour les aventures à venir !"
+                },
+                "memory": {
+                    "name": "Mémoire",
+                    "title": "Paires et éclosions",
+                    "action": "Associer !",
+                    "description": "Trouve les paires pour faire éclore des créatures rares dans ta ferme !"
+                },
+                "patterns": {
+                    "name": "Reconnaissance de motifs",
+                    "title": "Construction logique",
+                    "action": "Résoudre !",
+                    "description": "Déchiffre la séquence pour activer des mécanismes anciens et trouver des trésors !"
+                }
+            }
+        }
     }
 }

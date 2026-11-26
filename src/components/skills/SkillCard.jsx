@@ -10,6 +10,8 @@ import { pauseWhenOffscreen } from '../../hooks/useAnimationPause';
 import { DIFFICULTY_IMAGES } from '../../constants/gameData';
 import { calculateXPToLevel } from '../../utils/gameUtils';
 import { AURA_ADJECTIVES } from '../../utils/mobDisplayUtils';
+import { useTranslation } from '../../i18n/useTranslation';
+import { mobNameWithAura, themeSkillText } from '../../i18n/gameText';
 const MemoryGame = lazy(() => import('./games/MemoryGame'));
 const PatternGame = lazy(() => import('./games/PatternGame'));
 const MathGame = lazy(() => import('./games/MathGame'));
@@ -44,6 +46,7 @@ const SkillCard = ({
 }) => {
     const [isHit, setIsHit] = useState(false);
     const prevDamageCount = useRef(0);
+    const { t, language } = useTranslation();
 
     let borderClass = 'border-stone-500';
     let levelTextColor = 'text-white';
@@ -98,12 +101,12 @@ const SkillCard = ({
         }
     }
 
-    // Names and texts of the skill come from the theme, with the skill defaults as fallback.
-    const skillText = themeData.skills[config.id] || {};
-    const skillName = skillText.name || config.name;
-    const fantasyName = skillText.fantasyName || config.fantasyName;
-    const actionName = skillText.actionName || config.actionName;
-    const taskDescription = skillText.taskDescription || config.taskDescription;
+    // Names and texts of the skill come from the theme (in the current language when the theme
+    // has a translation), then from the dictionary defaults.
+    const skillName = themeSkillText(t, language, themeData, config.id, 'name');
+    const fantasyName = themeSkillText(t, language, themeData, config.id, 'fantasyName');
+    const actionName = themeSkillText(t, language, themeData, config.id, 'actionName');
+    const taskDescription = themeSkillText(t, language, themeData, config.id, 'taskDescription');
 
     // Every picture comes from the theme. A name the theme does not know shows its first enemy.
     let mobSrc;
@@ -119,7 +122,7 @@ const SkillCard = ({
 
     const displayMobNameWithAura =
         isBattling && mobAura && AURA_ADJECTIVES[mobAura]
-            ? `${AURA_ADJECTIVES[mobAura]} ${displayMobName}`
+            ? mobNameWithAura(t, displayMobName, mobAura)
             : displayMobName;
 
     const mobSize = '100%';
@@ -280,7 +283,7 @@ const SkillCard = ({
                         <div
                             className={`bg-black/60 px-3 py-1 rounded border border-white/20 text-3xl font-bold ${levelTextColor}`}
                         >
-                            Lvl {data.level}
+                            {t('skillCard.level', { level: data.level })}
                         </div>
                     </div>
                 )}
@@ -327,7 +330,7 @@ const SkillCard = ({
             {(!isBattling || config.id !== 'memory') && (
                 <div className="bg-[#1a1a1a] p-2 border-t-4 border-b-4 border-black relative">
                     <div className="flex justify-between text-gray-400 text-xs mb-1 uppercase">
-                        <span>HP</span>
+                        <span>{t('skillCard.hp')}</span>
                         <span>{hpPercent}%</span>
                     </div>
                     <div className="w-full h-6 bg-[#333] rounded-full overflow-hidden border-2 border-[#555] relative">
@@ -349,7 +352,7 @@ const SkillCard = ({
                                 return (
                                     <div className="mt-2 bg-[#1a1a1a] p-2 rounded border border-[#333]">
                                         <div className="flex justify-between text-gray-400 text-xs mb-1 uppercase">
-                                            <span>XP</span>
+                                            <span>{t('skillCard.xp')}</span>
                                             <span>
                                                 {data.xp} / {xpToLevel}
                                             </span>
@@ -413,7 +416,7 @@ const SkillCard = ({
                                                         '2px 2px 0 #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000',
                                                 }}
                                             >
-                                                ⚔ BATTLE ⚔
+                                                {t('skillCard.battle')}
                                             </div>
                                             <div className="absolute top-1 left-2 w-2 h-2 bg-amber-900 rounded-full border border-amber-950"></div>
                                             <div className="absolute top-1 right-2 w-2 h-2 bg-amber-900 rounded-full border border-amber-950"></div>
@@ -421,7 +424,7 @@ const SkillCard = ({
                                         <div className="p-2 space-y-1.5">
                                             <div className="bg-amber-900/20 border-2 border-amber-900/40 rounded p-1.5">
                                                 <div className="text-[8px] text-amber-900 uppercase font-bold tracking-wide">
-                                                    Target
+                                                    {t('skillCard.target')}
                                                 </div>
                                                 <div className="text-stone-900 font-black text-sm leading-tight">
                                                     {displayMobNameWithAura}
@@ -430,7 +433,7 @@ const SkillCard = ({
                                             <div className="flex gap-1.5">
                                                 <div className="flex-1 bg-amber-900/20 border-2 border-amber-900/40 rounded p-1.5">
                                                     <div className="text-[8px] text-amber-900 uppercase font-bold">
-                                                        Skill
+                                                        {t('skillCard.skill')}
                                                     </div>
                                                     <div className="text-stone-900 font-bold text-xs leading-tight">
                                                         {skillName}
@@ -438,7 +441,7 @@ const SkillCard = ({
                                                 </div>
                                                 <div className="flex-1 bg-amber-900/20 border-2 border-amber-900/40 rounded p-1.5">
                                                     <div className="text-[8px] text-amber-900 uppercase font-bold">
-                                                        Level
+                                                        {t('skillCard.levelLabel')}
                                                     </div>
                                                     <div
                                                         className={`font-black text-base leading-tight ${levelTextColor}`}
@@ -453,7 +456,7 @@ const SkillCard = ({
                                             </div>
                                             <div className="bg-amber-900/20 border-2 border-amber-900/40 rounded p-1.5">
                                                 <div className="text-[8px] text-amber-900 uppercase font-bold mb-0.5">
-                                                    Quest
+                                                    {t('skillCard.quest')}
                                                 </div>
                                                 <div className="text-stone-800 text-[10px] leading-snug italic font-medium">
                                                     {taskDescription}
@@ -482,6 +485,7 @@ const SkillCard = ({
                 <div className="absolute -top-10 left-0 flex items-center gap-2 z-20">
                     <button
                         onClick={() => setDifficulty(Math.max(1, difficulty - 1))}
+                        aria-label={t('skillCard.lowerDifficulty')}
                         className="bg-stone-700 text-white rounded p-1 border border-stone-500 hover:bg-stone-600"
                     >
                         <Minus size={16} />
@@ -489,7 +493,7 @@ const SkillCard = ({
                     <div className="relative">
                         <SafeImage
                             src={DIFFICULTY_IMAGES[difficulty] || DIFFICULTY_IMAGES[1]}
-                            alt={`Difficulty ${difficulty}`}
+                            alt={t('skillCard.difficultyAlt', { level: difficulty })}
                             className="w-8 h-8 object-contain"
                         />
                         <span className="absolute -bottom-1 -right-1 bg-black/90 text-yellow-400 text-xs font-bold px-1 rounded border border-yellow-500/50 min-w-[16px] text-center">
@@ -498,6 +502,7 @@ const SkillCard = ({
                     </div>
                     <button
                         onClick={() => setDifficulty(Math.min(unlockedDifficulty, difficulty + 1))}
+                        aria-label={t('skillCard.raiseDifficulty')}
                         className="bg-stone-700 text-white rounded p-1 border border-stone-500 hover:bg-stone-600"
                     >
                         <Plus size={16} />

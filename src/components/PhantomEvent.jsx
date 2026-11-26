@@ -2,6 +2,7 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { getTheme } from '../constants/gameData';
 import { playSuccessfulHit } from '../services/soundManager';
 import { STORAGE_KEYS } from '../services/storageKeys';
+import { useTranslation } from '../i18n/useTranslation';
 
 const PHANTOM_COOLDOWN_KEY = STORAGE_KEYS.phantomLastSpawn;
 const MIN_COOLDOWN_MS = 5 * 60 * 1000; // 5 minutes
@@ -11,6 +12,7 @@ const PHANTOM_OFFSCREEN_LEFT = '-120px'; // Start position offscreen on the left
 
 // A bonus creature flies across the screen now and then. Its picture comes from the theme.
 const PhantomEvent = ({ battlingSkillId, onAwardLevel, onPhantomCaught, imageSrc = getTheme().bonusCreature }) => {
+    const { t } = useTranslation();
     const [isActive, setIsActive] = useState(false);
     const [fromLeft, setFromLeft] = useState(true);
     const [clicked, setClicked] = useState(false);
@@ -131,7 +133,7 @@ const PhantomEvent = ({ battlingSkillId, onAwardLevel, onPhantomCaught, imageSrc
                 <img
                     key={`phantom-${fromLeft}`}
                     src={imageSrc}
-                    alt="Bonus creature"
+                    alt={t('phantom.alt')}
                     loading="lazy"
                     className="w-24 h-24 object-contain drop-shadow-[0_0_10px_rgba(100,200,255,0.8)]"
                     draggable={false}
@@ -140,7 +142,7 @@ const PhantomEvent = ({ battlingSkillId, onAwardLevel, onPhantomCaught, imageSrc
             {clicked && (
                 <div className="absolute inset-0 flex items-center justify-center">
                     <span className="text-yellow-400 text-2xl font-bold animate-bounce drop-shadow-[0_0_5px_rgba(255,215,0,0.8)]">
-                        +1 Level!
+                        {t('phantom.bonus')}
                     </span>
                 </div>
             )}

@@ -54,6 +54,36 @@ const buildSkills = (rawSkills = {}) =>
         }),
     );
 
+// JSON field names of a skill text, and the names the code uses.
+export const SKILL_TEXT_FIELDS = {
+    name: 'name',
+    title: 'fantasyName',
+    action: 'actionName',
+    description: 'taskDescription',
+};
+
+// Keeps only the skill texts the theme writes itself, with the code names.
+const pickSkillTexts = (rawSkills = {}) =>
+    Object.fromEntries(
+        Object.entries(rawSkills).map(([skillId, raw]) => [
+            skillId,
+            Object.fromEntries(
+                Object.entries(SKILL_TEXT_FIELDS)
+                    .filter(([jsonField]) => raw?.[jsonField])
+                    .map(([jsonField, field]) => [field, raw[jsonField]]),
+            ),
+        ]),
+    );
+
+// "translations": { "fr": { "name": ..., "skills": { ... }, "patternPieces": { ... } } }
+const buildTranslations = (raw = {}) =>
+    Object.fromEntries(
+        Object.entries(raw).map(([language, text]) => [
+            language,
+            { name: text.name, skills: pickSkillTexts(text.skills), patternPieces: text.patternPieces || {} },
+        ]),
+    );
+
 const toWordIndex = (groups) => {
     const seen = new Set();
     return groups
@@ -90,12 +120,17 @@ export const buildTheme = (id, raw) => {
             cardBack: resolveThemePath(id, raw.cardBack),
             mobs: Object.assign({}, ...THEME_SPRITE_GROUPS.map((key) => groups[key])),
         },
+        // English text with the skill defaults filled in. The screens use themeSkillText (src/i18n/gameText.js),
+        // which reads ownSkills and translations so the text follows the language.
         skills: buildSkills(raw.skills),
+        ownSkills: pickSkillTexts(raw.skills),
+        translations: buildTranslations(raw.translations),
         skillIcons: { ...DEFAULT_SKILL_ICONS, ...(own('skillIcons') || {}) },
         ...groups,
         milestoneContainer: usesOwnContainers ? raw.milestoneContainer : DEFAULT_CONTENT.milestoneContainer,
         bossContainer: usesOwnContainers ? raw.bossContainer : DEFAULT_CONTENT.bossContainer,
         patternPieces: own('patternPieces') || DEFAULT_CONTENT.patternPieces,
+        ownPatternPieces: Boolean(raw.patternPieces),
         bonusCreature: raw.bonusCreature ? resolveThemePath(id, raw.bonusCreature) : DEFAULT_CONTENT.bonusCreature,
         music: raw.music?.length ? raw.music.map((file) => resolveThemePath(id, file)) : DEFAULT_MUSIC,
         sounds: { ...DEFAULT_SOUNDS, ...ownSounds },

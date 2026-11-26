@@ -1,29 +1,32 @@
 import React from 'react';
 import { Trophy } from 'lucide-react';
-import { ACHIEVEMENTS, TIER_COLORS, TIER_NAMES } from '../../constants/achievements';
+import { ACHIEVEMENTS, TIER_COLORS } from '../../constants/achievements';
+import { useTranslation } from '../../i18n/useTranslation';
+import { achievementDescription, achievementName } from '../../i18n/gameText';
 
 /**
  * AchievementToast Component
  * Displays a celebratory toast when an achievement is unlocked
  */
 const AchievementToast = ({ achievementId, tierIndex = null, descriptionOverride = null }) => {
+    const { t } = useTranslation();
     const achievement = ACHIEVEMENTS[achievementId];
 
     if (!achievement) return null;
 
     // Determine display values
-    let displayName = achievement.name;
+    let displayName = achievementName(t, achievement);
     let tierColor = null;
     let tierName = null;
 
     if (achievement.isTiered && tierIndex !== null && tierIndex >= 0) {
-        const tier = achievement.tiers[tierIndex];
-        displayName = tier.tierName;
+        displayName = achievementName(t, achievement, tierIndex);
         tierColor = TIER_COLORS[tierIndex + 1];
-        tierName = TIER_NAMES[tierIndex];
+        tierName = t(`tiers.${tierIndex}`);
     }
 
     const Icon = achievement.icon;
+    const description = descriptionOverride || achievementDescription(t, achievement);
     const borderColor = tierColor ? tierColor.border : '#FFD700';
     const bgColor = tierColor ? tierColor.bg : 'rgba(255, 215, 0, 0.1)';
 
@@ -51,15 +54,13 @@ const AchievementToast = ({ achievementId, tierIndex = null, descriptionOverride
                     {/* Text */}
                     <div className="text-left">
                         <h2 className="text-2xl text-yellow-400 font-bold leading-none mb-1 uppercase tracking-wide">
-                            ACHIEVEMENT UNLOCKED!
+                            {t('toast.unlocked')}
                         </h2>
                         <p className="text-white text-lg font-bold">{displayName}</p>
-                        {(descriptionOverride || achievement.description) && (
-                            <p className="text-stone-300 text-base mt-1">
-                                {descriptionOverride || achievement.description}
-                            </p>
+                        {description && <p className="text-stone-300 text-base mt-1">{description}</p>}
+                        {tierName && (
+                            <p className="text-stone-400 text-sm mt-1">{t('toast.tier', { tier: tierName })}</p>
                         )}
-                        {tierName && <p className="text-stone-400 text-sm mt-1">{tierName} Tier</p>}
                     </div>
                 </div>
 

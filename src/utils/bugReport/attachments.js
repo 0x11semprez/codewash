@@ -12,17 +12,24 @@ const isAccepted = (file) =>
 export const formatBytes = (bytes) =>
     bytes < 1024 * 1024 ? `${Math.ceil(bytes / 1024)} KB` : `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
 
+// Default messages for rejected files. The modal passes translated ones.
+export const DEFAULT_FILE_MESSAGES = {
+    badType: (name) => `${name}: only images, .txt, .log and .json files are allowed.`,
+    tooLarge: (name, limit) => `${name}: larger than ${limit}.`,
+    tooMany: (name, max) => `${name}: you can attach up to ${max} files.`,
+};
+
 // Adds new files to the current list. Returns the files to keep and one message per rejected file.
-export const addFiles = (current, incoming) => {
+export const addFiles = (current, incoming, messages = DEFAULT_FILE_MESSAGES) => {
     const files = [...current];
     const errors = [];
     for (const file of incoming) {
         if (!isAccepted(file)) {
-            errors.push(`${file.name}: only images, .txt, .log and .json files are allowed.`);
+            errors.push(messages.badType(file.name));
         } else if (file.size > MAX_FILE_BYTES) {
-            errors.push(`${file.name}: larger than ${formatBytes(MAX_FILE_BYTES)}.`);
+            errors.push(messages.tooLarge(file.name, formatBytes(MAX_FILE_BYTES)));
         } else if (files.length >= MAX_FILES) {
-            errors.push(`${file.name}: you can attach up to ${MAX_FILES} files.`);
+            errors.push(messages.tooMany(file.name, MAX_FILES));
         } else {
             files.push(file);
         }

@@ -5,11 +5,13 @@ import ParentalVerificationModal from '../ui/ParentalVerificationModal';
 import diamondsTexture from '../../assets/textures/diagmonds-light.png';
 import { SKILL_DATA, getTheme } from '../../constants/gameData';
 import { pauseWhenOffscreen } from '../../hooks/useAnimationPause';
+import { useTranslation } from '../../i18n/useTranslation';
 
 const ProfileCard = ({ id, name, stats, isCurrent, onSwitch, onRename, isParent, onParentVerified }) => {
     const [isEditing, setIsEditing] = useState(false);
     const [tempName, setTempName] = useState(name);
     const [showParentalModal, setShowParentalModal] = useState(false);
+    const { t } = useTranslation();
 
     useEffect(() => {
         // eslint-disable-next-line react-hooks/set-state-in-effect
@@ -89,7 +91,9 @@ const ProfileCard = ({ id, name, stats, isCurrent, onSwitch, onRename, isParent,
                         {isParent ? (
                             <div className="flex flex-col items-center gap-1">
                                 <Crown className="fill-yellow-400 text-yellow-600" size={24} />
-                                <span className="text-[10px] text-yellow-400 font-bold uppercase">Parent</span>
+                                <span className="text-[10px] text-yellow-400 font-bold uppercase">
+                                    {t('profile.parent')}
+                                </span>
                             </div>
                         ) : (
                             <label
@@ -102,7 +106,9 @@ const ProfileCard = ({ id, name, stats, isCurrent, onSwitch, onRename, isParent,
                                     onChange={handleParentCheckboxChange}
                                     className="w-4 h-4 accent-yellow-400 cursor-pointer"
                                 />
-                                <span className="text-[10px] text-slate-400 font-bold uppercase">Parent?</span>
+                                <span className="text-[10px] text-slate-400 font-bold uppercase">
+                                    {t('profile.parentQuestion')}
+                                </span>
                             </label>
                         )}
                     </div>
@@ -125,6 +131,7 @@ const ProfileCard = ({ id, name, stats, isCurrent, onSwitch, onRename, isParent,
                                         setIsEditing(false);
                                     }}
                                     className="text-green-400 hover:text-green-300"
+                                    aria-label={t('profile.saveName')}
                                 >
                                     <Check size={24} />
                                 </button>
@@ -143,7 +150,9 @@ const ProfileCard = ({ id, name, stats, isCurrent, onSwitch, onRename, isParent,
                                         className={`fill-red-600 text-red-800 ${isCurrent ? 'animate-pulse' : ''}`}
                                         size={24}
                                     />
-                                    <span className="text-lg text-slate-400 uppercase tracking-wider">LV.</span>
+                                    <span className="text-lg text-slate-400 uppercase tracking-wider">
+                                        {t('profile.levelShort')}
+                                    </span>
                                     <span className="text-2xl font-bold text-white leading-none">
                                         {stats ? stats.totalLevel : 0}
                                     </span>
@@ -164,7 +173,7 @@ const ProfileCard = ({ id, name, stats, isCurrent, onSwitch, onRename, isParent,
                     <div className="flex-1 flex flex-col min-w-0 pr-2">
                         <div className="flex justify-between items-center mb-1">
                             <span className="text-[10px] text-slate-300 font-bold uppercase tracking-wider drop-shadow-md pl-2">
-                                Skill Proficiency
+                                {t('profile.skillProficiency')}
                             </span>
                         </div>
                         <div className="flex-1 bg-black/50 rounded-lg border-2 border-white/10 inner-shadow p-0 overflow-hidden backdrop-blur-sm relative flex items-center">

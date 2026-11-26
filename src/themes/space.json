@@ -137,5 +137,58 @@
         "mismatch": "sounds/mismatch.ogg",
         "enemyHurt": "sounds/enemy-hurt.ogg",
         "enemyDefeat": "sounds/enemy-defeat.ogg"
+    },
+    "translations": {
+        "fr": {
+            "name": "Espace",
+            "skills": {
+                "reading": {
+                    "name": "Signaux",
+                    "title": "Bibliothèque stellaire",
+                    "action": "Décoder !",
+                    "description": "Lis les mots de l'espace à voix haute pour charger tes lasers !"
+                },
+                "math": {
+                    "name": "Navigation",
+                    "title": "Salle de contrôle",
+                    "action": "Calculer !",
+                    "description": "Résous les calculs pour guider ton vaisseau à travers la flotte ennemie !"
+                },
+                "writing": {
+                    "name": "Orthographe",
+                    "title": "Atelier spatial",
+                    "action": "Construire !",
+                    "description": "Épelle le nom de chaque pièce pour l'ajouter à ton vaisseau !"
+                },
+                "cleaning": {
+                    "name": "Cargaison",
+                    "title": "Soute",
+                    "action": "Ranger !",
+                    "description": "Range tes capsules avant la prochaine mission !"
+                },
+                "memory": {
+                    "name": "Mémoire",
+                    "title": "Hangar",
+                    "action": "Associer !",
+                    "description": "Trouve les paires pour remplir ton hangar de vaisseaux !"
+                },
+                "patterns": {
+                    "name": "Motifs",
+                    "title": "Labo des signaux",
+                    "action": "Résoudre !",
+                    "description": "Répète la séquence lumineuse pour ouvrir la station spatiale !"
+                }
+            },
+            "patternPieces": {
+                "Bronze": "Bronze",
+                "Silver": "Argent",
+                "Gold": "Or",
+                "Blue": "Bleu",
+                "Green": "Vert",
+                "Red": "Rouge",
+                "Yellow": "Jaune",
+                "Orange": "Orange"
+            }
+        }
     }
 }

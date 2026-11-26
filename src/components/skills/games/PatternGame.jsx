@@ -2,6 +2,8 @@ import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react'
 import SafeImage from '../../ui/SafeImage';
 import { DIFFICULTY_CONTENT } from '../../../constants/gameData';
 import { playMatch, playMismatch, playNote } from '../../../services/soundManager';
+import { useTranslation } from '../../../i18n/useTranslation';
+import { pieceLabel } from '../../../i18n/gameText';
 
 const MAX_TEMPO_DELAY = 800;
 const MIN_TEMPO_DELAY = 200;
@@ -22,6 +24,7 @@ const getTempoDelays = (completedRounds, currentDifficulty) => {
 
 // Simon Says with the pattern pieces of the active theme. Each piece plays its own note.
 const PatternGame = ({ isBattling, difficulty, onMathSubmit, themeData }) => {
+    const { t, language } = useTranslation();
     const [simonSequence, setSimonSequence] = useState([]);
     const [playerIndex, setPlayerIndex] = useState(0);
     const [isShowingSequence, setIsShowingSequence] = useState(false);
@@ -133,9 +136,9 @@ const PatternGame = ({ isBattling, difficulty, onMathSubmit, themeData }) => {
     return (
         <div className="w-full flex flex-col items-center gap-1">
             <div className="text-white text-lg font-bold py-1">
-                Round: {completedRounds}{' '}
-                {isShowingSequence && <span className="text-yellow-400 animate-pulse">Watch!</span>}
-                {!isShowingSequence && simonGameActive && <span className="text-green-400">Your turn!</span>}
+                {t('games.round', { count: completedRounds })}{' '}
+                {isShowingSequence && <span className="text-yellow-400 animate-pulse">{t('games.watch')}</span>}
+                {!isShowingSequence && simonGameActive && <span className="text-green-400">{t('games.yourTurn')}</span>}
             </div>
             <div className="relative w-[240px] h-[240px]">
                 {pieceColors.map((color, index) => {
@@ -154,11 +157,11 @@ const PatternGame = ({ isBattling, difficulty, onMathSubmit, themeData }) => {
                         >
                             <SafeImage
                                 src={pieces[color]}
-                                alt={color}
+                                alt={pieceLabel(t, language, themeData, color)}
                                 className="w-full h-full object-contain drop-shadow-lg"
                             />
                             <span className="absolute -bottom-1 left-1/2 -translate-x-1/2 text-[10px] text-white bg-black/60 px-1 rounded">
-                                {color}
+                                {pieceLabel(t, language, themeData, color)}
                             </span>
                         </div>
                     );
@@ -167,13 +170,13 @@ const PatternGame = ({ isBattling, difficulty, onMathSubmit, themeData }) => {
             {!simonGameActive && completedRounds > 0 && (
                 <div className="flex flex-col items-center gap-3">
                     <div className="text-red-400 text-lg font-bold animate-pulse">
-                        Game Over! Rounds: {completedRounds}
+                        {t('games.gameOver', { count: completedRounds })}
                     </div>
                     <button
                         onClick={startSimonGame}
                         className="bg-blue-600 hover:bg-blue-500 text-white text-xl font-bold py-3 px-6 rounded shadow-[0_4px_0_#1e40af] active:shadow-none active:translate-y-[4px] transition-all"
                     >
-                        Retry
+                        {t('games.retry')}
                     </button>
                 </div>
             )}

@@ -130,5 +130,58 @@
         "mismatch": "sounds/mismatch.ogg",
         "enemyHurt": "sounds/enemy-hurt.ogg",
         "enemyDefeat": "sounds/enemy-defeat.ogg"
+    },
+    "translations": {
+        "fr": {
+            "name": "Océan",
+            "skills": {
+                "reading": {
+                    "name": "Lecture",
+                    "title": "Bibliothèque de corail",
+                    "action": "Lire !",
+                    "description": "Lis les mots à voix haute pour chasser les poissons fantômes !"
+                },
+                "math": {
+                    "name": "Maths",
+                    "title": "Carte au trésor",
+                    "action": "Compter !",
+                    "description": "Résous les calculs pour trouver le chemin du trésor !"
+                },
+                "writing": {
+                    "name": "Orthographe",
+                    "title": "Chantier naval",
+                    "action": "Construire !",
+                    "description": "Épelle le nom pour fabriquer l'équipement de ton bateau !"
+                },
+                "cleaning": {
+                    "name": "Rangement",
+                    "title": "Cale",
+                    "action": "Ranger !",
+                    "description": "Range la cale avant de lever l'ancre !"
+                },
+                "memory": {
+                    "name": "Mémoire",
+                    "title": "Aquarium",
+                    "action": "Associer !",
+                    "description": "Trouve les paires pour remplir ton aquarium !"
+                },
+                "patterns": {
+                    "name": "Motifs",
+                    "title": "Chanson des bulles",
+                    "action": "Résoudre !",
+                    "description": "Répète la chanson des poissons pour ouvrir la porte engloutie !"
+                }
+            },
+            "patternPieces": {
+                "Red": "Rouge",
+                "Pink": "Rose",
+                "Orange": "Orange",
+                "Green": "Vert",
+                "Blue": "Bleu",
+                "Brown": "Marron",
+                "Grey": "Gris",
+                "Bubble": "Bulle"
+            }
+        }
     }
 }

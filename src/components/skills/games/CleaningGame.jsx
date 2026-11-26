@@ -1,8 +1,10 @@
 import React, { useState, useCallback } from 'react';
 import ParentalVerificationModal from '../../ui/ParentalVerificationModal';
+import { useTranslation } from '../../../i18n/useTranslation';
 
 const CleaningGame = ({ challenge, onMathSubmit }) => {
     const [showParentalModal, setShowParentalModal] = useState(false);
+    const { t } = useTranslation();
 
     const handleParentalVerified = useCallback(() => {
         setShowParentalModal(false);
@@ -31,7 +33,7 @@ const CleaningGame = ({ challenge, onMathSubmit }) => {
                 onClick={() => setShowParentalModal(true)}
                 className="w-full bg-green-600 hover:bg-green-500 text-white text-3xl font-bold py-4 rounded shadow-[0_4px_0_#166534] active:shadow-none active:translate-y-[4px] transition-all"
             >
-                Complete!
+                {t('games.complete')}
             </button>
             <ParentalVerificationModal
                 isOpen={showParentalModal}

@@ -4,7 +4,15 @@ import { describe, it, expect } from 'vitest';
 import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs';
 import { join } from 'node:path';
 import { Buffer } from 'node:buffer';
-import { THEME_SOURCES, THEME_SPRITE_GROUPS, SKILL_DATA, SOUND_KEYS, DIFFICULTY_CONTENT } from '../constants/gameData';
+import {
+    THEME_SOURCES,
+    THEME_SPRITE_GROUPS,
+    SKILL_DATA,
+    SOUND_KEYS,
+    DIFFICULTY_CONTENT,
+    SKILL_TEXT_FIELDS,
+} from '../constants/gameData';
+import { LANGUAGE_CODES } from '../i18n/locales';
 
 const ROOT = join(import.meta.dirname, '..', '..');
 const THEMES_DIR = join(ROOT, 'public', 'assets', 'themes');
@@ -166,6 +174,28 @@ describe.each(themes)('theme "%s"', (id, raw) => {
             .filter(({ dims }) => dims && dims.width !== dims.height)
             .map(({ field, file, dims }) => `${field}: ${file} is ${dims.width} x ${dims.height}, use 256 x 256`);
         expect(notSquare).toEqual([]);
+    });
+
+    it('has translations only for known languages, skills, fields and pattern pieces', () => {
+        const skillIds = SKILL_DATA.map((skill) => skill.id);
+        const fields = Object.keys(SKILL_TEXT_FIELDS);
+        const problems = [];
+        Object.entries(raw.translations || {}).forEach(([code, text]) => {
+            if (!LANGUAGE_CODES.includes(code)) problems.push(`translations > ${code}: unknown language`);
+            Object.entries(text.skills || {}).forEach(([skillId, skill]) => {
+                if (!skillIds.includes(skillId))
+                    problems.push(`translations > ${code} > skills > ${skillId}: unknown skill`);
+                Object.keys(skill).forEach((field) => {
+                    if (!fields.includes(field))
+                        problems.push(`translations > ${code} > ${skillId} > ${field}: use ${fields.join(', ')}`);
+                });
+            });
+            Object.keys(text.patternPieces || {}).forEach((piece) => {
+                if (!raw.patternPieces?.[piece])
+                    problems.push(`translations > ${code} > patternPieces > ${piece}: not a piece`);
+            });
+        });
+        expect(problems).toEqual([]);
     });
 
     it('only uses known skill ids and sound names', () => {

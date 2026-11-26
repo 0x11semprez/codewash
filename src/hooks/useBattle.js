@@ -302,8 +302,8 @@ export const useBattle = (skills, setSkills, stats, setStats, theme = getTheme()
                                     newBadges.push(newTier);
                                     setLootBox({
                                         level: lvl,
-                                        skillName: theme.skills[skillId].fantasyName,
-                                        item: 'New Rank!',
+                                        skillId: skillConfig.id,
+                                        itemKey: 'loot.newRank',
                                         img: BASE_ASSETS.badges.Wood,
                                     });
                                     playNotification();
@@ -403,8 +403,8 @@ export const useBattle = (skills, setSkills, stats, setStats, theme = getTheme()
         if (skillConfig) {
             setLootBox({
                 level: skills[skillId].level + 1,
-                skillName: theme.skills[skillId].fantasyName,
-                item: 'Bonus Level!',
+                skillId: skillConfig.id,
+                itemKey: 'loot.phantomBonus',
                 img: theme.bonusCreature,
             });
             playNotification();

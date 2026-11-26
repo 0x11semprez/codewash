@@ -5,6 +5,7 @@ import { ACCEPTED_TYPES, MAX_FILES, MAX_FILE_BYTES, addFiles, formatBytes } from
 import { appLogBuffer } from '../../utils/bugReport/logBuffer.js';
 import { buildReport } from '../../utils/bugReport/buildReport.js';
 import { createTransport, downloadReportJson } from '../../utils/bugReport/transports.js';
+import { useTranslation } from '../../i18n/useTranslation';
 
 const fieldClass =
     'w-full bg-black/30 border-2 border-stone-600 rounded-lg px-3 py-2 text-white focus:border-slate-300 outline-none';
@@ -13,11 +14,6 @@ const buttonClass =
     'flex items-center justify-center gap-2 py-3 px-4 rounded-lg font-bold uppercase tracking-wider transition-all border-2';
 
 const DEFAULT_CONFIG = readBugReportConfig();
-
-const SUCCESS_TEXT = {
-    http: 'Thanks! Your report was sent.',
-    mailto: 'Your mail app should open now. Attached files are not included: add them to the email by hand.',
-};
 
 const BugReportModal = ({
     isOpen,
@@ -28,6 +24,7 @@ const BugReportModal = ({
     logBuffer = appLogBuffer,
     download = downloadReportJson,
 }) => {
+    const { t } = useTranslation();
     const activeTransport = useMemo(() => transport ?? createTransport(config), [transport, config]);
     const [description, setDescription] = useState('');
     const [steps, setSteps] = useState('');
@@ -54,7 +51,11 @@ const BugReportModal = ({
         buildReport({ description, steps, reporterEmail, context, logs: includeLogs ? logs : [], files });
 
     const handleFiles = (event) => {
-        const result = addFiles(files, Array.from(event.target.files ?? []));
+        const result = addFiles(files, Array.from(event.target.files ?? []), {
+            badType: (name) => t('bugReport.fileBadType', { name }),
+            tooLarge: (name, limit) => t('bugReport.fileTooLarge', { name, limit }),
+            tooMany: (name, max) => t('bugReport.fileTooMany', { name, max }),
+        });
         setFiles(result.files);
         setFileErrors(result.errors);
         event.target.value = '';
@@ -64,17 +65,18 @@ const BugReportModal = ({
 
     const handleSubmit = async (event) => {
         event.preventDefault();
-        if (!description.trim()) return setFormError('Please describe the bug.');
+        if (!description.trim()) return setFormError(t('bugReport.descriptionRequired'));
         if (reporterEmail.trim() && !isValidEmail(reporterEmail.trim())) {
-            return setFormError('This email address does not look valid.');
+            return setFormError(t('bugReport.emailInvalid'));
         }
         setFormError('');
         setStatus({ state: 'sending', message: '' });
         try {
             const result = await activeTransport.send(makeReport(), files);
-            setStatus({ state: 'success', message: SUCCESS_TEXT[result.kind] ?? SUCCESS_TEXT.http });
+            const kind = result.kind === 'mailto' ? 'mailto' : 'http';
+            setStatus({ state: 'success', message: t(`bugReport.success.${kind}`) });
         } catch (error) {
-            setStatus({ state: 'error', message: `Sending failed. ${error.message} You can download the report.` });
+            setStatus({ state: 'error', message: t('bugReport.sendFailed', { reason: error.message }) });
         }
     };
 
@@ -92,7 +94,7 @@ const BugReportModal = ({
                 <button
                     type="button"
                     onClick={onClose}
-                    aria-label="Close"
+                    aria-label={t('bugReport.close')}
                     className="absolute top-4 right-4 text-gray-400 hover:text-white transition-colors"
                 >
                     <X size={24} />
@@ -101,12 +103,12 @@ const BugReportModal = ({
                     id="bug-report-title"
                     className="text-3xl font-bold text-slate-300 uppercase tracking-wider mb-4 text-center"
                 >
-                    Discovered a bug?
+                    {t('bugReport.title')}
                 </h2>
                 <form onSubmit={handleSubmit} noValidate className="flex flex-col gap-4">
                     <div>
                         <label htmlFor="bug-description" className={labelClass}>
-                            What happened? *
+                            {t('bugReport.description')}
                         </label>
                         <textarea
                             id="bug-description"
@@ -119,7 +121,7 @@ const BugReportModal = ({
                     </div>
                     <div>
                         <label htmlFor="bug-steps" className={labelClass}>
-                            Steps to reproduce
+                            {t('bugReport.steps')}
                         </label>
                         <textarea
                             id="bug-steps"
@@ -131,7 +133,7 @@ const BugReportModal = ({
                     </div>
                     <div>
                         <label htmlFor="bug-email" className={labelClass}>
-                            Your email (optional)
+                            {t('bugReport.email')}
                         </label>
                         <input
                             id="bug-email"
@@ -144,7 +146,7 @@ const BugReportModal = ({
                     <div>
                         <label htmlFor="bug-files" className={labelClass}>
                             <Paperclip size={16} className="inline mr-1" />
-                            Screenshots or files
+                            {t('bugReport.files')}
                         </label>
                         <input
                             id="bug-files"
@@ -155,7 +157,7 @@ const BugReportModal = ({
                             className="w-full text-stone-300 text-sm"
                         />
                         <p className="text-stone-500 text-xs text-left mt-1">
-                            Images, .txt, .log or .json. Up to {MAX_FILES} files, {formatBytes(MAX_FILE_BYTES)} each.
+                            {t('bugReport.filesHint', { max: MAX_FILES, size: formatBytes(MAX_FILE_BYTES) })}
                         </p>
                         {files.length > 0 && (
                             <ul className="mt-2 text-left text-sm text-stone-300">
@@ -167,7 +169,7 @@ const BugReportModal = ({
                                         <button
                                             type="button"
                                             onClick={() => removeFile(i)}
-                                            aria-label={`Remove ${file.name}`}
+                                            aria-label={t('bugReport.removeFile', { name: file.name })}
                                             className="text-red-400 hover:text-red-300"
                                         >
                                             <X size={16} />
@@ -189,11 +191,11 @@ const BugReportModal = ({
                                 checked={includeLogs}
                                 onChange={(e) => setIncludeLogs(e.target.checked)}
                             />
-                            Include recent error logs ({logs.length})
+                            {t('bugReport.includeLogs', { count: logs.length })}
                         </label>
                         {includeLogs && logs.length > 0 && (
                             <pre
-                                aria-label="Log preview"
+                                aria-label={t('bugReport.logPreview')}
                                 className="mt-2 max-h-32 overflow-auto bg-black/40 border border-stone-700 rounded p-2 text-xs text-stone-400 whitespace-pre-wrap"
                             >
                                 {logs.map((log) => `[${log.level}] ${log.message}`).join('\n')}
@@ -227,7 +229,7 @@ const BugReportModal = ({
                             disabled={isSending}
                             className={`${buttonClass} flex-1 bg-red-600 hover:bg-red-500 text-white border-red-400 disabled:opacity-50 disabled:cursor-wait`}
                         >
-                            <Send size={18} /> {isSending ? 'Sending...' : 'Send'}
+                            <Send size={18} /> {isSending ? t('bugReport.sending') : t('bugReport.send')}
                         </button>
                     </div>
                 </form>

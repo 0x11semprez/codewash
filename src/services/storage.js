@@ -29,6 +29,17 @@ export const readJSON = (key, fallback) => {
     return parseJSON(raw, fallback, `"${key}"`);
 };
 
+// Saves a JSON value. Returns false (and warns) when storage is full or blocked.
+export const writeJSON = (key, value) => {
+    try {
+        localStorage.setItem(key, JSON.stringify(value));
+        return true;
+    } catch (error) {
+        console.warn(`[storage] Cannot write "${key}":`, error);
+        return false;
+    }
+};
+
 // Copies a corrupted raw value aside once, so the next save does not destroy it.
 export const backupCorrupted = (key, raw) => {
     const backupKey = `${key}_corrupted_backup`;

@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { createMemoryStorage } from './helpers/memoryStorage';
-import { parseJSON, readJSON, backupCorrupted } from '../services/storage';
+import { parseJSON, readJSON, writeJSON, backupCorrupted } from '../services/storage';
 
 describe('storage helpers', () => {
     let warn;
@@ -54,5 +54,21 @@ describe('storage helpers', () => {
         expect(backupCorrupted('save', 'first')).toBe('save_corrupted_backup');
         backupCorrupted('save', 'second');
         expect(localStorage.getItem('save_corrupted_backup')).toBe('first');
+    });
+
+    it('writeJSON saves a JSON value and returns true', () => {
+        expect(writeJSON('lang', 'fr')).toBe(true);
+        expect(localStorage.getItem('lang')).toBe('"fr"');
+        expect(readJSON('lang', 'en')).toBe('fr');
+    });
+
+    it('writeJSON returns false and warns when storage throws', () => {
+        vi.stubGlobal('localStorage', {
+            setItem: () => {
+                throw new Error('full');
+            },
+        });
+        expect(writeJSON('lang', 'fr')).toBe(false);
+        expect(warn).toHaveBeenCalled();
     });
 });

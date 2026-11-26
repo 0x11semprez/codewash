@@ -51,8 +51,9 @@ describe('theme menu', () => {
     it('marks the active theme and changes theme on click', () => {
         const setActiveTheme = vi.fn();
         renderDrawer(setActiveTheme);
-        expect(screen.getByRole('button', { name: /space/i })).toHaveAttribute('aria-pressed', 'true');
-        fireEvent.click(screen.getByRole('button', { name: /ocean/i }));
+        // Queries by picture: role queries are slow on this large drawer.
+        expect(screen.getByAltText('Space').closest('button')).toHaveAttribute('aria-pressed', 'true');
+        fireEvent.click(screen.getByAltText('Ocean').closest('button'));
         expect(setActiveTheme).toHaveBeenCalledWith('ocean');
     });
 

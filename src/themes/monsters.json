@@ -135,5 +135,58 @@
         "mismatch": "sounds/mismatch.ogg",
         "enemyHurt": "sounds/enemy-hurt.ogg",
         "enemyDefeat": "sounds/enemy-defeat.ogg"
+    },
+    "translations": {
+        "fr": {
+            "name": "Monstres",
+            "skills": {
+                "reading": {
+                    "name": "Sortilèges",
+                    "title": "Bibliothèque des monstres",
+                    "action": "Lire !",
+                    "description": "Lis les mots à voix haute pour calmer les monstres sauvages !"
+                },
+                "math": {
+                    "name": "Alchimie",
+                    "title": "Labo de potions",
+                    "action": "Mélanger !",
+                    "description": "Résous les calculs pour préparer une potion qui bat les monstres !"
+                },
+                "writing": {
+                    "name": "Calligraphie",
+                    "title": "Guide des monstres",
+                    "action": "Écrire !",
+                    "description": "Épelle le nom pour l'ajouter à ton guide des monstres !"
+                },
+                "cleaning": {
+                    "name": "Pillage",
+                    "title": "Salle au trésor",
+                    "action": "Ranger !",
+                    "description": "Range les blocs du trésor avant la prochaine sortie !"
+                },
+                "memory": {
+                    "name": "Runes",
+                    "title": "Amis animaux",
+                    "action": "Associer !",
+                    "description": "Trouve les paires pour te faire de nouveaux amis animaux !"
+                },
+                "patterns": {
+                    "name": "Rituels",
+                    "title": "Énigme des gemmes",
+                    "action": "Résoudre !",
+                    "description": "Répète la chanson des gemmes pour ouvrir la grotte des monstres !"
+                }
+            },
+            "patternPieces": {
+                "Blue": "Bleu",
+                "Green": "Vert",
+                "Red": "Rouge",
+                "Yellow": "Jaune",
+                "Gold": "Or",
+                "Silver": "Argent",
+                "Bronze": "Bronze",
+                "Heart": "Cœur"
+            }
+        }
     }
 }
