@@ -25,7 +25,7 @@ import {
     playMobHurt,
     playMobDeath,
     playAchievement,
-} from '../utils/soundManager';
+} from '../services/soundManager';
 import { getNewlyUnlockedAchievements, getNewTierAchievements, addUniqueToArray } from '../utils/achievementUtils';
 
 const BOSS_HEALING_ANIMATION_DURATION = 600;

@@ -1,5 +1,6 @@
 import { SKILL_DATA, THEME_CONFIG, THEMES_LIST } from '../constants/gameData';
-import { parseJSON } from './storage';
+import { parseJSON } from '../services/storage';
+import { STORAGE_KEYS, skillsKey } from '../services/storageKeys';
 
 const UI_SOUND_ASSETS = [
     'assets/sounds/ui/ui/actioncard_left.wav',
@@ -14,10 +15,8 @@ const UI_SOUND_ASSETS = [
 
 const getSavedTheme = () => {
     try {
-        const profile = Number.parseInt(localStorage.getItem('currentProfile_v1') || '1', 10) || 1;
-        const saved =
-            localStorage.getItem(`heroSkills_v23_p${profile}`) ||
-            (profile === 1 ? localStorage.getItem('heroSkills_v23') : null);
+        const profile = Number.parseInt(localStorage.getItem(STORAGE_KEYS.currentProfile) || '1', 10) || 1;
+        const saved = localStorage.getItem(skillsKey(profile));
         return parseJSON(saved, {}, 'saved theme').theme || 'minecraft';
     } catch {
         return 'minecraft';

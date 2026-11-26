@@ -47,6 +47,13 @@ src/
     constants/
 ```
 
+## Progress
+
+- Hooks live in `src/hooks/` ([#45](https://github.com/0x11semprez/codewash/pull/45)). Each mini-game has its own file in `src/components/skills/games/` ([#48](https://github.com/0x11semprez/codewash/pull/48)).
+- Game data is split by topic in `src/constants/game/`. `src/constants/gameData.js` re-exports it, so imports did not change.
+- Code that talks to the browser (`soundManager`, `storage`, `storageKeys`) lives in `src/services/`. `src/utils/` holds pure game logic.
+- The `src/features/` folders are not started.
+
 ## Decision
 
 Migrate from flat type-based structure to **feature-based structure** where each game feature owns its components, utils, and constants.

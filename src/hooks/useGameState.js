@@ -11,21 +11,17 @@ import { getRandomAura } from '../utils/mobDisplayUtils';
 import { SKILL_DATA } from '../constants/gameData';
 import { getDefaultStats, isAchievementUnlocked } from '../utils/achievementUtils';
 import { now as systemNow, today as getToday } from '../utils/clock';
-import { parseJSON, readJSON, backupCorrupted } from '../utils/storage';
+import { parseJSON, readJSON, backupCorrupted } from '../services/storage';
+import { STORAGE_KEYS, skillsKey, borderEffectKey, borderColorKey } from '../services/storageKeys';
 
-const getStorageKey = (profileId) => `heroSkills_v23_p${profileId}`;
 const DEFAULT_PROFILE_NAMES = { 1: 'Player 1', 2: 'Player 2', 3: 'Player 3' };
 const DEFAULT_PARENT_STATUS = { 1: false, 2: false, 3: false };
 
 // Returns the parsed skills save for a profile, or null when missing or corrupted.
 // A corrupted save is copied to a backup key before the app overwrites it.
 const readSkillsSave = (profileId) => {
-    let key = getStorageKey(profileId);
-    let raw = localStorage.getItem(key);
-    if (!raw && profileId === 1) {
-        key = 'heroSkills_v23';
-        raw = localStorage.getItem(key);
-    }
+    const key = skillsKey(profileId);
+    const raw = localStorage.getItem(key);
     if (!raw) return null;
     const parsed = parseJSON(raw, null, `"${key}"`);
     if (parsed === null || typeof parsed !== 'object' || Array.isArray(parsed)) {
@@ -118,13 +114,15 @@ const loadStats = (profileId) => {
 // `now` is injectable so tests can fix the date. The app calls useGameState() with no argument.
 export const useGameState = ({ now = systemNow } = {}) => {
     const [currentProfile, setCurrentProfile] = useState(() =>
-        localStorage.getItem('currentProfile_v1') ? parseInt(localStorage.getItem('currentProfile_v1')) : 1,
+        localStorage.getItem(STORAGE_KEYS.currentProfile)
+            ? parseInt(localStorage.getItem(STORAGE_KEYS.currentProfile))
+            : 1,
     );
     const [profileNames, setProfileNames] = useState(() =>
-        readJSON('heroProfileNames_v1', { ...DEFAULT_PROFILE_NAMES }),
+        readJSON(STORAGE_KEYS.profileNames, { ...DEFAULT_PROFILE_NAMES }),
     );
     const [parentStatus, setParentStatus] = useState(() =>
-        readJSON('heroParentStatus_v1', { ...DEFAULT_PARENT_STATUS }),
+        readJSON(STORAGE_KEYS.parentStatus, { ...DEFAULT_PARENT_STATUS }),
     );
 
     const [skills, setSkills] = useState(() => loadSkills(currentProfile));
@@ -133,25 +131,25 @@ export const useGameState = ({ now = systemNow } = {}) => {
     const loginTrackedRef = useRef(false);
 
     const [selectedBorder, setSelectedBorder] = useState(() => {
-        const saved = localStorage.getItem(`borderEffect_p${currentProfile}`);
+        const saved = localStorage.getItem(borderEffectKey(currentProfile));
         return saved || 'solid';
     });
     const [borderColor, setBorderColor] = useState(() => {
-        const saved = localStorage.getItem(`borderColor_p${currentProfile}`);
+        const saved = localStorage.getItem(borderColorKey(currentProfile));
         return saved || '#FFD700';
     });
 
     useEffect(() => {
         const dataToSave = { skills, theme: activeTheme, stats };
-        localStorage.setItem(getStorageKey(currentProfile), JSON.stringify(dataToSave));
-        localStorage.setItem('currentProfile_v1', currentProfile);
-        localStorage.setItem('heroProfileNames_v1', JSON.stringify(profileNames));
-        localStorage.setItem('heroParentStatus_v1', JSON.stringify(parentStatus));
+        localStorage.setItem(skillsKey(currentProfile), JSON.stringify(dataToSave));
+        localStorage.setItem(STORAGE_KEYS.currentProfile, currentProfile);
+        localStorage.setItem(STORAGE_KEYS.profileNames, JSON.stringify(profileNames));
+        localStorage.setItem(STORAGE_KEYS.parentStatus, JSON.stringify(parentStatus));
     }, [skills, currentProfile, activeTheme, profileNames, parentStatus, stats]);
 
     useEffect(() => {
-        localStorage.setItem(`borderEffect_p${currentProfile}`, selectedBorder);
-        localStorage.setItem(`borderColor_p${currentProfile}`, borderColor);
+        localStorage.setItem(borderEffectKey(currentProfile), selectedBorder);
+        localStorage.setItem(borderColorKey(currentProfile), borderColor);
     }, [selectedBorder, borderColor, currentProfile]);
 
     useEffect(() => {
@@ -251,14 +249,13 @@ export const useGameState = ({ now = systemNow } = {}) => {
     };
 
     const handleReset = () => {
-        localStorage.removeItem(getStorageKey(currentProfile));
-        if (currentProfile === 1) localStorage.removeItem('heroSkills_v23');
-        const parentStatusObj = readJSON('heroParentStatus_v1', { ...DEFAULT_PARENT_STATUS });
+        localStorage.removeItem(skillsKey(currentProfile));
+        const parentStatusObj = readJSON(STORAGE_KEYS.parentStatus, { ...DEFAULT_PARENT_STATUS });
         parentStatusObj[currentProfile] = false;
-        localStorage.setItem('heroParentStatus_v1', JSON.stringify(parentStatusObj));
-        const profileNamesObj = readJSON('heroProfileNames_v1', { ...DEFAULT_PROFILE_NAMES });
+        localStorage.setItem(STORAGE_KEYS.parentStatus, JSON.stringify(parentStatusObj));
+        const profileNamesObj = readJSON(STORAGE_KEYS.profileNames, { ...DEFAULT_PROFILE_NAMES });
         profileNamesObj[currentProfile] = `Player ${currentProfile}`;
-        localStorage.setItem('heroProfileNames_v1', JSON.stringify(profileNamesObj));
+        localStorage.setItem(STORAGE_KEYS.profileNames, JSON.stringify(profileNamesObj));
         window.location.reload();
     };
 

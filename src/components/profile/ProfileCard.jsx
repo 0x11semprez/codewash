@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Pencil, Check, Heart, Crown } from 'lucide-react';
 import SafeImage from '../ui/SafeImage';
 import ParentalVerificationModal from '../ui/ParentalVerificationModal';
+import diamondsTexture from '../../assets/textures/diagmonds-light.png';
 import { THEMES_LIST, SKILL_DATA } from '../../constants/gameData';
 
 const ProfileCard = ({ id, name, stats, isCurrent, onSwitch, onRename, isParent, onParentVerified }) => {
@@ -78,7 +79,10 @@ const ProfileCard = ({ id, name, stats, isCurrent, onSwitch, onRename, isParent,
                         <div className="absolute inset-0 bg-black/60"></div>
                     </div>
                 )}
-                <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/diagmonds-light.png')] opacity-10 pointer-events-none"></div>
+                <div
+                    className="absolute inset-0 opacity-10 pointer-events-none"
+                    style={{ backgroundImage: `url(${diamondsTexture})` }}
+                ></div>
                 <div className="relative flex h-full p-2 gap-2 z-10">
                     {/* Parent indicator on the left - checkbox if not verified, crown if verified */}
                     <div className="flex flex-col justify-center items-center px-2 border-r-2 border-white/20">

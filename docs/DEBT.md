@@ -298,14 +298,14 @@ Each item links to its GitHub issue for full context and to the PR that addresse
 - **Fix:** Extract shared `BorderEffectCard` component.
 - **Effort:** S
 
-### DEBT-009: Hardcoded localStorage keys [P2] [Open]
+### DEBT-009: Hardcoded localStorage keys [P2] [Done ✓]
 
-- **Issue:** [#32](https://github.com/0x11semprez/codewash/issues/32) — **PR:** none yet
-- **Location:** `src/App.jsx` (keys like `heroSkills_v23_p${profileId}`)
+- **Issue:** [#32](https://github.com/0x11semprez/codewash/issues/32) — **PR:** pending
+- **Location (before):** `useGameState.js`, `preloadStartupAssets.js` and `PhantomEvent.jsx` (21 occurrences of key names typed by hand)
 - **Smell:** Scattered magic strings. No central registry. No migration path.
-- **Impact:** Renaming a key silently loses all saved player data. No way to migrate between versions.
-- **Risk:** Medium impact, high likelihood.
-- **Fix:** Extract storage layer with key constants and version-aware migration.
+- **Impact:** Renaming a key silently loses all saved player data.
+- **Fix:** All keys live in `src/services/storageKeys.js`. `migrateKey` and `migrateStorage` move old data to a new key at startup. The save of the original game is moved to profile 1 by the migration. A test fails if a key name is typed anywhere else.
+- **Evidence:** [bug report](bugs/Bugs.md#debt-009-hardcoded-localstorage-keys), with screenshots of the bug and of the fix.
 - **Effort:** S
 
 ### DEBT-010: No error boundaries [P1] [Done ✓]
@@ -321,7 +321,7 @@ Each item links to its GitHub issue for full context and to the PR that addresse
 ### DEBT-011: Sound manager — singleton + no audio pooling [P3] [Open]
 
 - **Issue:** [#34](https://github.com/0x11semprez/codewash/issues/34) — **PR:** none yet
-- **Location:** `src/utils/soundManager.js` (287 lines)
+- **Location:** `src/services/soundManager.js` (287 lines)
 - **Smell:** Module-level mutable state (`sfxVolume`, `bgmManager`). Creates a new `Audio()` object on every play call. No pooling.
 - **Impact:** Not testable in isolation. Dozens of `Audio` objects during rapid battles increase memory pressure.
 - **Risk:** Low impact, low likelihood.
@@ -390,16 +390,12 @@ Each item links to its GitHub issue for full context and to the PR that addresse
 - **Fix:** Add try-catch or use a shared safe-parse helper.
 - **Effort:** XS
 
-### DEBT-019: External resources in component render [P3] [Open]
+### DEBT-019: External resources in component render [P3] [Done ✓]
 
-- **Issue:** [#42](https://github.com/0x11semprez/codewash/issues/42) — **PR:** none yet
-- **Location:**
-  - `src/components/ui/GlobalStyles.jsx:5` and `src/index.css:1` — Google Fonts `@import` (the one inside `<style>` re-fetches on every remount)
-  - `ProfileCard.jsx:69`, `SkillCard.jsx:187` — `transparenttextures.com` pattern URLs
+- **Issue:** [#42](https://github.com/0x11semprez/codewash/issues/42) — **PR:** pending
+- **Location (before):** `GlobalStyles.jsx` and `src/index.css` (Google Fonts `@import`), `ProfileCard.jsx` and `SkillCard.jsx` (`transparenttextures.com` pattern URLs), `App.jsx` (unused `placehold.co` fallback URL)
 - **Smell:** External HTTP requests triggered during render. Blocks first paint. Breaks fully-offline promise.
-- **Impact:** Slower load, flaky appearance if CDN is down.
-- **Risk:** Low impact, low likelihood.
-- **Fix:** Move font import to `index.html` `<head>`. Inline or self-host texture images.
+- **Fix:** The VT323 font is self-hosted in `src/assets/fonts/` with a local `@font-face` (SIL Open Font License file included). The two textures are stored in `src/assets/textures/` and imported by the components. The unused `placehold.co` prop was removed. `noExternalResources.test.js` fails if a source file points to an external website again.
 - **Effort:** XS
 
 ### DEBT-020: Flat file structure — no feature boundaries [P1] [In Progress]
@@ -409,12 +405,14 @@ Each item links to its GitHub issue for full context and to the PR that addresse
 - **Smell:** All components in flat `src/components/` folders by UI type (drawers, modals, ui). Constants and utils mixed across unrelated domains. No feature boundaries.
 - **Impact:** Cannot reason about which files belong to which feature. Imports cross every boundary.
 - **Fix:** Reorganize into `src/features/{battle,skills,achievements,cosmetics,profile,settings,menu,events}/` with co-located components, constants, and utils. Shared code in `src/shared/`.
+- **Done:** `src/constants/gameData.js` (702 lines) is split into six topic files under `src/constants/game/` (items, mobs, difficulty, themes, words, skills). `gameData.js` re-exports them, so no import had to change. Code that talks to the browser (`soundManager`, `storage`, `storageKeys`) moved from `src/utils/` to `src/services/`. `src/utils/` now holds pure game logic only.
+- **Remaining:** the full `src/features/` layout from ADR-006 is not started.
 - **Effort:** M
 
 ### DEBT-021: Missing theme assets [P2] [Open]
 
 - **Issue:** [#53](https://github.com/0x11semprez/codewash/issues/53) — **PR:** none yet
-- **Location:** `src/constants/gameData.jsx` (`THEMES`), `public/assets/themes/`
+- **Location:** `src/constants/game/themes.js` (`THEME_CONFIG`), `public/assets/themes/`
 - **Smell:** Broken references. Four images used by themes do not exist: `spy_logo.png`, `spy_memorycard.jpg`, `kpop_memorycard.jpg`, `pokemon_memorycard.jpg`.
 - **Impact:** With the spy, kpop or pokemon theme, the loading screen reports failed critical images and the player has to press Continue. In game, the logo or the memory card back is missing.
 - **Risk:** Medium impact, high likelihood: every player who picks one of these themes sees it.
@@ -487,7 +485,7 @@ Low Impact    │ DEBT-018, 019  │                 │ DEBT-004 ✓      │
 
 ## 5. Phased plan
 
-### Phase 0: quick wins (week 1) — done except DEBT-018, DEBT-019
+### Phase 0: quick wins (week 1) — done except DEBT-018
 
 | # | Debt | Task | Status |
 |---|------|------|--------|
@@ -499,7 +497,7 @@ Low Impact    │ DEBT-018, 019  │                 │ DEBT-004 ✓      │
 | 6 | DEBT-016 | Fix stale state reads | Done ✓ — Epitech PR #45 (merge `7b82098`) |
 | 7 | DEBT-017 | Replace setTimeout achievement checks | Done ✓ — Epitech PR #44 (merge `7fa5858`) |
 | 8 | DEBT-018 | Add try-catch to handleReset parse | Open |
-| 9 | DEBT-019 | Move font import to `<head>` | Open |
+| 9 | DEBT-019 | Self-host the font and the textures | Done ✓ |
 
 ### Phase 1: safety net + structure (week 2) — done except DEBT-014, DEBT-020
 
@@ -510,13 +508,13 @@ Low Impact    │ DEBT-018, 019  │                 │ DEBT-004 ✓      │
 | 12 | DEBT-020 | Reorganize into feature-based structure | In Progress — Epitech PR #48 (merge `f69df57`) |
 | 13 | DEBT-014 | Fix `perfectMemoryGames` counter | Open |
 
-### Phase 2: break god components (weeks 3-4) — done except DEBT-009
+### Phase 2: break god components (weeks 3-4) — done
 
 | # | Debt | Task | Status |
 |---|------|------|--------|
 | 14 | DEBT-001 | Extract App.jsx into hooks + context | Done ✓ — [#45](https://github.com/0x11semprez/codewash/pull/45) (merged) |
 | 15 | DEBT-003 | Split SkillCard per skill type | Done ✓ — [#48](https://github.com/0x11semprez/codewash/pull/48) (merged) |
-| 16 | DEBT-009 | Extract storage layer | Open |
+| 16 | DEBT-009 | Extract storage layer | Done ✓ |
 
 ### Phase 3: polish (week 5+)
 
@@ -543,7 +541,7 @@ Low Impact    │ DEBT-018, 019  │                 │ DEBT-004 ✓      │
 | DEBT-006 | [#29](https://github.com/0x11semprez/codewash/issues/29) | [#5](https://github.com/0x11semprez/codewash/pull/5) (merged), originally Epitech PR #37 | Done ✓ |
 | DEBT-007 | [#30](https://github.com/0x11semprez/codewash/issues/30) | [#47](https://github.com/0x11semprez/codewash/pull/47) (merged) | Done ✓ |
 | DEBT-008 | [#31](https://github.com/0x11semprez/codewash/issues/31) | — | Open |
-| DEBT-009 | [#32](https://github.com/0x11semprez/codewash/issues/32) | — | Open |
+| DEBT-009 | [#32](https://github.com/0x11semprez/codewash/issues/32) | pending | Done ✓ |
 | DEBT-010 | [#33](https://github.com/0x11semprez/codewash/issues/33) | [#49](https://github.com/0x11semprez/codewash/pull/49) (merged) | Done ✓ |
 | DEBT-011 | [#34](https://github.com/0x11semprez/codewash/issues/34) | — | Open |
 | DEBT-012 | [#35](https://github.com/0x11semprez/codewash/issues/35) | Epitech PR #37 (merged) | Done ✓ |
@@ -553,7 +551,7 @@ Low Impact    │ DEBT-018, 019  │                 │ DEBT-004 ✓      │
 | DEBT-016 | [#39](https://github.com/0x11semprez/codewash/issues/39) | Epitech PR #45 (merge `7b82098`) | Done ✓ |
 | DEBT-017 | [#40](https://github.com/0x11semprez/codewash/issues/40) | Epitech PR #44 (merge `7fa5858`) | Done ✓ |
 | DEBT-018 | [#41](https://github.com/0x11semprez/codewash/issues/41) | — | Open |
-| DEBT-019 | [#42](https://github.com/0x11semprez/codewash/issues/42) | — | Open |
+| DEBT-019 | [#42](https://github.com/0x11semprez/codewash/issues/42) | pending | Done ✓ |
 | DEBT-020 | [#11](https://github.com/0x11semprez/codewash/issues/11) | Epitech PR #48 (merge `f69df57`) | In Progress |
 | DEBT-021 | [#53](https://github.com/0x11semprez/codewash/issues/53) | — | Open |
 | DEBT-022 | [#54](https://github.com/0x11semprez/codewash/issues/54) | — | Open |

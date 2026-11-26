@@ -5,6 +5,7 @@ import SafeImage from '../ui/SafeImage';
 import MobWithAura from '../ui/MobWithAura';
 import ParentalVerificationModal from '../ui/ParentalVerificationModal';
 import GameErrorBoundary from '../ui/GameErrorBoundary';
+import cubesTexture from '../../assets/textures/cubes.png';
 import {
     BASE_ASSETS,
     HOSTILE_MOBS,
@@ -274,7 +275,7 @@ const SkillCard = ({
                 </div>
             )}
             <div className={topSectionBaseClass} style={config.colorStyle}>
-                <div className="absolute inset-0 opacity-30 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')]"></div>
+                <div className="absolute inset-0 opacity-30" style={{ backgroundImage: `url(${cubesTexture})` }}></div>
                 {!isBattling && (
                     <div className="absolute top-2 left-2 bg-black/50 px-2 py-1 rounded text-white border border-white/20 z-20">
                         <div className="text-xs text-gray-400 uppercase">{skillName}</div>
