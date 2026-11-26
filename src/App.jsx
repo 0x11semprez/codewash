@@ -506,7 +506,7 @@ const App = ({ startupLoadSeconds = null }) => {
                                     damageNumbers={damageNumbers.filter((d) => d.skillId === item.id)}
                                     onStartBattle={() => startBattle(item.id, startVoiceListener, startBGM)}
                                     onEndBattle={() => endBattle(stopVoiceRecognition)}
-                                    onMathSubmit={(val) => handleSuccessHit(item.id, val)}
+                                    onMathSubmit={(val, result) => handleSuccessHit(item.id, val, result)}
                                     onMicClick={() => toggleMicListener(item.id, battlingSkillId)}
                                     difficulty={skills[item.id].difficulty || 1}
                                     setDifficulty={(newDiff) => setSkillDifficulty(item.id, newDiff)}
