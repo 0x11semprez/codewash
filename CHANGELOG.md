@@ -4,7 +4,7 @@ All notable changes to Level Up RPG since the team received it are listed here.
 
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). The project has no version tags yet (`package.json` still says `0.0.0`), so all work merged since the received version is under "Unreleased".
 
-Links to pull requests point to this repository. Work done before the move from the Epitech organization repository is cited as "Epitech PR #N" with its merge commit, because those numbers do not exist here. Entries marked "pending" are in open pull requests and are not on `main` yet.
+Links to pull requests point to this repository. Work done before the move from the Epitech organization repository is cited as "Epitech PR #N" with its merge commit, because those numbers do not exist here. Some stacked pull requests were merged into their base branch instead of `main`. Their work reached `main` later through [#66](https://github.com/0x11semprez/codewash/pull/66) and [#67](https://github.com/0x11semprez/codewash/pull/67).
 
 ## [Unreleased]
 
@@ -27,20 +27,26 @@ Links to pull requests point to this repository. Work done before the move from 
 - Baseline dependency graph in `docs/DEBT.md`. Epitech PR #48 (merge `f69df57`).
 - README, `.gitignore` and six architecture decision records in `docs/adr/`. [#7](https://github.com/0x11semprez/codewash/pull/7)
 - `.gitignore` rules for macOS metadata files such as `._*` (DEBT-007). [#47](https://github.com/0x11semprez/codewash/pull/47)
-- `docs/SUBJECT_MAP.md`, which links each requirement of the subject to its evidence. Pending [#55](https://github.com/0x11semprez/codewash/pull/55).
-- Debt items DEBT-021 (missing theme images) and DEBT-022 (Docker build). Pending [#55](https://github.com/0x11semprez/codewash/pull/55).
-- Runbook for the person on duty (`docs/handover/RUNBOOK.md`) and this changelog. Pending [#57](https://github.com/0x11semprez/codewash/pull/57).
+- `docs/SUBJECT_MAP.md`, which links each requirement of the subject to its evidence. [#55](https://github.com/0x11semprez/codewash/pull/55), [#67](https://github.com/0x11semprez/codewash/pull/67).
+- Debt items DEBT-021 (missing theme images), DEBT-022 (Docker build) and DEBT-023 (direct calls to `Math.random` and `Date`). [#55](https://github.com/0x11semprez/codewash/pull/55), [#59](https://github.com/0x11semprez/codewash/issues/59).
+- Runbook for the person on duty (`docs/handover/RUNBOOK.md`) and this changelog. [#57](https://github.com/0x11semprez/codewash/pull/57), [#67](https://github.com/0x11semprez/codewash/pull/67).
+- Prettier with a format check in CI, and `.git-blame-ignore-revs` to skip the formatting commit ([ADR-007](docs/adr/007-prettier-code-formatting.md)). [#56](https://github.com/0x11semprez/codewash/pull/56)
+- `src/utils/random.js` and `src/utils/clock.js`. Game utilities and `useGameState` accept an injected random source and clock, so tests can fix them ([ADR-008](docs/adr/008-inject-randomness-and-clock.md), DEBT-023). [#60](https://github.com/0x11semprez/codewash/pull/60), [#66](https://github.com/0x11semprez/codewash/pull/66)
+- Tests that render each of the six mini-games for real, so a broken import in a game fails CI. [#58](https://github.com/0x11semprez/codewash/pull/58), [#66](https://github.com/0x11semprez/codewash/pull/66)
+- Branch protection on `main`: a pull request and a green `build-and-test` check are required. No pull request (GitHub setting).
 
 ### Changed
 
-- `App.jsx` is split into six hooks: `useGameState`, `useBattle`, `useAudio`, `useCarousel`, `useVoiceRecognition` and `useFullscreen` (DEBT-001). `App.jsx` went from 1,492 lines in the received version to 353 today. [#45](https://github.com/0x11semprez/codewash/pull/45)
+- `App.jsx` is split into six hooks: `useGameState`, `useBattle`, `useAudio`, `useCarousel`, `useVoiceRecognition` and `useFullscreen` (DEBT-001). `App.jsx` went from 1,492 lines in the received version to 353 after this PR. Later features brought it back to 579 lines today. [#45](https://github.com/0x11semprez/codewash/pull/45)
 - `SkillCard.jsx` is split into one component per mini-game under `src/components/skills/games/` (DEBT-003). [#48](https://github.com/0x11semprez/codewash/pull/48)
 - Drawers, modals and the six mini-games load on demand with `React.lazy`. Display components and closed drawers are memoized. Startup JavaScript went from 392.46 kB to 319.27 kB. [#51](https://github.com/0x11semprez/codewash/pull/51)
 - Global CSS moved from `GlobalStyles.jsx` to `GlobalStyles.css`, loaded by the loading screen. [#51](https://github.com/0x11semprez/codewash/pull/51)
 - Coverage thresholds raised from 30% lines and statements and 20% functions and branches to 60% lines and statements, 50% branches and 40% functions. [#46](https://github.com/0x11semprez/codewash/pull/46)
 - Badge and difficulty images converted from PNG to SVG. Commit `7a24994` (no pull request).
-- `docs/DEBT.md` links to issues and pull requests in this repository instead of the Epitech one, and its statuses are up to date. Pending [#52](https://github.com/0x11semprez/codewash/pull/52).
-- Documentation reorganized around the subject: `docs/handover/`, `docs/missions/`, `docs/features/`. Pending [#55](https://github.com/0x11semprez/codewash/pull/55).
+- `docs/DEBT.md` links to issues and pull requests in this repository instead of the Epitech one, and its statuses are up to date. [#52](https://github.com/0x11semprez/codewash/pull/52).
+- Documentation reorganized around the subject: `docs/handover/`, `docs/missions/`, `docs/features/`. [#55](https://github.com/0x11semprez/codewash/pull/55), [#67](https://github.com/0x11semprez/codewash/pull/67).
+- Background music compressed from WAV (about 191 MB) to MP3. [#64](https://github.com/0x11semprez/codewash/pull/64)
+- Global CSS split into five files by topic under `src/styles/` (DEBT-002, in progress). [#65](https://github.com/0x11semprez/codewash/pull/65)
 
 ### Fixed
 
@@ -50,6 +56,7 @@ Links to pull requests point to this repository. Work done before the move from 
 - UI and mob sound effects play again. Their paths pointed to folders that do not exist. [#51](https://github.com/0x11semprez/codewash/pull/51)
 - Opening a battle no longer fails because of a missing `GameErrorBoundary` import in `SkillCard.jsx`. [#49](https://github.com/0x11semprez/codewash/pull/49) used the component without importing it. [#51](https://github.com/0x11semprez/codewash/pull/51)
 - Two ESLint warnings about unneeded `useCallback` dependencies in `App.jsx`. [#50](https://github.com/0x11semprez/codewash/pull/50)
+- A corrupted save in `localStorage` no longer crashes the game. It falls back to defaults and is backed up once to `<key>_corrupted_backup` (DEBT-018). [#58](https://github.com/0x11semprez/codewash/pull/58), [#66](https://github.com/0x11semprez/codewash/pull/66)
 - Unused imports in test files that failed lint. Commit `9916a52` (no pull request).
 
 ### Removed
