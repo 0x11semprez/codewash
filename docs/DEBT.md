@@ -291,7 +291,7 @@ Each item links to its GitHub issue for full context and to the PR that addresse
 - **Fix:** `git rm` + add `._*` to `.gitignore`.
 - **Effort:** XS
 
-### DEBT-008: Duplicated code [P2] [Open]
+### DEBT-008: Duplicated code [P2] [Done ✓]
 
 - **Issue:** [#31](https://github.com/0x11semprez/codewash/issues/31) (open) — **PR:** none
 - **Location:**
@@ -301,7 +301,8 @@ Each item links to its GitHub issue for full context and to the PR that addresse
 - **Smell:** Copy-paste. Same rendering logic duplicated within one file.
 - **Impact:** Bug fixes must be applied twice. Divergence risk.
 - **Fix:** Extract shared `BorderEffectCard` component.
-- **Why it stays:** the two blocks render different unlock rules. Merging them needs a test of every border and effect first. Duplication is already below the baseline (see [section 8](#8-final-metrics)).
+- **Done:** the badge effects and the achievement effects now render through one `BorderEffectCard` component (`src/components/drawers/BorderEffectCard.jsx`). Only the preview style, the color picker and the tooltip differ, and they are passed as props. The three CosmeticsDrawer clones are gone. The drawer tests cover every border, the color picker and both tooltips.
+- **Remaining:** small clones elsewhere (MathGame and WritingGame headers, ResetModal and ParentalVerificationModal buttons, two SettingsDrawer sliders) are a few lines each. `npm run metrics` lists them.
 - **Effort:** S
 
 ### DEBT-009: Hardcoded localStorage keys [P2] [Done ✓]
@@ -500,7 +501,7 @@ High Impact   │ DEBT-010 ✓     │ DEBT-002 ◐      │ DEBT-001 ✓      �
               │                │                 │ DEBT-005 ✓      │
               │                │                 │ DEBT-006 ✓      │
 ──────────────┼────────────────┼─────────────────┼─────────────────┤
-Med Impact    │ DEBT-011       │ DEBT-008        │ DEBT-009 ✓      │
+Med Impact    │ DEBT-011       │ DEBT-008 ✓      │ DEBT-009 ✓      │
               │                │ DEBT-013 ✓      │ DEBT-012 ✓      │
               │                │ DEBT-016 ✓      │ DEBT-014 ✓      │
               │                │ DEBT-017 ✓      │ DEBT-015 ✓      │
@@ -555,7 +556,7 @@ Low Impact    │ DEBT-018 ✓     │                 │ DEBT-004 ◐      │
 | # | Debt | Task | Status |
 |---|------|------|--------|
 | 17 | DEBT-002 | Break GlobalStyles into modules | Partly done — [#65](https://github.com/0x11semprez/codewash/pull/65) (merged). Class names are still global. |
-| 18 | DEBT-008 | Remove internal duplication | Open |
+| 18 | DEBT-008 | Remove internal duplication | Done ✓ |
 | 19 | DEBT-011 | Refactor sound manager + audio pooling | Open |
 | 20 | DEBT-013 | Add error tracking | Done ✓ — [#83](https://github.com/0x11semprez/codewash/pull/83) (merged) |
 | 21 | DEBT-021 | Add missing theme images + path test | Done ✓ — [#79](https://github.com/0x11semprez/codewash/pull/79) (merged) |
@@ -575,7 +576,7 @@ Low Impact    │ DEBT-018 ✓     │                 │ DEBT-004 ◐      │
 | DEBT-005 | [#28](https://github.com/0x11semprez/codewash/issues/28) | [#3](https://github.com/0x11semprez/codewash/pull/3), [#4](https://github.com/0x11semprez/codewash/pull/4), [#6](https://github.com/0x11semprez/codewash/pull/6), [#46](https://github.com/0x11semprez/codewash/pull/46), [#80](https://github.com/0x11semprez/codewash/pull/80) (merged) | Done ✓ |
 | DEBT-006 | [#29](https://github.com/0x11semprez/codewash/issues/29) | [#5](https://github.com/0x11semprez/codewash/pull/5) (merged), originally Epitech PR #37 | Done ✓ |
 | DEBT-007 | [#30](https://github.com/0x11semprez/codewash/issues/30) | [#47](https://github.com/0x11semprez/codewash/pull/47) (merged) | Done ✓ |
-| DEBT-008 | [#31](https://github.com/0x11semprez/codewash/issues/31) (open) | — | Open |
+| DEBT-008 | [#31](https://github.com/0x11semprez/codewash/issues/31) | [#90](https://github.com/0x11semprez/codewash/pull/90) | Done ✓ |
 | DEBT-009 | [#32](https://github.com/0x11semprez/codewash/issues/32) | [#70](https://github.com/0x11semprez/codewash/pull/70) (merged) | Done ✓ |
 | DEBT-010 | [#33](https://github.com/0x11semprez/codewash/issues/33) | [#49](https://github.com/0x11semprez/codewash/pull/49) (merged) | Done ✓ |
 | DEBT-011 | [#34](https://github.com/0x11semprez/codewash/issues/34) (open) | — | Open |
@@ -667,12 +668,11 @@ The script is `tools/measure-metrics.mjs`. With `--ref`, it copies the commit wi
 - The code grew by 1,686 lines because the missions added features: French translation (the two locale files alone are 714 lines), bug reporting, error tracking, the loading screen and theme loading. Total decision points grew with it.
 - The complexity is spread out now. The worst file went from 233 to 75 decision points, and the worst function from 107 to 58. App.jsx went from 1,492 to 607 lines.
 - The 10 files over 300 lines include the two locale files and `achievements.js`, which are data. The worst code files are `App.jsx`, `SkillCard.jsx` and `useBattle.js`. They are the first candidates for the next team.
-- Duplication dropped from 6.01% to 1.03%. Three of the 7 clones left are the CosmeticsDrawer blocks of DEBT-008.
+- Duplication dropped from 6.01% to 1.03%. Three of the 7 clones left were the CosmeticsDrawer blocks of DEBT-008. They were removed after this measure. Run `npm run metrics` for the current numbers.
 - The SkillCard component (complexity 58) is the most complex function left. Its branches choose which mini-game to show and how to style the card.
 
 Clones left today:
 
-- `CosmeticsDrawer.jsx` 151 / 305, 161 / 290 and 191 / 307 (DEBT-008)
 - `MathGame.jsx` 4 / `WritingGame.jsx` 4 (12 lines)
 - `ResetModal.jsx` 69 / `ParentalVerificationModal.jsx` 87 (13 lines)
 - `SettingsDrawer.jsx` 83 / 98 (13 lines)
@@ -688,7 +688,6 @@ These items stay open for the next team. Each one has its reason in section 2.
 |------|--------------|--------------|--------|
 | DEBT-002 | Global CSS class names in `src/styles/` | Touches every component and needs visual checks of all themes | M |
 | DEBT-004 | Dead file `src/constants/assets.js` | Harmless, not in the bundle. Also remove its entries in `vitest.config.js` and `assetPaths.test.js` | XS |
-| DEBT-008 | 7 clones, 3 of them in `CosmeticsDrawer.jsx` | Needs tests of every border and effect before merging the blocks | S |
 | DEBT-011 | `soundManager` singleton, a new `Audio` per sound | Low impact, no reported problem | M |
 | DEBT-020 | No `src/features/` layout | A big move would break open branches. Move one feature at a time | M |
 | DEBT-023 | 16 direct random and clock calls in hooks and components, and the `0 - 1 = -1` subtraction bug | Needs new hook arguments. The bug fix changes game rules | M |

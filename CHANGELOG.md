@@ -56,6 +56,7 @@ Links to pull requests point to this repository. Work done before the move from 
 
 ### Changed
 
+- The border effect cards of the cosmetics drawer render through one `BorderEffectCard` component instead of two copied blocks (DEBT-008). [#31](https://github.com/0x11semprez/codewash/issues/31)
 - The "Static analysis" step in `ci.yml` is removed. It ran ESLint a second time with the same rules. The lint step is renamed "Lint and complexity ceilings (zero warnings)". No pull request yet.
 - The debt register (`docs/DEBT.md`) matches the merged pull requests: each done item names its pull request, and DEBT-002, DEBT-004, DEBT-020 and DEBT-023 are "Partly done" because a residual part is still in the code. The risk matrix, the plan and the summary use the same statuses. The old codebase map is kept as the "received version".
 - `App.jsx` is split into six hooks: `useGameState`, `useBattle`, `useAudio`, `useCarousel`, `useVoiceRecognition` and `useFullscreen` (DEBT-001). `App.jsx` went from 1,492 lines in the received version to 353 after this PR. Later features brought it back to 607 lines today. [#45](https://github.com/0x11semprez/codewash/pull/45)
