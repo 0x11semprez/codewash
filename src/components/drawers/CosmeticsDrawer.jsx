@@ -16,6 +16,7 @@ import {
 import SafeImage from '../ui/SafeImage';
 import { THEMES_LIST } from '../../constants/gameData';
 import { ACHIEVEMENTS } from '../../constants/achievements';
+import { pauseWhenOffscreen } from '../../hooks/useAnimationPause';
 
 const BORDER_EFFECTS = [
     { id: 'solid', name: 'Default', badge: null, description: 'Eternal golden radiance', icon: Star },
@@ -77,6 +78,7 @@ const CosmeticsDrawer = ({
 
     return (
         <div
+            ref={pauseWhenOffscreen}
             className={`fixed h-full w-[85%] md:w-[60%] bg-[#0f172a]/95 backdrop-blur-xl z-50 border-r-4 border-slate-700 shadow-2xl transition-transform duration-300 ease-in-out ${isOpen ? 'translate-x-0' : '-translate-x-full'}`}
             style={{ top: 0, left: 0 }}
         >
