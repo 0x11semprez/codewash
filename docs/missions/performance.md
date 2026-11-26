@@ -4,10 +4,11 @@ Issue [#18](https://github.com/EpitechBachelorPromo2028/B-ING-300-PAR-3-1-codewa
 
 **Compared versions**
 
-| Label | Commit | Description |
+| Label | Commit | Used in |
 | --- | --- | --- |
-| Before | `866aaff` | No loading screen, no lazy loading |
-| After | `666c69c` + Web Vitals reporting | All changes described below |
+| Received | `a4f337f` (the first commit `f12cd74` plus the original assets) | Section 4.2, fair comparison |
+| Current | `4e0388a` (`main`) | Section 4.2, fair comparison |
+| Before / After | `866aaff` / `666c69c` | Sections 2 and 4.1, measured when the loading screen was added |
 
 ## Summary
 
@@ -15,18 +16,19 @@ Issue [#18](https://github.com/EpitechBachelorPromo2028/B-ING-300-PAR-3-1-codewa
 | --- | --- | --- |
 | Loading screen | Done | Full-screen loader with progress percentage, critical asset preloading, measured load time |
 | Performance profiling | Done | Profiles captured, re-renders identified, FCP baseline recorded |
-| Optimizations | Done | Memoization, lazy-loaded drawers, modals and mini-games, extracted global CSS, deferred images |
-| Measurement | Partial | Bundle sizes and Web Vitals reporting done; the two Lighthouse series are not comparable yet (different themes) |
+| Optimizations | Done | Memoization, lazy-loaded drawers, modals and mini-games, extracted global CSS, deferred images, paused off-screen animations, WebP sprites |
+| Measurement | Done | Same-theme Lighthouse and startup comparison of the received and current versions, with a script to rerun it (section 4.2) |
 | Tests | Done | Loading screen, loading gate, preload, lazy components, Web Vitals and a regression guard |
 
 **Key results**
 
-- Startup JavaScript went from 392.46 kB to 319.27 kB (-18.6 %).
-- Closed drawers no longer render: 0 of 13 commits, against 8 of 10 before.
-- The maximum React commit dropped from 277.2 ms to 142.3 ms (development build).
-- The background music went from 191 MB to 18 MB (WAV to MP3).
-- The game no longer loads its font or textures from external websites (PR [#68](https://github.com/0x11semprez/codewash/pull/68), pending review).
-- No end-user speedup is claimed: the Lighthouse figures do not show one (see section 4.2).
+The received version and the current `main` were measured in the same conditions (section 4.2). Medians of 4 runs each:
+
+- The game is usable sooner: 3.16 s against 4.27 s (-26 %), loading screen included.
+- The Lighthouse performance score went from 38.5 to 57.5, LCP from 2.87 s to 1.42 s and Total Blocking Time from 2.22 s to 1.03 s.
+- The first load transfers 1.34 MB against 2.13 MB (-37 %).
+- Two figures got worse. The page makes 33.5 requests against 24, because drawers, global styles and the font are now separate files. The startup JavaScript is 107.9 kB transferred against 102.2 kB (+5.7 %), because translations and other features were added since.
+- The machine was busy during the runs (load average 12 to 25 on 8 cores). The trend is the same in every pair of runs, but the absolute values are slower than on a quiet machine.
 
 Every figure is labeled with the tool and environment that produced it.
 
@@ -162,37 +164,79 @@ Source: `npx vite build` on each commit. Sizes are deterministic, so they do not
 
 The JavaScript needed to show the menu shrank by about 73 kB (12 kB gzipped). The CSS grew slightly: the global stylesheet is not smaller overall, it is only loaded in a controlled place.
 
-### 4.2 Lighthouse
+### 4.2 Fair comparison: received version and current version
 
-Chrome DevTools, Performance category only, production preview (`http://localhost:4173`), same browser and window, three runs per version. This Lighthouse version does not report Time to Interactive; Total Blocking Time (TBT) is reported instead.
+An earlier attempt compared runs made on two different themes (`spy` before, `minecraft` after), so its figures could not be compared and were removed. The runs below use the same theme and the same setup for both versions.
 
-| Run | Version | Theme | Score | FCP | LCP | TBT | CLS | Speed Index |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| 1 | Before | spy | 96 | 0.5 s | 1.0 s | 80 ms | 0.082 | 1.1 s |
-| 2 | Before | spy | 97 | 0.5 s | 0.9 s | 90 ms | 0.062 | 0.8 s |
-| 3 | Before | spy | 97 | 0.5 s | 1.0 s | 70 ms | 0.071 | 0.8 s |
-| 1 | After | minecraft | 73 | 0.7 s | 3.1 s | 60 ms | 0 | 14.4 s |
-| 2 | After | minecraft | 73 | 0.7 s | 2.5 s | 20 ms | 0.202 | 1.9 s |
-| 3 | After | minecraft | 75 | 0.6 s | 3.1 s | 10 ms | 0 | 3.1 s |
+#### Conditions
 
-Medians:
+| Item | Value |
+| --- | --- |
+| Versions | Received: `a4f337f`. Current: `4e0388a` |
+| Theme | The default theme of each version, which is the same theme renamed: `minecraft` in the received version, `blocks` now. Every run starts with a new browser profile, so storage is empty |
+| Build | `npm ci` (`--legacy-peer-deps` for the received version), `npm run build`, `npx vite preview` on ports 4301 and 4302 |
+| Browser | Chromium 155 headless (`--headless=new`), window 1280 x 720 |
+| Lighthouse | 13.6.0, `--preset=desktop`, Performance category only (simulated desktop throttling) |
+| Runs | 4 per version, run in turn (received, current, received, current...) so both see the same load |
+| Machine | 8 cores. Load average between 11.9 and 24.8 during the runs (other jobs were running). A fifth pair was stopped |
 
-| Metric | Before | After |
+#### Lighthouse
+
+| Metric | Received | Current | Change |
+| --- | --- | --- | --- |
+| Performance score | 38.5 | 57.5 | +19 points |
+| First Contentful Paint | 563 ms | 339 ms | -40 % |
+| Largest Contentful Paint | 2,872 ms | 1,418 ms | -51 % |
+| Total Blocking Time | 2,224 ms | 1,032 ms | -54 % |
+| Cumulative Layout Shift | 0.166 | 0.076 | -54 % |
+| Speed Index | 5,390 ms | 4,132 ms | -23 % |
+| Main thread work | 4,950 ms | 3,963 ms | -20 % |
+| Bytes transferred | 2,134 kB | 1,344 kB | -37 % |
+| Requests | 24 | 33.5 | +40 % |
+| Startup JavaScript (transferred) | 102.2 kB | 107.9 kB | +5.7 % |
+
+Score per run: received 34, 43, 40, 37; current 49, 57, 58, 64. The current version scored higher in every pair.
+
+#### Time until the game is usable
+
+The script opens the page in a new Chromium profile, without throttling, and records the moment when three things are true: the loading screen is gone, the skill carousel is in the page, and every image inside the window has loaded. The received version has no loading screen, so only the last two apply to it. The current time includes the 450 ms fade of the loading screen.
+
+| Run | Received | Current |
 | --- | --- | --- |
-| Score | 97 | 73 |
-| FCP | 0.5 s | 0.7 s |
-| LCP | 1.0 s | 3.1 s |
-| TBT | 80 ms | 20 ms |
-| CLS | 0.071 | 0 |
-| Speed Index | 0.8 s | 3.1 s |
+| 1 | 6,760 ms | 3,235 ms |
+| 2 | 4,198 ms | 3,694 ms |
+| 3 | 4,343 ms | 3,077 ms |
+| 4 | 2,704 ms | 2,023 ms |
+| Median | 4,271 ms | 3,156 ms |
 
-**What a fair comparison means.** Both versions must be measured under the same conditions: same theme, same browser and window, same machine load, several runs each. Here the "before" runs used the `spy` theme, whose logo and card back images are missing, so the page painted less content. The "after" runs used the `minecraft` theme with its large logo. The score, the FCP and the LCP of the two series therefore cannot be compared, and no speedup or slowdown can be concluded from them. Only the TBT difference (80 ms to 20 ms) is large enough to be informative. The runs have to be redone on the `minecraft` theme for both versions (see section 6).
+The current version was usable sooner in every pair (-26 % on the median). The received version transfers more bytes on its first screen (2.13 MB against 1.34 MB), mostly GIF sprites that are now smaller WebP files and off-screen images that now load later.
+
+#### What got worse
+
+- Requests: 33.5 against 24. Drawers, modals, the global stylesheet and the local font are now separate files. Each is small and some load only on first use, but the first screen still asks for more files.
+- Startup JavaScript: 107.9 kB against 102.2 kB transferred. Lazy loading took the drawers, modals and mini-games out of the entry file, but features added since (translations, error tracking, new themes) made it grow again. The built entry file is 341.8 kB (108.4 kB gzip) against 362.8 kB (102.6 kB gzip): smaller before compression, larger after it.
+
+#### Frame time on the main menu
+
+The script also counts frames for 5 seconds on the idle menu and collects long tasks. These figures are not reported. With the load average above 10, headless Chromium drew 2 to 7 frames per second for both versions, which says more about the machine than about the game. The frame figures of the 4 runs were also lost when the fifth pair was stopped (the script now saves each run as soon as it ends). Rerun on a quiet machine to get them.
+
+#### How to rerun it
+
+```sh
+git worktree add ../cw-received a4f337f
+git worktree add ../cw-current main
+(cd ../cw-received && npm ci --legacy-peer-deps && npm run build && npx vite preview --port 4301 --strictPort --host 127.0.0.1) &
+(cd ../cw-current && npm ci && npm run build && npx vite preview --port 4302 --strictPort --host 127.0.0.1) &
+CHROME_PATH=/usr/bin/chromium node tools/lighthouse-compare.mjs http://127.0.0.1:4301/ http://127.0.0.1:4302/ 5 perf-results
+```
+
+`tools/lighthouse-compare.mjs` alternates the two versions. Before each measurement it waits until the 1-minute load average is below `MAX_LOAD` (4 by default, 20 minutes at most) and writes the load down. Set `MAX_LOAD=999` to start at once. It keeps every Lighthouse report and writes `runs.json` (each run) and `summary.json` (medians) in the output folder.
 
 ### 4.3 Earlier Lighthouse runs (DEBT-001)
 
 These figures were first recorded in the debt register. They measure the hook extraction from DEBT-001 ([#45](https://github.com/0x11semprez/codewash/pull/45)), before the loading screen existed. They were taken with the Lighthouse CLI (`npx lighthouse http://localhost:4173 --only-categories=performance`) on a build served with `npx serve dist`. The theme was not recorded.
 
-The tool, the server and the code differ from section 4.2. Do not compare the two tables.
+The tool settings, the server and the code differ from section 4.2. Do not compare the two tables.
 
 | Metric | Before DEBT-001 | After DEBT-001 |
 | --- | --- | --- |
@@ -390,6 +434,6 @@ The script converts every GIF under `public/`. It keeps a GIF when the WebP woul
 
 | Item | Notes |
 | --- | --- |
-| Fair Lighthouse comparison | Select the `minecraft` theme, check out `866aaff`, run `npm run build && npm run preview`, run Lighthouse three times, then add the figures to section 4.2 |
-| Investigate the higher LCP after the change | Compare the "after" build with and without the loading screen |
+| Frame time on the main menu | Run `tools/lighthouse-compare.mjs` on a quiet machine and add the frame figures to section 4.2 |
+| Fewer startup requests | Inline or merge the small files loaded on the first screen |
 | Add the missing theme images | Tracked as [DEBT-021](../DEBT.md#debt-021-missing-theme-assets-p2-open) |
