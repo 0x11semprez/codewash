@@ -83,6 +83,19 @@ describe('reportWebVitals', () => {
         expect(onReport.mock.calls[0][0].name).toBe('CLS');
     });
 
+    it('waits until the page is hidden, not just any visibility change', () => {
+        const onReport = vi.fn();
+        reportWebVitals(onReport);
+        document.dispatchEvent(new Event('visibilitychange'));
+        expect(onReport).not.toHaveBeenCalled();
+    });
+
+    it('works without a report callback', () => {
+        reportWebVitals();
+        emit('paint', [{ name: 'first-contentful-paint', startTime: 100 }]);
+        expect(() => hidePage()).not.toThrow();
+    });
+
     it('does nothing when PerformanceObserver is unavailable', () => {
         vi.stubGlobal('PerformanceObserver', undefined);
         expect(() => reportWebVitals(vi.fn())).not.toThrow();

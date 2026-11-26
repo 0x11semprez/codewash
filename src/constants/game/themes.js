@@ -147,10 +147,13 @@ export const THEME_SOURCES = Object.fromEntries(
     Object.entries(themeFiles).map(([path, raw]) => [path.match(/([\w-]+)\.json$/)[1], raw]),
 );
 
+// Menu order: by "order", then by id when two themes share the same order.
+export const compareThemes = (a, b) => a.order - b.order || a.id.localeCompare(b.id);
+
 export const THEME_CONFIG = Object.fromEntries(
     Object.entries(THEME_SOURCES)
         .map(([id, raw]) => buildTheme(id, raw))
-        .sort((a, b) => a.order - b.order || a.id.localeCompare(b.id))
+        .sort(compareThemes)
         .map((theme) => [theme.id, theme]),
 );
 

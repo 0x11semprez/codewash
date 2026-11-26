@@ -118,6 +118,26 @@ describe('BugReportModal', () => {
         expect(screen.getByRole('alert')).toHaveTextContent('game.exe: only images');
     });
 
+    it('explains why a file is too large or one file too many', () => {
+        renderModal();
+        const big = new File(['x'], 'huge.png', { type: 'image/png' });
+        Object.defineProperty(big, 'size', { value: 6 * 1024 * 1024 });
+        const images = ['a.png', 'b.png', 'c.png', 'd.png'].map((name) => new File(['x'], name, { type: 'image/png' }));
+        fireEvent.change(screen.getByLabelText(/Screenshots or files/), { target: { files: [big, ...images] } });
+        const text = screen
+            .getAllByRole('alert')
+            .map((alert) => alert.textContent)
+            .join(' ');
+        expect(text).toContain('huge.png');
+        expect(text).toContain('d.png');
+    });
+
+    it('accepts a file input change with no file list', () => {
+        renderModal();
+        fireEvent.change(screen.getByLabelText(/Screenshots or files/), { target: { files: null } });
+        expect(screen.queryByRole('alert')).toBeNull();
+    });
+
     it('shows the mailto hint after a mailto send', async () => {
         const transport = { send: vi.fn().mockResolvedValue({ kind: 'mailto' }) };
         renderModal({ transport });

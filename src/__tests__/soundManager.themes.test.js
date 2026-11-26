@@ -16,6 +16,7 @@ import {
     playMobHurt,
     playMobDeath,
     playNote,
+    playUISound,
 } from '../services/soundManager';
 import { THEME_CONFIG, DEFAULT_MUSIC, DEFAULT_SOUNDS, NOTE_SOUNDS } from '../constants/gameData';
 
@@ -172,5 +173,34 @@ describe('audio that cannot play', () => {
         vi.stubGlobal('Audio', Broken);
         expect(() => playNote(0)).not.toThrow();
         vi.stubGlobal('Audio', FakeAudio);
+    });
+});
+
+describe('sounds without a file', () => {
+    it('plays nothing for a sound name the theme does not know', () => {
+        playUISound('doesNotExist');
+        expect(played).toEqual([]);
+    });
+});
+
+describe('music playlist', () => {
+    it('starts another track when the current one ends', () => {
+        const listeners = {};
+        class ListeningAudio extends FakeAudio {
+            addEventListener(name, callback) {
+                listeners[name] = callback;
+            }
+        }
+        vi.stubGlobal('Audio', ListeningAudio);
+        try {
+            const bgm = getBGMManager();
+            bgm.play();
+            expect(played).toHaveLength(1);
+            listeners.ended();
+            expect(played).toHaveLength(2);
+            expect(DEFAULT_MUSIC).toContain(played[1]);
+        } finally {
+            vi.stubGlobal('Audio', FakeAudio);
+        }
     });
 });

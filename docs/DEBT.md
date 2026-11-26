@@ -260,7 +260,7 @@ Each item links to its GitHub issue for full context and to the PR that addresse
 
 ### DEBT-005: No tests [P0] [Done ✓]
 
-- **Issue:** [#28](https://github.com/0x11semprez/codewash/issues/28) — **PR:** [#3](https://github.com/0x11semprez/codewash/pull/3), [#4](https://github.com/0x11semprez/codewash/pull/4), [#6](https://github.com/0x11semprez/codewash/pull/6), [#46](https://github.com/0x11semprez/codewash/pull/46) (merged). Coverage target of 80% still tracked in [#17](https://github.com/0x11semprez/codewash/issues/17)
+- **Issue:** [#28](https://github.com/0x11semprez/codewash/issues/28) — **PR:** [#3](https://github.com/0x11semprez/codewash/pull/3), [#4](https://github.com/0x11semprez/codewash/pull/4), [#6](https://github.com/0x11semprez/codewash/pull/6), [#46](https://github.com/0x11semprez/codewash/pull/46) (merged). Coverage is now 100% on every metric, with 100% thresholds ([#17](https://github.com/0x11semprez/codewash/issues/17))
 - **Location:** Entire codebase
 - **Smell:** Zero test coverage. No testing framework was present in the original project.
 - **Impact:** No safety net for refactoring. Bugs from DEBT-014, 015, 016 were only caught by manual code review.

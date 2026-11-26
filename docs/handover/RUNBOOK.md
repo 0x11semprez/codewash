@@ -221,7 +221,7 @@ Fix, by failing step:
 | Static analysis | Same ESLint rules, second run | Same as lint |
 | Build | Import error or syntax error | Run `npm run build` locally and read the first error |
 | Test | A test fails | Run `npm test` locally. Check whether the change broke the behavior or the test needs an update |
-| Test with coverage | Coverage below the thresholds in `vitest.config.js`: 60% lines and statements, 50% branches, 40% functions | Add tests for the new code |
+| Test with coverage | Coverage below 100% (lines, statements, branches or functions), the thresholds in `vitest.config.js` | Open `coverage/index.html` or read the "Uncovered Line #s" column, then add tests for those lines |
 
 The coverage report is attached to each run as the `coverage-report` artifact for 14 days.
 

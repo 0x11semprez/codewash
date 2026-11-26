@@ -16,6 +16,7 @@ import {
     getReadingWord,
     getWordForDifficulty,
 } from '../utils/gameUtils';
+import { DIFFICULTY_CONTENT } from '../constants/gameData';
 
 describe('getEncounterType', () => {
     it('returns hostile for levels 1-9', () => {
@@ -275,5 +276,58 @@ describe('getWordForDifficulty', () => {
         const r7 = getWordForDifficulty(7);
         expect(r6.word).toBeDefined();
         expect(r7.word).toBeDefined();
+    });
+});
+
+// The difficulty tables are data. These tests check that a partial entry
+// still gives a valid challenge instead of crashing the battle.
+describe('challenge generators with partial difficulty data', () => {
+    const withEntry = (table, level, entry, run) => {
+        const original = DIFFICULTY_CONTENT[table][level];
+        DIFFICULTY_CONTENT[table][level] = entry;
+        try {
+            return run();
+        } finally {
+            DIFFICULTY_CONTENT[table][level] = original;
+        }
+    };
+    const first = () => 0;
+    const last = () => 0.99;
+
+    it('reads 3-letter words when a reading level has no word length', () => {
+        expect(withEntry('reading', 2, {}, () => getReadingWord(2, first))).toHaveLength(3);
+    });
+
+    it('falls back to 3-letter words when no list exists for the word length', () => {
+        expect(withEntry('reading', 2, { charLength: 42 }, () => getReadingWord(2, first))).toHaveLength(3);
+    });
+
+    it('uses single-digit addition when a math level has no operations or range', () => {
+        const problem = withEntry('math', 1, {}, () => generateMathProblem(1, last));
+        expect(problem).toEqual({ type: 'math', question: '9 + 9 = ?', answer: '18' });
+    });
+
+    it('uses 1 to 12 for multiplication and division when their range is missing', () => {
+        const product = withEntry('math', 1, { operations: ['*'] }, () => generateMathProblem(1, last));
+        expect(product).toEqual({ type: 'math', question: '12 × 12 = ?', answer: '144' });
+        const quotient = withEntry('math', 1, { operations: ['/'] }, () => generateMathProblem(1, last));
+        expect(quotient).toEqual({ type: 'math', question: '120 ÷ 12 = ?', answer: '10' });
+    });
+
+    it('uses the easiest level for a difficulty that does not exist', () => {
+        expect(getReadingWord(99, first)).toHaveLength(3);
+        expect(generateMathProblem(99, last)).toEqual({ type: 'math', question: '9 + 9 = ?', answer: '18' });
+    });
+
+    it('turns an unknown operation into a single-digit addition', () => {
+        const problem = withEntry('math', 1, { operations: ['%'] }, () => generateMathProblem(1, first));
+        expect(problem).toEqual({ type: 'math', question: '1 + 1 = ?', answer: '2' });
+    });
+});
+
+describe('getRandomMob with a single enemy', () => {
+    it('returns that enemy even when it is the one to exclude', () => {
+        const theme = { enemies: { Zombie: {} } };
+        expect(getRandomMob('Zombie', Math.random, theme)).toBe('Zombie');
     });
 });

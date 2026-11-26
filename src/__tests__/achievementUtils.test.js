@@ -10,6 +10,7 @@ import {
     addUniqueToArray,
     getAchievementDisplayName,
 } from '../utils/achievementUtils';
+import { ACHIEVEMENTS } from '../constants/achievements';
 
 describe('getDefaultStats', () => {
     it('returns fresh stats object', () => {
@@ -227,5 +228,24 @@ describe('getAchievementDisplayName', () => {
     it('returns base name when no tier reached', () => {
         const stats = { ...getDefaultStats(), phantomsCaught: 0 };
         expect(getAchievementDisplayName('phantom_hunter', stats, {})).toBe('Ghost Buster');
+    });
+});
+
+// An old save can hold a skill with no level or no badge list yet.
+describe('skills with missing fields', () => {
+    const skills = { reading: { level: 3, earnedBadges: [] }, math: {} };
+
+    it('counts a skill without a level as level 0', () => {
+        expect(ACHIEVEMENTS.combined_levels.getProgress(getDefaultStats(), skills)).toBe(3);
+        expect(ACHIEVEMENTS.skill_mastery.getProgress(getDefaultStats(), skills)).toBe(0);
+        expect(ACHIEVEMENTS.skill_mastery.getProgressText(getDefaultStats(), skills)).toBe('2/6 skills at level 0+');
+        expect(isAchievementUnlocked('level_up', getDefaultStats(), { math: {} })).toBe(false);
+    });
+
+    it('does not count a skill without a badge list as a badge', () => {
+        expect(isAchievementUnlocked('badge_collector', getDefaultStats(), skills)).toBe(false);
+        expect(isAchievementUnlocked('badge_collector', getDefaultStats(), { math: { earnedBadges: ['b'] } })).toBe(
+            true,
+        );
     });
 });

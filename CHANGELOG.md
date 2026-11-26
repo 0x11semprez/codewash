@@ -44,6 +44,8 @@ Links to pull requests point to this repository. Work done before the move from 
 - `src/__tests__/themeFiles.test.js`, which checks every theme for missing files, wrong sizes, bad names and missing licenses, and names the file to fix. Issue [#21](https://github.com/0x11semprez/codewash/issues/21).
 - A step-by-step guide to add a theme, for non-technical readers, and the audit of the old themes: `docs/features/themes.md`. Issue [#21](https://github.com/0x11semprez/codewash/issues/21).
 
+- Tests for every file in `src/`: the hooks, the six mini-games, the drawers, the modals, the skill card, the bonus creature and the app itself. Coverage is now 100% for lines, statements, branches and functions. Issue [#17](https://github.com/0x11semprez/codewash/issues/17).
+
 ### Changed
 
 - `App.jsx` is split into six hooks: `useGameState`, `useBattle`, `useAudio`, `useCarousel`, `useVoiceRecognition` and `useFullscreen` (DEBT-001). `App.jsx` went from 1,492 lines in the received version to 353 after this PR. Later features brought it back to 579 lines today. [#45](https://github.com/0x11semprez/codewash/pull/45)
@@ -51,6 +53,8 @@ Links to pull requests point to this repository. Work done before the move from 
 - Drawers, modals and the six mini-games load on demand with `React.lazy`. Display components and closed drawers are memoized. Startup JavaScript went from 392.46 kB to 319.27 kB. [#51](https://github.com/0x11semprez/codewash/pull/51)
 - Global CSS moved from `GlobalStyles.jsx` to `GlobalStyles.css`, loaded by the loading screen. [#51](https://github.com/0x11semprez/codewash/pull/51)
 - Coverage thresholds raised from 30% lines and statements and 20% functions and branches to 60% lines and statements, 50% branches and 40% functions. [#46](https://github.com/0x11semprez/codewash/pull/46)
+- Coverage thresholds raised to 100% for lines, statements, branches and functions. `src/constants/assets.js` is left out of the count: it only holds placeholder paths and nothing imports it. Issue [#17](https://github.com/0x11semprez/codewash/issues/17).
+- Small changes to make the last branches testable, with the same behavior: the language and theme sort functions are exported (`compareLanguages`, `compareThemes`), `PixelHeart` reads its colors from a map, and two checks that could never be false were removed from `ProfileCard` and `App`.
 - Badge and difficulty images converted from PNG to SVG. Commit `7a24994` (no pull request).
 - `docs/DEBT.md` links to issues and pull requests in this repository instead of the Epitech one, and its statuses are up to date. [#52](https://github.com/0x11semprez/codewash/pull/52).
 - Documentation reorganized around the subject: `docs/handover/`, `docs/missions/`, `docs/features/`. [#55](https://github.com/0x11semprez/codewash/pull/55), [#67](https://github.com/0x11semprez/codewash/pull/67).
