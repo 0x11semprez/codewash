@@ -12,6 +12,7 @@
     "format:check": "prettier --check src/",
     "test": "vitest run",
     "test:coverage": "vitest run --coverage",
+    "metrics": "node tools/measure-metrics.mjs",
     "preview": "vite preview",
     "electron:dev": "npm run build && electron .",
     "electron:build": "npm run build && electron-builder"
