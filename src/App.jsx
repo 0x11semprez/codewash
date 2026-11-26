@@ -280,7 +280,11 @@ const App = ({ startupLoadSeconds = null }) => {
             </Suspense>
             <Suspense fallback={null}>
                 {isBugReportOpen && (
-                    <BugReportModal isOpen={isBugReportOpen} onClose={() => setIsBugReportOpen(false)} />
+                    <BugReportModal
+                        isOpen={isBugReportOpen}
+                        onClose={() => setIsBugReportOpen(false)}
+                        context={{ profileId: currentProfile, theme: activeTheme }}
+                    />
                 )}
             </Suspense>
 
