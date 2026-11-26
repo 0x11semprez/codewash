@@ -1,0 +1,24 @@
+Music and water sounds in this folder. All files are public domain (CC0 1.0).
+License text: https://creativecommons.org/publicdomain/zero/1.0/
+
+music/deep-sea.mp3
+  Title: Deep Sea
+  Author: Umplix
+  Source: https://opengameart.org/content/deep-sea
+  License: CC0 1.0
+  Change: re-encoded to MP3 at 96 kbps.
+
+music/underwater-village.mp3
+  Title: Binary Underwater Village (loop)
+  Author: Pro Sensory
+  Source: https://opengameart.org/content/binary-underwater-village-loop
+  License: CC0 1.0
+  Change: re-encoded to MP3 at 96 kbps.
+
+sounds/hit.ogg, sounds/death.ogg, sounds/match.ogg,
+sounds/enemy-hurt.ogg, sounds/enemy-defeat.ogg
+  Pack: 40 CC0 water / splash / slime SFX
+  Author: rubberduck
+  Source: https://opengameart.org/content/40-cc0-water-splash-slime-sfx
+  License: CC0 1.0
+  Files used: splash_03, splash_10, bubble_01, splash_05, bubble_03 (renamed).
