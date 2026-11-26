@@ -238,6 +238,70 @@ The six background tracks were uncompressed WAV files (44.1 kHz, stereo, 1411 kb
 
 The music is about 10.6 times smaller. Durations were compared for two tracks only, and sound quality was not compared by ear. `soundManager.test.js` checks that the track list points to existing MP3 files under 10 MB.
 
+### 4.6 Paused off-screen animations
+
+The global styles have about 40 `infinite` animations. At least 20 animate `filter` or `box-shadow`, which the browser repaints on every frame. Before this change they ran even when nobody could see them: carousel cards outside the viewport or at `opacity: 0`, the closed Cosmetics and Settings drawers, and the whole page in a hidden tab.
+
+They are now paused with `animation-play-state: paused` while their element is off-screen or the page is hidden. The keyframes did not change. The design is in [ADR-010](../adr/010-pause-offscreen-animations.md).
+
+#### Protocol: animation count
+
+This count does not depend on machine speed.
+
+1. Run `npm run build`, then `npx vite preview --port 4199`.
+2. Start Chromium with a DevTools port: `chromium --headless=new --remote-debugging-port=9333 --window-size=1280,720 about:blank`.
+3. Run `node tools/measure-animations.mjs 9333 http://localhost:4199/ after 5`.
+4. Run it again with `before` in place of `after`.
+
+The script waits for the loading screen to end. It opens and closes the Cosmetics and Settings drawers, so both stay mounted off-screen. It then counts the animations from `document.getAnimations()` by play state. In `before` mode it first deletes the pause rules from the page's CSSOM. The attributes stay on the elements but have no effect, as before the change.
+
+#### Results
+
+Chromium headless, 1280 x 720, production build, `minecraft` theme, 6 runs.
+
+| Mode | Runs | Animations | Running | Paused |
+| --- | --- | --- | --- | --- |
+| Before | 3 | 37 | 37 | 0 |
+| After | 3 | 33 to 37 | 15 to 18 | 15 to 19 |
+
+About half of the animations are paused after the change. The totals differ between "after" runs because the carousel was sometimes still moving when the count was taken.
+
+The same script also reads `Performance.getMetrics` (style recalculation time, task time) and counts `requestAnimationFrame` calls over 5 seconds. These figures are not reported. The machine had a load average above 17 during the runs, the page drew only 6 to 22 frames in 5 seconds, and the timings varied by a factor of 20 within one mode.
+
+#### Protocol: frame rate and paint time (manual)
+
+Use this on a quiet machine to measure the effect on frame time.
+
+1. Open the production preview in Chrome at 1280 x 720 and pass the loading screen.
+2. Open and close the Cosmetics drawer, then the Settings drawer.
+3. In DevTools, open the Rendering panel and enable "Frame Rendering Stats" and "Paint flashing". Green flashes should appear only on the center card and the visible mobs, not on the left edge where the drawers sit.
+4. In the Performance panel, set CPU throttling to 4x slowdown. Record 10 seconds without touching the page.
+5. Note the FPS, and the "Rendering" and "Painting" totals from the Summary tab.
+6. To get the "before" figures in the same build, run this in the console, then repeat steps 4 and 5:
+
+   ```js
+   for (const s of document.styleSheets) {
+       const walk = (list, owner) => {
+           for (let i = list.length - 1; i >= 0; i--) {
+               const r = list[i];
+               if (r.cssRules) walk(r.cssRules, r);
+               if (r.selectorText?.includes('data-offscreen')) owner.deleteRule(i);
+           }
+       };
+       walk(s.cssRules, s);
+   }
+   ```
+
+7. Repeat three times per mode and keep the median.
+
+These figures have not been recorded yet.
+
+#### Limits
+
+- Visible animations cost the same as before. The center card border and the visible auras still repaint `filter` and `box-shadow` on every frame.
+- Browsers already slow down hidden tabs. The page-hidden rule mainly helps the Electron window when it is minimized.
+- `useAnimationPause.test.jsx`, `MobWithAura.test.jsx`, `SkillCard.test.jsx`, `app.test.jsx` and `globalStyles.test.js` cover the attributes and the CSS rule. jsdom does not run CSS animations, so the tests cannot count them.
+
 ---
 
 ## 5. Automated tests
@@ -251,6 +315,7 @@ The music is about 10.6 times smaller. Durations were compared for two tracks on
 | `SkillCard.test.jsx` | The right mini-game renders after loading for each skill, and none outside a battle |
 | `webVitals.test.js` | Metric collection and rating thresholds |
 | `performanceBudget.test.js` | Drawers, modals and mini-games stay lazy; global styles stay out of `App`; images stay lazy by default |
+| `useAnimationPause.test.jsx` | Off-screen and hidden-page attributes, shared observer cleanup, fallback without `IntersectionObserver` |
 
 ---
 

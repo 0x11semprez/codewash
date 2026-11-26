@@ -1,5 +1,6 @@
 import React from 'react';
 import SafeImage from './SafeImage';
+import { pauseWhenOffscreen } from '../../hooks/useAnimationPause';
 
 /**
  * MobWithAura - Composite component that renders mob and aura as a single element
@@ -34,6 +35,7 @@ const MobWithAura = ({
 
     return (
         <div
+            ref={pauseWhenOffscreen}
             className={`mob-with-aura-container ${className}`}
             style={{
                 width: isFillContainer ? '100%' : normalizedSize,
