@@ -4,9 +4,12 @@ import LoadingGate from './components/LoadingGate.jsx';
 import ErrorBoundary from './components/ui/ErrorBoundary.jsx';
 import { reportWebVitals } from './utils/webVitals.js';
 import { migrateStorage } from './services/storageKeys.js';
+import { installLogCapture } from './utils/bugReport/logBuffer.js';
 import './index.css';
 
 migrateStorage();
+// Keep recent warnings and errors in memory for bug reports.
+installLogCapture();
 
 reportWebVitals(({ name, value, rating }) => {
     console.info(`[web-vitals] ${name}: ${value.toFixed(name === 'CLS' ? 3 : 0)} (${rating})`);
