@@ -336,14 +336,16 @@ Each item links to its GitHub issue for full context and to the PR that addresse
 - **Fix:** Added multi-stage Dockerfile (Node build + nginx serve) and docker-compose.
 - **Effort:** S
 
-### DEBT-013: No monitoring [P2] [Open]
+### DEBT-013: No monitoring [P2] [Done ✓]
 
-- **Issue:** [#36](https://github.com/0x11semprez/codewash/issues/36) — **PR:** none yet
+- **Issue:** [#36](https://github.com/0x11semprez/codewash/issues/36) — **PR:** `fix/debt-013-error-tracking`
 - **Location:** Entire app
 - **Smell:** No error tracking, no metrics, no crash reporting. Errors vanish silently.
 - **Impact:** Cannot detect production issues without user reports.
 - **Risk:** Medium impact, medium likelihood.
 - **Fix:** Add basic error tracking (window.onerror / React ErrorBoundary reporting).
+- **Done:** `src/services/errorTracker.js` saves the last 20 errors in `localStorage` (`errorLog_v1`): uncaught errors, unhandled promise rejections, and the crashes caught by `ErrorBoundary` and `GameErrorBoundary`. Each entry has the time, the source, the message, the stack and a count (a repeated error raises the count). Emails and credentials are hidden. The Web Vitals were already measured in `src/utils/webVitals.js`. See [RUNBOOK](handover/RUNBOOK.md#white-screen-or-something-went-wrong).
+- **Remaining:** nothing is sent to a server, because the game has none. A developer reads the errors from the browser, or asks the player for them.
 - **Effort:** M
 
 ### DEBT-014: `perfectMemoryGames` never incremented [P1] [Done ✓]
@@ -540,7 +542,7 @@ Low Impact    │ DEBT-018 ✓, 019│                 │ DEBT-004 ✓      │
 | 17 | DEBT-002 | Break GlobalStyles into modules | In Progress |
 | 18 | DEBT-008 | Remove internal duplication | Open |
 | 19 | DEBT-011 | Refactor sound manager + audio pooling | Open |
-| 20 | DEBT-013 | Add error tracking | Open |
+| 20 | DEBT-013 | Add error tracking | Done ✓ |
 | 21 | DEBT-021 | Add missing theme images + path test | Done ✓ |
 | 22 | DEBT-022 | Fix Docker build + add it to CI | Done |
 
@@ -562,8 +564,8 @@ Low Impact    │ DEBT-018 ✓, 019│                 │ DEBT-004 ✓      │
 | DEBT-010 | [#33](https://github.com/0x11semprez/codewash/issues/33) | [#49](https://github.com/0x11semprez/codewash/pull/49) (merged) | Done ✓ |
 | DEBT-011 | [#34](https://github.com/0x11semprez/codewash/issues/34) | — | Open |
 | DEBT-012 | [#35](https://github.com/0x11semprez/codewash/issues/35) | Epitech PR #37 (merged) | Done ✓ |
-| DEBT-013 | [#36](https://github.com/0x11semprez/codewash/issues/36) | — | Open |
-| DEBT-014 | [#37](https://github.com/0x11semprez/codewash/issues/37) | pending | Done ✓ |
+| DEBT-013 | [#36](https://github.com/0x11semprez/codewash/issues/36) | [#83](https://github.com/0x11semprez/codewash/pull/83) | Done ✓ |
+| DEBT-014 | [#37](https://github.com/0x11semprez/codewash/issues/37) | [#82](https://github.com/0x11semprez/codewash/pull/82) (merged) | Done ✓ |
 | DEBT-015 | [#38](https://github.com/0x11semprez/codewash/issues/38) | Epitech PR #46 (merge `a9e408a`) | Done ✓ |
 | DEBT-016 | [#39](https://github.com/0x11semprez/codewash/issues/39) | Epitech PR #45 (merge `7b82098`) | Done ✓ |
 | DEBT-017 | [#40](https://github.com/0x11semprez/codewash/issues/40) | Epitech PR #44 (merge `7fa5858`) | Done ✓ |

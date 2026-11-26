@@ -17,6 +17,7 @@ Links to pull requests point to this repository. Work done before the move from 
 - Coverage thresholds in `vitest.config.js`. [#6](https://github.com/0x11semprez/codewash/pull/6)
 - CI fails on any ESLint warning, and runs a second ESLint pass as a "Static analysis" step. [#46](https://github.com/0x11semprez/codewash/pull/46)
 - Multi-stage `Dockerfile` (Node build, nginx serve) and `nginx.conf`. Epitech PR #37 (merge `6b3b960`). It did not build until DEBT-022 was fixed.
+- Error tracking: the last 20 errors (uncaught errors, unhandled promise rejections and error boundary crashes) are saved in `localStorage` with their source, stack and count, with emails and credentials hidden (DEBT-013). [#36](https://github.com/0x11semprez/codewash/issues/36)
 - Error boundaries: a full-page "Something went wrong" screen with a "Try Again" button, and a "Game crashed!" screen inside each skill card that ends the battle and keeps the rest of the game running (DEBT-010). [#49](https://github.com/0x11semprez/codewash/pull/49)
 - Loading screen with a progress percentage. It preloads the critical images of the saved theme and offers a "Continue" button when some fail. [#51](https://github.com/0x11semprez/codewash/pull/51)
 - "So... So fast !?" achievement, unlocked from the measured startup time. [#51](https://github.com/0x11semprez/codewash/pull/51)

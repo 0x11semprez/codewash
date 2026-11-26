@@ -1,5 +1,6 @@
 import React from 'react';
 import { I18nContext } from '../../i18n/I18nContext';
+import { trackError } from '../../services/errorTracker';
 
 class ErrorBoundary extends React.Component {
     static contextType = I18nContext;
@@ -15,6 +16,7 @@ class ErrorBoundary extends React.Component {
 
     componentDidCatch(error, errorInfo) {
         console.error('[ErrorBoundary]', error, errorInfo);
+        trackError({ source: 'react', error, componentStack: errorInfo.componentStack });
     }
 
     handleRetry = () => {

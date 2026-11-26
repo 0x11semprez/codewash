@@ -32,6 +32,7 @@ describe('storage key names', () => {
             phantomLastSpawn: 'phantomEvent_lastSpawn_v1',
             legacySkills: 'heroSkills_v23',
             language: 'language_v1',
+            errorLog: 'errorLog_v1',
         });
     });
 
@@ -206,7 +207,7 @@ describe('storage keys in the source code', () => {
         .filter((file) => /\.(js|jsx)$/.test(file) && !file.startsWith('__tests__') && !file.endsWith('storageKeys.js'))
         .map((file) => join(src, file));
     const names = ['heroSkills_v23', 'currentProfile_v1', 'heroProfileNames_v1', 'heroParentStatus_v1'];
-    const others = ['phantomEvent_lastSpawn_v1', 'borderEffect_p', 'borderColor_p', 'language_v1'];
+    const others = ['phantomEvent_lastSpawn_v1', 'borderEffect_p', 'borderColor_p', 'language_v1', 'errorLog_v1'];
 
     it('are written in one file only', () => {
         const found = [];
