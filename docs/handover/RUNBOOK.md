@@ -30,12 +30,13 @@ Quick check:
 
 1. Open the Console. The full-page screen logs `[ErrorBoundary]` with the error. A crashed mini-game logs `[GameError] <game name>:` (for example `[GameError] math:`).
 2. Copy the first red error and its stack.
+3. The game also keeps the last 20 errors in `localStorage`, so they are still there after a crash or a reload. In the Console, run `JSON.parse(localStorage.getItem('errorLog_v1'))`. Each entry has the time, the `source` (`window`, `promise`, `react` or `game:<name>`), the message, the stack and how many times it happened. Delete the key to start clean.
 
 What the screens do:
 
 - "Something went wrong" comes from `src/components/ui/ErrorBoundary.jsx`. It wraps the whole app in `src/main.jsx`. "Try Again" renders the app again from scratch.
 - "Game crashed!" comes from `src/components/ui/GameErrorBoundary.jsx`. It wraps the mini-game inside each skill card. "Retry" ends the battle and the rest of the game keeps working.
-- Error boundaries only catch errors while React draws the screen. An error in a click handler does not show either screen. It only appears in the Console as `Uncaught ...`.
+- Error boundaries only catch errors while React draws the screen. An error in a click handler does not show either screen. It only appears in the Console as `Uncaught ...`, and in the saved error list with the source `window`.
 
 Fix:
 

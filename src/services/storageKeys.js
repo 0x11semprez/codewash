@@ -10,6 +10,7 @@ export const STORAGE_KEYS = {
     phantomLastSpawn: 'phantomEvent_lastSpawn_v1',
     legacySkills: 'heroSkills_v23',
     language: 'language_v1',
+    errorLog: 'errorLog_v1',
 };
 
 export const skillsKey = (profileId) => `heroSkills_v23_p${profileId}`;

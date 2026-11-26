@@ -1,5 +1,6 @@
 import React from 'react';
 import { I18nContext } from '../../i18n/I18nContext';
+import { trackError } from '../../services/errorTracker';
 
 class GameErrorBoundary extends React.Component {
     static contextType = I18nContext;
@@ -15,6 +16,11 @@ class GameErrorBoundary extends React.Component {
 
     componentDidCatch(error, errorInfo) {
         console.error(`[GameError] ${this.props.gameName || 'Unknown'}:`, error, errorInfo);
+        trackError({
+            source: `game:${this.props.gameName || 'unknown'}`,
+            error,
+            componentStack: errorInfo.componentStack,
+        });
     }
 
     handleRetry = () => {

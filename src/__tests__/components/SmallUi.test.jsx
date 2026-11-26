@@ -1,8 +1,11 @@
 import React from 'react';
-import { describe, it, expect, vi, afterEach } from 'vitest';
+import { describe, it, expect, vi, afterEach, beforeEach } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import AchievementToast from '../../components/ui/AchievementToast';
+import ErrorBoundary from '../../components/ui/ErrorBoundary';
 import GameErrorBoundary from '../../components/ui/GameErrorBoundary';
+import { getTrackedErrors } from '../../services/errorTracker';
+import { createMemoryStorage } from '../helpers/memoryStorage';
 import LanguageSelector from '../../components/ui/LanguageSelector';
 import MobWithAura from '../../components/ui/MobWithAura';
 import { I18nContext } from '../../i18n/I18nContext';
@@ -19,6 +22,53 @@ describe('AchievementToast', () => {
     it('renders nothing for an unknown achievement', () => {
         const { container } = render(<AchievementToast achievementId="no_such_achievement" />);
         expect(container).toBeEmptyDOMElement();
+    });
+});
+
+describe('error boundaries report to the error tracker', () => {
+    const Boom = () => {
+        throw new Error('tracked crash');
+    };
+
+    beforeEach(() => {
+        vi.stubGlobal('localStorage', createMemoryStorage());
+    });
+
+    it('GameErrorBoundary tracks the crash with the game name', () => {
+        vi.spyOn(console, 'error').mockImplementation(() => {});
+        render(
+            <GameErrorBoundary gameName="memory">
+                <Boom />
+            </GameErrorBoundary>,
+        );
+        const [entry] = getTrackedErrors();
+        expect(entry.source).toBe('game:memory');
+        expect(entry.message).toBe('tracked crash');
+        expect(entry.componentStack).toContain('Boom');
+    });
+
+    it('GameErrorBoundary tracks an unnamed game as unknown', () => {
+        vi.spyOn(console, 'error').mockImplementation(() => {});
+        render(
+            <GameErrorBoundary>
+                <Boom />
+            </GameErrorBoundary>,
+        );
+        expect(getTrackedErrors()[0].source).toBe('game:unknown');
+    });
+
+    it('ErrorBoundary tracks the crash', () => {
+        vi.spyOn(console, 'error').mockImplementation(() => {});
+        render(
+            <I18nContext.Provider value={{ t: (key) => key }}>
+                <ErrorBoundary>
+                    <Boom />
+                </ErrorBoundary>
+            </I18nContext.Provider>,
+        );
+        const [entry] = getTrackedErrors();
+        expect(entry.source).toBe('react');
+        expect(entry.message).toBe('tracked crash');
     });
 });
 
