@@ -16,7 +16,7 @@ Last checked: 2026-11-25.
 | --- | --- | --- | --- |
 | Pre-wash: characterization tests freeze current behavior | Done | `src/__tests__/` (17 files and 170 tests at that point, 24 files and 237 tests today), PR [#3](https://github.com/0x11semprez/codewash/pull/3), [ADR-005](adr/005-characterization-tests-before-refactoring.md) | |
 | Directed jet: separate domain from I/O, inject clock and config, remove globals | Partial | [ADR-008](adr/008-inject-randomness-and-clock.md), [#60](https://github.com/0x11semprez/codewash/pull/60) (DEBT-023), `src/utils/storage.js` ([#58](https://github.com/0x11semprez/codewash/pull/58), DEBT-018) | 10 direct calls to `Math.random` or `Date` are left, in `useBattle`, `soundManager`, `PhantomEvent`, `MemoryGame` and `PatternGame`. Storage keys is not abstracted ([DEBT-009](DEBT.md#debt-009-hardcoded-localstorage-keys-p2-open)). The sound manager is a module singleton ([DEBT-011](DEBT.md#debt-011-sound-manager--singleton--no-audio-pooling-p3-open)). |
-| Controlled rinse: CI green, coverage thresholds visible | Partial | `.github/workflows/ci.yml`, `vitest.config.js` | Thresholds are 60/50/40, below the 80% target ([#17](https://github.com/0x11semprez/codewash/issues/17)). |
+| Controlled rinse: CI green, coverage thresholds visible | Done | `.github/workflows/ci.yml`, `vitest.config.js` | |
 | Hot-spot treatment: duplication, coupling, fragile parsers, silent errors | Partial | DEBT-001 ([#45](https://github.com/0x11semprez/codewash/pull/45)), DEBT-003 ([#48](https://github.com/0x11semprez/codewash/pull/48)), DEBT-010 ([#49](https://github.com/0x11semprez/codewash/pull/49)) | DEBT-018 is done ([#58](https://github.com/0x11semprez/codewash/pull/58)). DEBT-002 is in progress ([#65](https://github.com/0x11semprez/codewash/pull/65)). DEBT-008 and 009 are open. |
 | Finishing pass: small features, public contracts kept, clean handover | Partial | Performance mission ([#51](https://github.com/0x11semprez/codewash/pull/51)) | Three more missions and the handover documents below. |
 | First push is the project as received | Done | Commit `f12cd74` | |
@@ -48,7 +48,7 @@ Last checked: 2026-11-25.
 | CI on every pull request: build, tests, lint, format, coverage | Done | `.github/workflows/ci.yml`, format check since [#56](https://github.com/0x11semprez/codewash/pull/56) | |
 | Quality gates block the merge | Partial | CI fails on a test failure, a lint warning or low coverage | `main` is protected since 2026-11-25: a pull request is required, the `build-and-test` check must pass on an up-to-date branch, and force pushes and deletion are blocked. Admins can still bypass the rule. |
 | Static analysis in the pipeline | Partial | "Static analysis" step in `ci.yml` | The step is a second ESLint run. There is no dedicated tool. |
-| New code fully covered, 80% of modified lines | Missing | | No diff coverage check. Global thresholds are below 80%. |
+| New code fully covered, 80% of modified lines | Done | `vitest.config.js` | Global thresholds are 100% for lines, statements, branches and functions, so new code without tests fails CI. There is no separate diff coverage check. |
 | Lowered thresholds are written down as debt | Done | [ADR-003](adr/003-conservative-coverage-thresholds.md) | |
 | Tests can control the clock and random numbers | Partial | [ADR-008](adr/008-inject-randomness-and-clock.md), `src/__tests__/gameUtils.deterministic.test.js`, `src/__tests__/useGameState.clock.test.js` | Same 10 calls as in "Directed jet" above. |
 
