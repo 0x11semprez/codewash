@@ -19,7 +19,7 @@ Electron ships its own Chromium engine, so the Web Speech API works the same way
 2. Click "ENCHANT!" to start a battle
 3. The microphone starts listening automatically
 4. A word appears on screen for the player to read aloud
-5. The status indicator shows "Listening..." while the mic is active
+5. The status indicator shows "Listening..." ("Écoute..." in French) while the mic is active
 
 ### Manual mic control
 Players toggle the microphone by clicking the mic button:
@@ -31,6 +31,11 @@ When the battle ends (closing the battle card), the microphone stops and cleans 
 - Speech recognition stops
 - Event listeners are removed
 - Audio streams are released
+
+### Recognition language
+Recognition always listens in English (`en-US`), even when the game is in French. The reading words and their homophones are English game data (see ADR-012), and the transcript must match them exactly. A French recognizer writes what it hears as French words, so a French player could not pass a reading battle. The language is the `READING_SPEECH_LANGUAGE` constant in `src/hooks/useVoiceRecognition.js`. Change it only when the reading words are translated.
+
+The status messages do follow the game language. The hook stores them as dictionary keys (`MIC_STATUS`), and the reading game shows them with `t()`. `isMicStatus()` tells a status key from a transcript, so a status message never counts as a wrong word.
 
 ## Technical implementation
 
@@ -58,10 +63,10 @@ Cleanup when battle ends:
 ### Event handlers
 
 #### `onstart`
-Sets `isListening` to `true` and updates spoken text to "Listening..."
+Sets `isListening` to `true` and sets spoken text to `MIC_STATUS.listening`.
 
 #### `onend`
-Sets `isListening` to `false`. Auto-restarts if still in a Reading battle (continuous mode). Shows "Mic Off" if not restarting.
+Sets `isListening` to `false`. Auto-restarts if still in a Reading battle (continuous mode). Sets `MIC_STATUS.off` if not restarting.
 
 #### `onerror`
 Handles speech recognition errors:

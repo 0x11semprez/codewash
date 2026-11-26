@@ -127,8 +127,9 @@ describe('ReadingGame', () => {
     });
 
     it('translates the status messages of the voice recognition', () => {
-        renderReading({ spokenText: 'Mic permission denied' });
+        const { container } = renderReading({ spokenText: 'games.micDenied' });
         expect(screen.getByText('Mic permission denied')).toBeInTheDocument();
+        expect(container.firstChild.className).not.toContain('animate-shake');
     });
 
     it('flashes red for a wrong word, but not for a homophone or a very short sound', () => {

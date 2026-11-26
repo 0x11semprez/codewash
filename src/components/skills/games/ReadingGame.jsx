@@ -2,17 +2,9 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Mic } from 'lucide-react';
 import { HOMOPHONES } from '../../../constants/gameData';
 import { useTranslation } from '../../../i18n/useTranslation';
+import { isMicStatus, MIC_STATUS } from '../../../hooks/useVoiceRecognition';
 
 const MIN_SPOKEN_TEXT_LENGTH = 2;
-
-// useVoiceRecognition reports its state with these English status strings.
-// They are compared as values, so they are mapped to dictionary keys only for display.
-const MIC_STATUS_KEYS = {
-    'Listening...': 'games.listening',
-    'Mic Off': 'games.micOff',
-    'Mic permission denied': 'games.micDenied',
-    'Mic not available': 'games.micUnavailable',
-};
 
 const ReadingGame = ({ challenge, isListening, spokenText, onMicClick, onMathSubmit }) => {
     const [isReadingWrong, setIsReadingWrong] = useState(false);
@@ -21,7 +13,7 @@ const ReadingGame = ({ challenge, isListening, spokenText, onMicClick, onMathSub
     const { t } = useTranslation();
 
     useEffect(() => {
-        if (spokenText && spokenText !== 'Listening...' && spokenText !== 'Mic Off') {
+        if (spokenText && !isMicStatus(spokenText)) {
             if (spokenText !== prevSpokenTextRef.current) {
                 if (challenge?.answer) {
                     const homophones = HOMOPHONES[challenge.answer];
@@ -60,10 +52,10 @@ const ReadingGame = ({ challenge, isListening, spokenText, onMicClick, onMathSub
                 </span>
                 <div className={`absolute bottom-1 text-xs ${isReadingWrong ? 'text-red-400' : 'text-gray-400'}`}>
                     {spokenText
-                        ? MIC_STATUS_KEYS[spokenText]
-                            ? t(MIC_STATUS_KEYS[spokenText])
+                        ? isMicStatus(spokenText)
+                            ? t(spokenText)
                             : spokenText
-                        : t(isListening ? 'games.listening' : 'games.micOff')}
+                        : t(isListening ? MIC_STATUS.listening : MIC_STATUS.off)}
                 </div>
             </div>
             <button

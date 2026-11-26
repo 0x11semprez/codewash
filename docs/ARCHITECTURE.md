@@ -131,7 +131,7 @@ Every key name is defined once, in `src/services/storageKeys.js`. A test fails i
 | `localStorage` reads and writes | `services/storage.js` (`readJSON`, `writeJSON`, `parseJSON`, `backupCorrupted`) | A corrupted save falls back to defaults and is copied once to `<key>_corrupted_backup`. `useGameState`, `PhantomEvent` and `preloadStartupAssets` still call `localStorage.getItem` and `setItem` for plain strings. |
 | Sound effects and music | `services/soundManager.js` | A new `Audio` object for each sound. One `BGMManager` plays the theme music in random order. `setSoundTheme` switches the files when the theme changes. |
 | Image and sound preloading | `utils/preloadStartupAssets.js` | `Image` and `Audio` objects, at startup only. |
-| Speech recognition | `hooks/useVoiceRecognition.js` | `webkitSpeechRecognition`, Reading game only, language fixed to `en-US`. See [microphone](features/microphone.md). |
+| Speech recognition | `hooks/useVoiceRecognition.js` | `webkitSpeechRecognition`, Reading game only, language fixed to `en-US` because the reading words are English (`READING_SPEECH_LANGUAGE`). See [microphone](features/microphone.md). |
 | Network | `utils/bugReport/transports.js` | The only network call in the game. A bug report is a `fetch` POST to `VITE_BUG_REPORT_ENDPOINT`. Without an endpoint, the game opens a `mailto:` link. Fonts and textures are self-hosted, and a test fails on any external URL in `src/`. |
 | Error tracking | `services/errorTracker.js` | Listens to `error` and `unhandledrejection` on `window`. The two error boundaries also report to it. Emails and credentials are hidden before saving. |
 | Console capture | `utils/bugReport/logBuffer.js` | Wraps `console.warn` and `console.error` to keep recent messages for bug reports. |

@@ -80,6 +80,7 @@ Links to pull requests point to this repository. Work done before the move from 
 
 ### Fixed
 
+- The reading game shows every microphone status in the game language. `useVoiceRecognition` now stores dictionary keys instead of English strings, and a "permission denied" or "not available" message no longer flashes red as a wrong word. Recognition stays in English (`en-US`) on purpose: the reading words are English, and a French recognizer would never match them (ADR-012, [microphone.md](docs/features/microphone.md)).
 - The Docker image builds again. `@testing-library/jest-dom` 8 wanted Vitest 5, so `npm ci` failed. Version 7.0.1 works with Vitest 3, so no install flag is needed anymore. CI now builds the image on every pull request, and `.dockerignore` keeps local files out of it (DEBT-022). [#54](https://github.com/0x11semprez/codewash/issues/54)
 - `battlesThisSession` now resets when the game starts, so the "speed_demon" achievement needs 10 battles in one session again (DEBT-015). Epitech PR #46 (merge `a9e408a`).
 - Rapid answers no longer read stale skill data in `handleSuccessHit` (DEBT-016). Epitech PR #45 (merge `7b82098`).

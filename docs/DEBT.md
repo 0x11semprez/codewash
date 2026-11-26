@@ -694,6 +694,5 @@ These items stay open for the next team. Each one has its reason in section 2.
 
 Not in the register yet, seen while writing [ARCHITECTURE.md](ARCHITECTURE.md):
 
-- Speech recognition always uses `en-US` (`useVoiceRecognition.js`), even when the game is in French.
 - Music and sound volumes are not saved. They go back to 30% and 50% at each start. This was already the case in the received version.
 - `useGameState`, `PhantomEvent` and `preloadStartupAssets` still call `localStorage` directly for plain strings, next to the `storage.js` helpers.

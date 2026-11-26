@@ -55,7 +55,7 @@ These stay as they are:
 
 The reading and writing words, the homophones and the math problems are game data. Translating them takes more than new strings:
 
-- Speech recognition must listen in the matching language.
+- Speech recognition must listen in the matching language. While the words stay English, recognition stays `en-US` in every interface language (`READING_SPEECH_LANGUAGE` in `useVoiceRecognition.js`). A French recognizer would turn English words into French ones, and the exact match against the answer would fail.
 - The homophone list (`SEE`, `SEA`, `C`) only makes sense in English.
 - Word lengths drive the difficulty levels.
 - The writing game builds the answer from the mob name, which stays in English.
@@ -76,6 +76,6 @@ So in French, the interface is French but the reading and writing exercises are 
 
 - We maintain the module ourselves. If we need lazy loading, rich text inside a translation, or complex plural rules, `react-i18next` may become the better choice. The keys and dictionary shape are close to i18next's format, so a move later would be mostly mechanical.
 - The constants still hold English names and descriptions (`ACHIEVEMENTS`, `SKILL_DATA`, `THEME_CONFIG`). Utilities and tests use them. The UI reads the dictionaries, and a test keeps the two in sync. Removing the copies from the constants is a follow-up.
-- `useVoiceRecognition` still sets English status strings such as "Listening...". The reading game maps them to dictionary keys for display. A cleaner fix is to make the hook return status codes.
+- `useVoiceRecognition` stores its status messages as dictionary keys (`MIC_STATUS`) in the same `spokenText` state as the transcript. The reading game translates them with `t()`. A transcript has no dots, so it never matches a key.
 - A toast that is already on screen keeps its language until it closes.
 - Follow-ups: translate the educational content, and remove the English copies from the constants.
