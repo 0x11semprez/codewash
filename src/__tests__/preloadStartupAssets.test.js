@@ -65,4 +65,45 @@ describe('preloadStartupAssets', () => {
         await new Promise((resolve) => setTimeout(resolve, 10));
         expect(warn).toHaveBeenCalled();
     });
+
+    it('counts images the browser already has in cache as loaded', async () => {
+        vi.stubGlobal(
+            'Image',
+            class {
+                constructor() {
+                    this.complete = false;
+                    this.naturalWidth = 0;
+                }
+                set src(_) {
+                    this.complete = true;
+                    this.naturalWidth = 16;
+                }
+            },
+        );
+        const result = await preloadStartupAssets();
+        expect(result.failedCritical).toEqual([]);
+        expect(result.total).toBeGreaterThan(0);
+    });
+
+    it('also preloads the sprites that are visible on screen, but not the hidden ones', async () => {
+        const loaded = [];
+        installImage((src) => {
+            loaded.push(src);
+            return true;
+        });
+        document.body.innerHTML =
+            '<div id="root"><main><img id="on" src="/on-screen.png"><img id="off" src="/off-screen.png"></main></div>';
+        const place = (id, rect) => {
+            document.getElementById(id).getBoundingClientRect = () => rect;
+        };
+        place('on', { top: 10, left: 10, bottom: 50, right: 50 });
+        place('off', { top: 10, left: window.innerWidth + 10, bottom: 50, right: window.innerWidth + 50 });
+        try {
+            await preloadStartupAssets();
+        } finally {
+            document.body.innerHTML = '';
+        }
+        expect(loaded.some((src) => src.endsWith('/on-screen.png'))).toBe(true);
+        expect(loaded.some((src) => src.endsWith('/off-screen.png'))).toBe(false);
+    });
 });

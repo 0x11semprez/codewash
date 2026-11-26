@@ -16,6 +16,7 @@ import {
     DEFAULT_SOUNDS,
     buildWritingPools,
     THEME_SPRITE_GROUPS,
+    compareThemes,
 } from '../constants/gameData';
 import { hasDefeatedWholeGroup } from '../constants/achievements';
 
@@ -143,6 +144,15 @@ describe('theme registry', () => {
     it('loads every theme JSON file, in menu order', () => {
         expect(THEMES_LIST.map((theme) => theme.id)).toEqual(['blocks', 'idols', 'monsters', 'spy', 'space', 'ocean']);
         THEMES_LIST.forEach((item) => expect(item.img).toBe(THEME_CONFIG[item.id].assets.background));
+    });
+
+    it('sorts themes with the same order by id', () => {
+        const themes = [
+            { id: 'zoo', order: 2 },
+            { id: 'army', order: 2 },
+            { id: 'moon', order: 1 },
+        ];
+        expect(themes.sort(compareThemes).map((theme) => theme.id)).toEqual(['moon', 'army', 'zoo']);
     });
 
     it('resolves unknown or empty theme ids to the default theme', () => {

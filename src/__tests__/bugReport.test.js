@@ -113,6 +113,14 @@ describe('log buffer', () => {
         expect(buffer.getEntries()).toEqual([]);
     });
 
+    it('formats an error without a stack as name and message', () => {
+        const buffer = createLogBuffer({ clock });
+        const error = new TypeError('bad value');
+        error.stack = '';
+        buffer.add('error', [error]);
+        expect(buffer.getEntries()[0].message).toBe('TypeError: bad value');
+    });
+
     it('redacts emails and secrets', () => {
         expect(redact('user kid@home.test token=abc123 password: "hunter2"')).toBe(
             'user [email] token=[redacted] password: "[redacted]"',
@@ -253,6 +261,30 @@ describe('transports', () => {
         await createTransport({ endpoint: 'https://example.test' }).send(makeReport());
         expect(fetchSpy).toHaveBeenCalledOnce();
         fetchSpy.mockRestore();
+    });
+
+    it('HTTP transport sends no abort signal when AbortSignal.timeout is missing', async () => {
+        const original = AbortSignal.timeout;
+        AbortSignal.timeout = undefined;
+        try {
+            const fetchImpl = vi.fn().mockResolvedValue({ ok: true });
+            await createHttpTransport({ endpoint: 'https://example.test', fetchImpl }).send(makeReport());
+            expect(fetchImpl.mock.calls[0][1].signal).toBeUndefined();
+        } finally {
+            AbortSignal.timeout = original;
+            vi.restoreAllMocks();
+        }
+    });
+
+    it('default mailto opener sends the browser to the mailto URL', async () => {
+        const assign = vi.fn();
+        vi.stubGlobal('window', { location: { assign } });
+        try {
+            await createTransport({ endpoint: '', email: 'dev@example.test' }).send(makeReport());
+        } finally {
+            vi.unstubAllGlobals();
+        }
+        expect(assign).toHaveBeenCalledWith(expect.stringMatching(/^mailto:dev%40example\.test\?/));
     });
 
     it('downloads the report as a JSON file', () => {

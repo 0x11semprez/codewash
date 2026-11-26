@@ -1,5 +1,6 @@
-import { describe, it, expect } from 'vitest';
-import { LANGUAGES, LANGUAGE_CODES, LOCALES } from '../../i18n/locales';
+import { describe, it, expect, vi, afterEach } from 'vitest';
+import { LANGUAGES, LANGUAGE_CODES, LOCALES, compareLanguages, getInitialLanguage } from '../../i18n/locales';
+import { createMemoryStorage } from '../helpers/memoryStorage';
 import { DEFAULT_LOCALE, flattenKeys, lookup } from '../../i18n/translate';
 import { ACHIEVEMENTS, TIER_NAMES } from '../../constants/achievements';
 import { BADGE_TIERS, SKILL_DATA, THEME_CONFIG } from '../../constants/gameData';
@@ -13,6 +14,11 @@ describe('language registry', () => {
         expect(LANGUAGE_CODES[0]).toBe(DEFAULT_LOCALE);
         expect(LANGUAGE_CODES).toEqual(expect.arrayContaining(['en', 'fr']));
         expect(LANGUAGES.find((l) => l.code === 'fr').name).toBe('Français');
+    });
+
+    it('puts the default language first and sorts the others by code', () => {
+        const codes = ['fr', 'de', DEFAULT_LOCALE, 'es'].map((code) => ({ code }));
+        expect(codes.sort(compareLanguages).map(({ code }) => code)).toEqual([DEFAULT_LOCALE, 'de', 'es', 'fr']);
     });
 
     it('gives every language a code that matches its key and a name', () => {
@@ -94,5 +100,25 @@ describe('English dictionary covers the game data', () => {
         Object.entries(AURA_ADJECTIVES).forEach(([aura, adjective]) => {
             expect(lookup(en, `auras.${aura}`)).toBe(adjective);
         });
+    });
+});
+
+describe('getInitialLanguage', () => {
+    afterEach(() => {
+        vi.restoreAllMocks();
+        vi.unstubAllGlobals();
+    });
+
+    it('uses navigator.language when the browser gives no language list', () => {
+        vi.stubGlobal('localStorage', createMemoryStorage());
+        vi.spyOn(window.navigator, 'languages', 'get').mockReturnValue([]);
+        vi.spyOn(window.navigator, 'language', 'get').mockReturnValue('fr-FR');
+        expect(getInitialLanguage()).toBe('fr');
+    });
+
+    it('falls back to English when there is no navigator', () => {
+        vi.stubGlobal('localStorage', createMemoryStorage());
+        vi.stubGlobal('navigator', undefined);
+        expect(getInitialLanguage()).toBe(DEFAULT_LOCALE);
     });
 });
