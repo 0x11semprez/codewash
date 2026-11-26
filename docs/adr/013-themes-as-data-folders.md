@@ -40,6 +40,10 @@ We chose JSON over JavaScript because a non-developer can edit it without knowin
 - Every theme picture has a standard size: background 1280 x 720, logo 1200 x 300, card back 400 x 600, sprites 256 x 256.
 - The UI draws each picture in a fixed box with `object-fit`. A picture of the wrong size can look blurry, but it never stretches and never moves the rest of the screen.
 
+### Theme text in other languages
+
+The game is translated (ADR-012). Theme text belongs to the theme, so it is translated in the theme JSON, in a `"translations"` block per language: the theme name, the skill texts and the pattern piece labels. `themeSkillText`, `themeName` and `pieceLabel` in `src/i18n/gameText.js` pick the text in this order: the theme's translation, the theme's own text, then the dictionary. A new theme without translations still works in every language. Fixed UI text, badges, border effects and the default skill texts stay in the dictionaries.
+
 ### A test that guards new themes
 
 `src/__tests__/themeFiles.test.js` checks every theme: missing files, file types, file sizes, picture shapes, names, counts and license files. Each failure names the theme and the file or setting to fix.
@@ -112,6 +116,7 @@ We kept names that are ordinary English words or common fantasy creatures: Zombi
 
 ### Negative
 
-- The Blocks theme keeps the creature, item and skill pictures the game came with. Their origin is not documented and many look like Minecraft art. The default music (`calm1` to `piano3`), the default UI sounds and the per-enemy sounds have the same problem. No theme plays these sounds any more, but they stay as the fallback. They should be replaced with CC0 files before any public release.
+- Known limit: Blocks keeps the original creature, item and skill icon images. Only their names changed. Many look like Minecraft art. The team keeps them on purpose and will justify it at the defense.
+- The default UI sounds and the per-enemy sounds come from the original project. No theme plays them any more, but they stay as the fallback. The six old music files named after Minecraft soundtrack files (`calm1` to `piano3`) were deleted, and the default music is now the Blocks playlist.
 - JSON cannot hold comments, so the guide lives in `docs/features/themes.md` and not in the file itself.
 - The six theme folders add about 17 MB to the repository, mostly music.

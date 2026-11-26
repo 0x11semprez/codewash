@@ -37,6 +37,7 @@ Links to pull requests point to this repository. Work done before the move from 
 - Space and Ocean themes, made from CC0 assets (Kenney packs and OpenGameArt music and sounds). Credits are in `docs/features/themes.md`. Issue [#21](https://github.com/0x11semprez/codewash/issues/21).
 - Own creatures, items, music and sounds for the Monsters, Idols and Spy themes, and own music and sounds for Blocks, all CC0. Issue [#21](https://github.com/0x11semprez/codewash/issues/21).
 - A save migration: at startup, old theme ids and old creature names in each profile save are updated, so no progress is lost. Issue [#21](https://github.com/0x11semprez/codewash/issues/21).
+- French text for every theme (name, skill texts, pattern pieces) in a `"translations"` block of each theme JSON, and French text for the new UI labels, the "Titanium" badge and the "Shadow Portal" border. Issue [#21](https://github.com/0x11semprez/codewash/issues/21).
 - Themes are data: one folder in `public/assets/themes/<id>/` and one JSON file in `src/themes/<id>.json` per theme. The game loads every JSON file, so adding a theme needs no code ([ADR-013](docs/adr/013-themes-as-data-folders.md)). Issue [#21](https://github.com/0x11semprez/codewash/issues/21).
 - Per-theme music and sound effects. The music switches as soon as the player changes theme. Issue [#21](https://github.com/0x11semprez/codewash/issues/21).
 - A scroll bar in the theme menu. Issue [#21](https://github.com/0x11semprez/codewash/issues/21).
@@ -77,6 +78,7 @@ Links to pull requests point to this repository. Work done before the move from 
 
 ### Removed
 
+- The six default music files named after Minecraft soundtrack files (`calm1` to `calm3`, `piano1` to `piano3`). The default music is now the Blocks playlist. Issue [#21](https://github.com/0x11semprez/codewash/issues/21).
 - Dead code: seven unused functions, the unused `WRITING_ITEMS_BY_LENGTH` constant and `MenuDrawer_old.jsx` (DEBT-004). Commit `883e02f`, merged with Epitech PR #44 (merge `7fa5858`). `src/constants/assets.js` was not removed and is still unused.
 - The `build-exe.yml` workflow that packaged the Electron app, and the first CI workflow from Epitech PR #37, which ran in a `CodeWashGame/` folder that does not exist. Commit `881859e` (no pull request).
 - The Minecraft, Pokemon and K-Pop Demon Hunters logos, backgrounds and card backs. Unused theme files `fantasy.png`, `Scifi.png`, `pokemon_logo.svg` and an empty `text` file, and the unused `boss` and `mobType` fields of the skill and theme data. Issue [#21](https://github.com/0x11semprez/codewash/issues/21).

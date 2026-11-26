@@ -159,7 +159,7 @@ Escalate when the mic fails in Chrome with permission granted, or works in Chrom
 How sound works (`src/services/soundManager.js` and `src/hooks/useAudio.js`):
 
 - Music starts the first time a battle starts. There is no music on the menu before that.
-- Music is a random track from six MP3 files in `public/assets/sounds/bgm/` (they were WAV files of about 190 MB before [#64](https://github.com/0x11semprez/codewash/pull/64)). They are not preloaded, so the first track can take time to start on a slow network.
+- Music is a random track from the playlist of the current theme, in `public/assets/themes/<id>/music/`. Tracks are not preloaded, so the first track can take time to start on a slow network.
 - Every sound call ends with `.catch(() => {})`. When the browser refuses to play a sound, for example because of its autoplay rules, nothing appears in the Console.
 - After the first attempt to start the music, the game counts the music as playing, even if the browser refused. It does not try again until the page is reloaded.
 

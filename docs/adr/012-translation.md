@@ -45,8 +45,8 @@ The two confirmation words follow the language. The reset modal asks for "DELETE
 
 These stay as they are:
 
-- Theme names (Minecraft, Pokemon, K-Pop Demon Hunters, Spy). They are brands.
-- Mob names (Zombie, Creeper, Ender Dragon...). They are Minecraft names, and save files and achievements use them as ids. Only the aura adjective is translated, and French puts it after the noun ("Zombie gelé").
+- Theme names and theme skill texts are not in the dictionaries. They are translated in each theme's JSON file (see ADR-013).
+- Creature names (Zombie, Boomer, Void Dragon...). Save files and achievements use them as ids. Only the aura adjective is translated, and French puts it after the noun ("Zombie gelé").
 - The "MINECRAFT / GAME STUDIOS" wordmark on the loading screen. It is a logo.
 - The error detail in the bug report form when sending fails. It comes from the browser or the server.
 

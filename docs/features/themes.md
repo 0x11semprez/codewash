@@ -171,11 +171,29 @@ Make `music` and `sounds` folders in your theme folder.
 
 Without `enemyHurt` and `enemyDefeat`, the default enemies play their own sounds and other enemies play none.
 
-### 7. Add the license
+### 7. Translate the theme (optional)
+
+The game is in English and French. Write your texts in English. To show French text too, add a `"translations"` block at the end of the JSON file:
+
+```json
+"translations": {
+    "fr": {
+        "name": "Jungle",
+        "skills": {
+            "reading": { "name": "Lecture", "title": "...", "action": "Lire !", "description": "..." }
+        },
+        "patternPieces": { "Red": "Rouge" }
+    }
+}
+```
+
+Every part is optional. A text you leave out shows in English. A skill text the theme does not set at all comes from the game dictionaries (`src/i18n/locales/`), so it is always translated. Creature names stay as they are, because the spelling game uses them as words.
+
+### 8. Add the license
 
 Only use pictures and sounds you have the right to use. Put the license text next to them, in a file whose name starts with `LICENSE`, for example `LICENSE.txt`. Write where each file comes from in the "Credits" section below.
 
-### 8. Check the theme
+### 9. Check the theme
 
 Ask a developer to run `npm test`, or run it yourself. The test `src/__tests__/themeFiles.test.js` checks every theme. When something is wrong, it names the theme and the file or setting to fix, for example:
 
@@ -189,7 +207,7 @@ It checks that:
 - the JSON file and the folder both exist,
 - every file the JSON file names exists, has a supported type and is not too big (1 MB per picture, 5 MB per music file),
 - the background, logo and card back have the right shape, and sprites are square,
-- skill and sound keys are spelled right,
+- skill and sound keys are spelled right, and the translations use known languages, skills and pieces,
 - each group has enough pictures,
 - a license file is present when the theme has its own files.
 
@@ -215,7 +233,8 @@ Some parts stay the same in every theme. They are not tied to one world, or chan
 
 ## Known limits
 
-- The Blocks theme keeps the creature, item and skill pictures the game came with. Their origin is not documented. Many of them look like Minecraft art. Their Minecraft names were renamed (see ADR-013), but the pictures should be replaced with CC0 art before any public release. The same goes for the default music in `public/assets/sounds/bgm/` (`calm1` to `calm3`, `piano1` to `piano3`), the default UI sounds and the per-enemy sounds in `public/assets/sounds/mob/`. No theme plays them now, because every theme lists its own music and sounds, but they are still the fallback.
+- Blocks keeps the original creature, item and skill icon images. Only their names changed. Many of them look like Minecraft art, and their origin is not documented. The team chose to keep them for now and will explain this choice at the defense.
+- The default UI sounds and the per-enemy sounds in `public/assets/sounds/mob/` come from the original project too. No theme plays them now, because every theme lists its own sounds, but they are still the fallback. The six old music files, named after Minecraft soundtrack files, were deleted. The default music is now the Blocks playlist.
 - The bonus creature event and its achievement keep the internal name "phantom" in the code and in saved data, so old saves keep their progress.
 
 ## Credits
