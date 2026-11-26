@@ -224,6 +224,72 @@ The six background tracks were uncompressed WAV files (44.1 kHz, stereo, 1411 kb
 
 The music is about 10.6 times smaller. Durations were compared for two tracks only, and sound quality was not compared by ear. `soundManager.test.js` checks that the track list points to existing MP3 files under 10 MB.
 
+### 4.7 Animated sprites
+
+The 32 animated GIFs under `public/assets/` are now lossless animated WebP files. The pixels, the transparency and the loop are unchanged. [ADR-011](../adr/011-animated-webp-instead-of-gif.md) explains the choice.
+
+| Folder | GIF | WebP | Change |
+| --- | --- | --- | --- |
+| `items/` | 18.03 MB | 12.25 MB | -32 % |
+| `mobs/` | 16.78 MB | 8.29 MB | -51 % |
+| `skills/` | 2.10 MB | 0.99 MB | -53 % |
+| **Total** | **36.91 MB** | **21.53 MB** | **-42 %** |
+
+Sizes per file, largest first:
+
+| File | GIF | WebP | Change |
+| --- | --- | --- | --- |
+| `items/book` | 12.21 MB | 8.34 MB | -32 % |
+| `items/axe` | 2.15 MB | 1.42 MB | -34 % |
+| `items/hoe` | 2.07 MB | 1.42 MB | -31 % |
+| `mobs/axolotl/axolotl_pink` | 1.81 MB | 0.82 MB | -55 % |
+| `mobs/boss/enderdragon` | 1.29 MB | 1.05 MB | -18 % |
+| `items/chests/ender_chest` | 1.25 MB | 0.84 MB | -33 % |
+| `mobs/axolotl/axolotl_red` | 1.11 MB | 0.54 MB | -52 % |
+| `mobs/axolotl/axolotl_green` | 1.10 MB | 0.56 MB | -49 % |
+| `mobs/axolotl/axolotl_brown` | 1.09 MB | 0.51 MB | -53 % |
+| `mobs/axolotl/axolotl_black` | 1.08 MB | 0.47 MB | -57 % |
+| `mobs/axolotl/axolotl_cyan` | 1.05 MB | 0.46 MB | -56 % |
+| `mobs/axolotl/axolotl_gold` | 1.00 MB | 0.45 MB | -55 % |
+| `mobs/hostile/blaze` | 0.99 MB | 0.36 MB | -64 % |
+| `skills/axolotl_blue` | 0.96 MB | 0.44 MB | -54 % |
+| `mobs/axolotl/axolotl_blue` | 0.96 MB | 0.44 MB | -54 % |
+| `skills/reading_icon` | 0.92 MB | 0.47 MB | -49 % |
+| `mobs/friendly/glowsquid` | 0.75 MB | 0.25 MB | -67 % |
+| `mobs/hostile/phantom` | 0.74 MB | 0.58 MB | -22 % |
+| `mobs/hostile/guardian` | 0.64 MB | 0.34 MB | -46 % |
+| `mobs/miniboss/elderguardian` | 0.64 MB | 0.36 MB | -43 % |
+| `mobs/boss/warden` | 0.60 MB | 0.27 MB | -55 % |
+| `mobs/hostile/ghast` | 0.47 MB | 0.09 MB | -82 % |
+| `mobs/friendly/squid` | 0.46 MB | 0.11 MB | -76 % |
+| `mobs/friendly/nautilus` | 0.43 MB | 0.05 MB | -88 % |
+| `skills/cleaning_icon` | 0.22 MB | 0.08 MB | -64 % |
+| `mobs/friendly/strider` | 0.19 MB | 0.06 MB | -68 % |
+| `items/chests/trapped_chest` | 0.19 MB | 0.11 MB | -44 % |
+| `mobs/friendly/allay` | 0.18 MB | 0.09 MB | -48 % |
+| `items/chests/chest` | 0.17 MB | 0.11 MB | -35 % |
+| `mobs/friendly/frog` | 0.07 MB | 0.04 MB | -46 % |
+| `mobs/friendly/camel` | 0.06 MB | 0.04 MB | -33 % |
+| `mobs/friendly/sniffer` | 0.06 MB | 0.03 MB | -44 % |
+
+Sizes are in decimal megabytes, read from the files on disk. For `frog`, `warden` and `enderdragon`, every decoded frame was compared with the GIF and matched exactly. The frame count and delays matched too.
+
+`skills/axolotl_blue` is not used by the code. It was converted with the others.
+
+The item animations stay large. `book` has 1,650 frames and `axe` and `hoe` have 825 each, so even lossless WebP stays above 1 MB. A shorter loop would help more than a new format.
+
+#### How to rerun the conversion
+
+You need `ffmpeg` built with `libwebp`. Check with `ffmpeg -hide_banner -encoders | grep libwebp_anim`.
+
+```sh
+node scripts/convert-gifs.mjs --dry-run   # print sizes, change nothing
+node scripts/convert-gifs.mjs             # convert, delete the GIFs, update the paths in src/
+npx vitest run --dir src src/__tests__/assetPaths.test.js
+```
+
+The script converts every GIF under `public/`. It keeps a GIF when the WebP would be bigger. Run it again after adding a new animated sprite.
+
 ---
 
 ## 5. Automated tests
@@ -237,6 +303,7 @@ The music is about 10.6 times smaller. Durations were compared for two tracks on
 | `SkillCard.test.jsx` | The right mini-game renders after loading for each skill, and none outside a battle |
 | `webVitals.test.js` | Metric collection and rating thresholds |
 | `performanceBudget.test.js` | Drawers, modals and mini-games stay lazy; global styles stay out of `App`; images stay lazy by default |
+| `assetPaths.test.js` | Every image path in `gameData` and `src/` exists under `public/`, except the four known missing theme images ([#53](https://github.com/0x11semprez/codewash/issues/53)); no referenced GIF is above 200 KB |
 
 ---
 
