@@ -64,7 +64,7 @@ Quick check:
 Fix:
 
 1. Press "CONTINUE". The game works, with a missing logo or a missing memory card back.
-2. To stop the message, open the Cosmetics panel and pick the Minecraft theme. The next start will not report failed images.
+2. To stop the message, open the Cosmetics panel and pick the Blocks theme (the default). The next start will not report failed images.
 3. If the percentage is stuck on a slow network, wait. There is no timeout on images, so the screen waits until the browser gives up on each one. If it never ends, reload.
 
 Escalate when a theme reports failed images, or when the screen stays stuck after a reload on a normal network. Include the list of 404 files from the Network tab and the theme name.

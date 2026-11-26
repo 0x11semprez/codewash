@@ -13,7 +13,9 @@ A theme changes the look and the sound of the whole game:
 
 The player picks a theme in the Cosmetics panel (the sparkle button at the top left). Each profile keeps its own theme.
 
-The game has six themes: Minecraft (the default), K-Pop Demon Hunters, Pokemon, Spy, Space and Ocean.
+The game has six themes: Blocks (the default), Idols, Monsters, Spy, Space and Ocean. Every theme has its own background, logo, card back, music and sounds. Every theme except Blocks also has its own creatures and items.
+
+Three themes were renamed to drop the names and logos of other companies: Minecraft is now Blocks, K-Pop Demon Hunters is now Idols and Pokemon is now Monsters. Old saves move to the new names on their own (see "Saved games" below).
 
 ## Audit of the themes before this work
 
@@ -24,7 +26,7 @@ We read the code of every screen and mini-game and checked every file the four o
 | Missing files | `spy_logo.png`, `spy_memorycard.jpg`, `kpop_memorycard.jpg` and `pokemon_memorycard.jpg` did not exist (DEBT-021). The loading screen reported failed images. | Every theme now has a logo and a card back. A test fails when a theme points to a missing file. |
 | Spy background | The Spy theme used `minecraft.png` as its background. | It uses its own picture. |
 | Skill cards | The titles and texts ("Enchanting Table", "Redstone", "Crafting Table", "Power up your redstone circuits...") were the same in every theme. Only the small skill name changed. | Each theme sets its own titles, button texts and descriptions. The defaults are neutral. |
-| Skill icons | The six skill icons were Minecraft pictures (blocks, a chest, an enchanted book) in every theme. | A theme can set its own icons. Space and Ocean do. |
+| Skill icons | The six skill icons were Minecraft pictures (blocks, a chest, an enchanted book) in every theme. | A theme can set its own icons. Every theme except Blocks does. |
 | Enemies and bosses | The card looked up the Minecraft lists first. Unknown names always fell back to "Zombie". | Every name and picture comes from the theme. Unknown names show the first enemy of the theme. |
 | Memory game | The cards always showed the Minecraft animals. Only the card back followed the theme. | The cards show the theme's "friends". |
 | Pattern game | The pieces were always the eight axolotls. | The pieces come from the theme. |
@@ -39,6 +41,7 @@ We read the code of every screen and mini-game and checked every file the four o
 | Theme menu | A plain grid with room for four themes and no scroll bar. | The grid shows two rows and has a visible scroll bar. |
 | Achievements | "Mini Master", "World Ender" and "Monster Manual" checked a fixed list of Minecraft names. | They unlock when the player beats every creature of the group in one theme. |
 | Unused files | `fantasy.png`, `Scifi.png`, `pokemon_logo.svg` and an empty file named `text` were not used. | Removed. |
+| Brand names and logos | The themes used the Minecraft, Pokemon and K-Pop Demon Hunters names, logos and franchise art. | Renamed to Blocks, Monsters and Idols. Their logos, backgrounds and card backs are now made from CC0 art. |
 | Unused data | The `boss` and `mobType` fields of the theme and skill data were never read. | Removed. |
 
 ## How it works
@@ -50,11 +53,20 @@ Each theme has two parts:
 
 The game reads every JSON file in `src/themes/` when it starts. There is no list to update in the code. The file name is the theme id, so `src/themes/ocean.json` is the theme `ocean`.
 
-A theme can leave out any optional part. The game then uses the default part. The parts are swapped as whole groups, so a theme never mixes its own enemies with default enemies. The defaults are the Minecraft creatures and the original music and sounds.
+A theme can leave out any optional part. The game then uses the default part. The parts are swapped as whole groups, so a theme never mixes its own enemies with default enemies. The default creatures are the ones the game came with. The Blocks theme uses them.
 
 The code is in `src/constants/game/themes.js` (`buildTheme`). `src/constants/game/audio.js` holds the default music and sounds. `src/services/soundManager.js` plays the sounds of the active theme (`setSoundTheme`).
 
 A save made with another theme still works. If the saved theme no longer exists, the game uses the default theme. If a saved enemy name is not part of the current theme, the game always shows the same enemy of the current theme in its place.
+
+## Saved games
+
+The game renamed three themes and some default creatures. `migrateStorage()` in `src/services/storageKeys.js` runs once when the game starts and updates the save of each profile:
+
+- the old theme ids `minecraft`, `pokemon` and `kpop` become `blocks`, `monsters` and `idols`,
+- the old creature names become the new ones (for example "Creeper" becomes "Boomer"), in the skills and in the lists of defeated creatures, so achievement progress is kept.
+
+`resolveThemeId` also accepts the old ids, so a save that was not updated still opens the right theme. The full list of renamed names is in [ADR-013](../adr/013-themes-as-data-folders.md).
 
 ## How to add a theme
 
@@ -82,9 +94,29 @@ PNG and JPG files work too. If you use them, write their names in the JSON file 
 
 ### 4. Create the settings file
 
-Copy `src/themes/spy.json` to `src/themes/jungle.json`. Open the new file in a text editor and change:
+Create the file `src/themes/jungle.json` with a text editor and paste this:
 
-- `"name"`: the name shown in the theme menu, for example `"Jungle"`.
+```json
+{
+    "name": "Jungle",
+    "order": 7,
+    "background": "background.webp",
+    "logo": "logo.webp",
+    "cardBack": "card-back.webp",
+    "skills": {
+        "reading": { "name": "Reading" },
+        "math": { "name": "Math" },
+        "writing": { "name": "Spelling" },
+        "cleaning": { "name": "Tidying" },
+        "memory": { "name": "Memory" },
+        "patterns": { "name": "Patterns" }
+    }
+}
+```
+
+Then change:
+
+- `"name"`: the name shown in the theme menu.
 - `"order"`: the position in the menu. Use the next free number (the last theme uses 6, so use 7).
 - the names under `"skills"`: the small name on each skill card.
 
@@ -183,16 +215,45 @@ Some parts stay the same in every theme. They are not tied to one world, or chan
 
 ## Known limits
 
-- The K-Pop Demon Hunters, Pokemon and Spy themes only have a background, a logo, a card back and skill names. Their creatures, music and sounds come from the default theme. Adding their own sprites follows step 5.
-- "Pokemon", "K-Pop Demon Hunters" and the default "Minecraft" theme use the names and logos of other companies. They came with the project. They should be reviewed before any public release.
+- The Blocks theme keeps the creature, item and skill pictures the game came with. Their origin is not documented. Many of them look like Minecraft art. Their Minecraft names were renamed (see ADR-013), but the pictures should be replaced with CC0 art before any public release. The same goes for the default music in `public/assets/sounds/bgm/` (`calm1` to `calm3`, `piano1` to `piano3`), the default UI sounds and the per-enemy sounds in `public/assets/sounds/mob/`. No theme plays them now, because every theme lists its own music and sounds, but they are still the fallback.
 - The bonus creature event and its achievement keep the internal name "phantom" in the code and in saved data, so old saves keep their progress.
 
 ## Credits
 
-All files of the Space and Ocean themes are public domain (CC0 1.0, https://creativecommons.org/publicdomain/zero/1.0/). The license text of each pack is in the theme folder. We resized, cropped and converted the pictures to WebP, and re-encoded the music to MP3 at 96 kbps. The two logos are text drawn with the Kenney Future font from the Space Shooter Redux pack (CC0). The Spy logo uses the same font. The K-Pop Demon Hunters, Pokemon and Spy card backs are cropped from the backgrounds already in the project.
+All files of the six theme folders are public domain (CC0 1.0, https://creativecommons.org/publicdomain/zero/1.0/). The license text of each Kenney pack is in the theme folder as `LICENSE-kenney-<pack>.txt`. The music and the OpenGameArt sounds have no license file in their download, so `LICENSE-music*.txt` in each folder records the title, author, page and license of each file.
+
+We resized, cropped and converted the pictures to WebP, and re-encoded the music to MP3 at 96 kbps. The six logos are text drawn with the Kenney Future font from the Space Shooter Redux pack. The card backs and the Idols and Spy backgrounds were drawn with ImageMagick from simple shapes and the Kenney pictures listed below. The Monsters bosses and the Idols demons are built from Kenney Monster Builder parts. The Idols friends and pattern pieces are Kenney Shape Characters with a face. Some Spy robots and bosses are Toon Characters with shifted colors.
 
 | Theme | Files | Pack or title | Author | Source | License |
 | --- | --- | --- | --- | --- | --- |
+| Blocks | Background, card back | New Platformer Pack | Kenney (kenney.nl) | https://opengameart.org/content/new-platformer-pack | CC0 |
+| Blocks | `hit`, `death`, `level-up`, `match`, `enemy-hurt`, `enemy-defeat` sounds | New Platformer Pack | Kenney (kenney.nl) | https://opengameart.org/content/new-platformer-pack | CC0 |
+| Blocks | `click`, `card-left`, `card-right`, `fail`, `notification`, `mismatch` sounds | Interface Sounds | Kenney (kenney.nl) | https://opengameart.org/content/interface-sounds | CC0 |
+| Blocks | `music/flowerbed-fields.mp3` | Flowerbed Fields [Loop] | Zane Little Music | https://opengameart.org/content/flowerbed-fields-loop | CC0 |
+| Blocks | `music/town-theme.mp3` | Town Theme RPG | cynicmusic | https://opengameart.org/content/town-theme-rpg | CC0 |
+| Monsters | Enemies, minibosses, items, blocks, pieces, icons, background | New Platformer Pack | Kenney (kenney.nl) | https://opengameart.org/content/new-platformer-pack | CC0 |
+| Monsters | Bosses (built from parts) | Monster Builder Pack | Kenney (kenney.nl) | https://opengameart.org/content/monster-builder-pack | CC0 |
+| Monsters | Friends (animals) | Animal Pack Redux | Kenney (kenney.nl) | https://opengameart.org/content/animal-pack-redux | CC0 |
+| Monsters | `click`, `hit`, `death`, `level-up`, `notification`, `match`, `enemy-hurt`, `enemy-defeat` sounds | New Platformer Pack | Kenney (kenney.nl) | https://opengameart.org/content/new-platformer-pack | CC0 |
+| Monsters | `card-left`, `card-right`, `fail`, `mismatch` sounds | Interface Sounds | Kenney (kenney.nl) | https://opengameart.org/content/interface-sounds | CC0 |
+| Monsters | `music/happy-adventure.mp3` | Happy Adventure (Loop) | TinyWorlds | https://opengameart.org/content/happy-adventure-loop | CC0 |
+| Monsters | `music/green-hills.mp3` | Green Hills | Igor Gundarev | https://opengameart.org/content/green-hills | CC0 |
+| Idols | Enemies, minibosses, bosses (built from parts) | Monster Builder Pack | Kenney (kenney.nl) | https://opengameart.org/content/monster-builder-pack | CC0 |
+| Idols | Friends, pieces, background idols | Shape Characters | Kenney (kenney.nl) | https://opengameart.org/content/shape-characters | CC0 |
+| Idols | Microphone, headphones, disc, music player, bags, suitcases, pencil icon | Generic Items | Kenney (kenney.nl) | https://opengameart.org/content/generic-items | CC0 |
+| Idols | Crown, medal | Board Game Icons | Kenney (kenney.nl) | https://opengameart.org/content/board-game-icons | CC0 |
+| Idols | Star, heart | New Platformer Pack | Kenney (kenney.nl) | https://opengameart.org/content/new-platformer-pack | CC0 |
+| Idols | All sounds | Interface Sounds | Kenney (kenney.nl) | https://opengameart.org/content/interface-sounds | CC0 |
+| Idols | `music/funky-house.mp3` | Funky House | Of Far Different Nature | https://opengameart.org/content/funky-house | CC0 |
+| Idols | `music/party-sector.mp3` | Party Sector | Joth | https://opengameart.org/content/party-sector | CC0 |
+| Spy | Enemies, minibosses, bosses, bonus robot | Toon Characters 1 | Kenney (kenney.nl) | https://opengameart.org/content/toon-characters-1 | CC0 |
+| Spy | Gadgets, items, bags, icons | Generic Items | Kenney (kenney.nl) | https://opengameart.org/content/generic-items | CC0 |
+| Spy | Pattern pieces (card suits and chess pieces), card back lock | Board Game Icons | Kenney (kenney.nl) | https://opengameart.org/content/board-game-icons | CC0 |
+| Spy | `click`, `card-left`, `card-right`, `fail`, `level-up`, `notification`, `mismatch` sounds | Interface Sounds | Kenney (kenney.nl) | https://opengameart.org/content/interface-sounds | CC0 |
+| Spy | `hit`, `death`, `match`, `enemy-hurt`, `enemy-defeat` sounds | Sci-Fi Sounds | Kenney (kenney.nl) | https://opengameart.org/content/sci-fi-sounds | CC0 |
+| Spy | `music/spy-loop.mp3` | Spy Loop | wipics | https://opengameart.org/content/spy-loop | CC0 |
+| Spy | `music/covert-action.mp3` | Covert Action | congusbongus | https://opengameart.org/content/covert-action | CC0 |
+| All | Logo font (Kenney Future) | Space Shooter Redux | Kenney (kenney.nl) | https://opengameart.org/content/space-shooter-redux | CC0 |
 | Space | Enemies, bosses, ships, items, pods, pieces, background, logo font, `fail`, `death` and `level-up` sounds | Space Shooter Redux | Kenney (kenney.nl) | https://opengameart.org/content/space-shooter-redux | CC0 |
 | Space | `hit`, `match`, `enemy-hurt`, `enemy-defeat` sounds | Sci-Fi Sounds | Kenney (kenney.nl) | https://opengameart.org/content/sci-fi-sounds | CC0 |
 | Space | `click`, `card-left`, `card-right`, `notification`, `mismatch` sounds | Interface Sounds | Kenney (kenney.nl) | https://opengameart.org/content/interface-sounds | CC0 |
@@ -204,5 +265,3 @@ All files of the Space and Ocean themes are public domain (CC0 1.0, https://crea
 | Ocean | `hit`, `death`, `match`, `enemy-hurt`, `enemy-defeat` sounds | 40 CC0 water / splash / slime SFX | rubberduck | https://opengameart.org/content/40-cc0-water-splash-slime-sfx | CC0 |
 | Ocean | `music/deep-sea.mp3` | Deep Sea | Umplix | https://opengameart.org/content/deep-sea | CC0 |
 | Ocean | `music/underwater-village.mp3` | Binary Underwater Village (loop) | Pro Sensory | https://opengameart.org/content/binary-underwater-village-loop | CC0 |
-
-The Kenney packs ship their own `License.txt`. It is copied next to the files as `LICENSE-kenney-<pack>.txt`. The OpenGameArt music and water sounds have no license file in their download, so `LICENSE-music.txt` (Space) and `LICENSE-music-and-water-sounds.txt` (Ocean) record the title, author, page and license of each file.

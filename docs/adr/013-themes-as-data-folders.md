@@ -55,17 +55,56 @@ The subject asks us to rename Minecraft-specific values we cannot move into a th
 | `border-netherite` CSS class | Skill card border at level 140 | `border-titanium` | Follows the badge rename. |
 | "Phantom" bonus creature | Flying bonus event, loot box text "Phantom Bonus!", achievement text "Catch Phantoms" | Theme picture `bonusCreature`, "Bonus Level!", "Catch the flying bonus creature" | The picture is themed. The internal names (`PhantomEvent`, `phantomsCaught`, the storage key `phantomEvent_lastSpawn_v1`) stay, because renaming them would reset saved progress. |
 | Axolotls in the pattern game | `axolotlCount`, `AXOLOTL_NOTE_MAP`, `assets/sounds/axolotl/` | `pieceCount`, `NOTE_SOUNDS`, `assets/sounds/notes/` | The pieces are themed now. The notes are shared, because the game teaches the same melody in every theme. |
-| Skill titles and texts ("Enchanting Table", "Redstone", "Crafting Table", "Chest Management") | `SKILL_DATA` | Neutral defaults: "Spell Book", "Power Circuits", "Workshop", "Storage Room" | These are themed now. The Minecraft theme keeps the original wording. The defaults are what a theme without its own texts shows. |
+| Skill titles and texts ("Enchanting Table", "Redstone", "Crafting Table", "Chest Management") | `SKILL_DATA` | Neutral defaults: "Spell Book", "Power Circuits", "Workshop", "Storage Room". The Blocks theme uses "Magic Table", "Power Lab", "Workbench" and "Chest Management". | These are themed now. The defaults are what a theme without its own texts shows. |
 | Fixed Minecraft lists in achievements | "Mini Master", "World Ender", "Monster Manual" | Beat every creature of the group in any one theme | The creatures are themed, so a fixed list of Minecraft names could never be completed in Space or Ocean. |
 | "Zombie" fallback | Skill card | First enemy of the theme | Themed. |
 
 We kept the achievement title "World Ender". It is an ordinary English phrase and the achievement id `world_ender` is saved in player data.
+
+### Themes renamed to drop brand names
+
+Three themes used the names, logos and art of other companies. We renamed them and replaced their pictures with CC0 or drawn ones.
+
+| Old theme | New theme | Old id | New id |
+| --- | --- | --- | --- |
+| Minecraft | Blocks | `minecraft` | `blocks` |
+| Pokemon | Monsters | `pokemon` | `monsters` |
+| K-Pop Demon Hunters | Idols | `kpop` | `idols` |
+
+We renamed the default id too. The id is saved in each profile, so `migrateStorage()` rewrites old ids at startup, and `resolveThemeId` also maps an old id to the new theme. No save is lost, so there was no reason to keep the `minecraft` id.
+
+### Default creatures renamed
+
+The default creatures (used by the Blocks theme) had Minecraft names. We renamed the names that only exist in Minecraft. The names are saved in each profile (the current enemy of each skill and the lists of defeated creatures that achievements read), so `migrateStorage()` renames them in the save too, and achievement progress is kept. The map is `MOB_NAME_RENAMES` in `src/constants/game/mobs.js`. File names of the pictures did not change, except `Herobrine.png`, which is now `darkhero.png`.
+
+| Old name | New name |
+| --- | --- |
+| Creeper | Boomer |
+| Enderman | Shadow Walker |
+| Ghast | Sky Ghost |
+| Hoglin | Tusk Beast |
+| Magma Cube | Lava Cube |
+| Piglin | Pig Warrior |
+| Bogged | Swamp Archer |
+| Evoker | Sorcerer |
+| Ender Dragon | Void Dragon |
+| Herobrine | Dark Hero |
+| Wither | Skull King |
+| Wither Skeleton | Dark Skeleton |
+| Creaking | Tree Spirit |
+| Allay | Sky Sprite |
+| Mooshroom | Mushroom Cow |
+| Ender Chest | Magic Chest |
+| Shulker Box | Shell Box |
+
+We kept names that are ordinary English words or common fantasy creatures: Zombie, Skeleton, Spider, Slime, Witch, Blaze, Breeze, Drowned, Guardian, Elder Guardian, Parched, Phantom, Pillager, Ravager, Warden, the golems, Glow Squid, Sniffer, Strider and the farm animals. Renaming them would not remove a brand name, and it would change more saves and spelling words for no gain.
 
 ## Consequences
 
 ### Positive
 
 - A non-developer adds a theme with a folder, three pictures and one JSON file. Creatures, music and sounds are optional.
+- No theme uses the name, logo or art of another company. Old saves move to the renamed themes and creatures on their own.
 - Every mini-game, every picture and every sound follows the theme, including the spelling ("crafting table") game.
 - Changing the theme does not move or stretch anything on screen.
 - Broken themes fail CI with a message that says what to fix. DEBT-021 is fixed and cannot come back unnoticed.
@@ -73,7 +112,6 @@ We kept the achievement title "World Ender". It is an ordinary English phrase an
 
 ### Negative
 
-- The default theme is still Minecraft, with the Minecraft logo and art from the original project. The K-Pop Demon Hunters and Pokemon themes also use third-party names. This needs a decision before any public release.
-- K-Pop Demon Hunters, Pokemon and Spy only have a background, a logo, a card back and skill names. Their creatures, music and sounds come from the default theme.
+- The Blocks theme keeps the creature, item and skill pictures the game came with. Their origin is not documented and many look like Minecraft art. The default music (`calm1` to `piano3`), the default UI sounds and the per-enemy sounds have the same problem. No theme plays these sounds any more, but they stay as the fallback. They should be replaced with CC0 files before any public release.
 - JSON cannot hold comments, so the guide lives in `docs/features/themes.md` and not in the file itself.
-- The Space and Ocean themes add about 6 MB to the repository, mostly music.
+- The six theme folders add about 17 MB to the repository, mostly music.
