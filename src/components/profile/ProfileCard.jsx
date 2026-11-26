@@ -4,6 +4,7 @@ import SafeImage from '../ui/SafeImage';
 import ParentalVerificationModal from '../ui/ParentalVerificationModal';
 import diamondsTexture from '../../assets/textures/diagmonds-light.png';
 import { THEMES_LIST, SKILL_DATA } from '../../constants/gameData';
+import { pauseWhenOffscreen } from '../../hooks/useAnimationPause';
 
 const ProfileCard = ({ id, name, stats, isCurrent, onSwitch, onRename, isParent, onParentVerified }) => {
     const [isEditing, setIsEditing] = useState(false);
@@ -69,6 +70,7 @@ const ProfileCard = ({ id, name, stats, isCurrent, onSwitch, onRename, isParent,
     return (
         <>
             <div
+                ref={pauseWhenOffscreen}
                 onClick={() => !isEditing && onSwitch(id)}
                 className={getProfileCardClasses()}
                 style={getProfileCardStyles()}

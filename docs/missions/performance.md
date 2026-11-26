@@ -24,7 +24,9 @@ Issue [#18](https://github.com/EpitechBachelorPromo2028/B-ING-300-PAR-3-1-codewa
 - Startup JavaScript went from 392.46 kB to 319.27 kB (-18.6 %).
 - Closed drawers no longer render: 0 of 13 commits, against 8 of 10 before.
 - The maximum React commit dropped from 277.2 ms to 142.3 ms (development build).
-- No end-user speedup is claimed: the Lighthouse figures do not show one (see section 4.3).
+- The background music went from 191 MB to 18 MB (WAV to MP3).
+- The game no longer loads its font or textures from external websites (PR [#68](https://github.com/0x11semprez/codewash/pull/68), pending review).
+- No end-user speedup is claimed: the Lighthouse figures do not show one (see section 4.2).
 
 Every figure is labeled with the tool and environment that produced it.
 
@@ -117,6 +119,9 @@ First Contentful Paint measured at 522.9 ms: one Opera GX measurement on the pro
 | Global CSS extracted to a stylesheet | Styles injected from a JSX component, including a font `@import` on each mount | `src/components/ui/GlobalStyles.css`, `LoadingGate.jsx` |
 | Deferred off-screen images | Images outside the viewport loaded eagerly | `SafeImage.jsx`, `PhantomEvent.jsx`, `preloadStartupAssets.js` |
 | `React.lazy` + `Suspense` for mini-games | Six mini-games bundled with the skill card | `src/components/skills/SkillCard.jsx` |
+| Music compressed from WAV to MP3 (issue #63) | 191 MB of uncompressed music in the build | `public/assets/sounds/bgm/`, `soundManager.js` |
+| Global CSS split into five files (DEBT-002, PR #65) | One 1,781-line stylesheet | `src/styles/`, `GlobalStyles.css` |
+| Font and textures hosted locally (DEBT-019, PR #68) | Requests to Google Fonts and transparenttextures.com | `src/assets/fonts/`, `src/assets/textures/`, `index.css` |
 
 ### Behavior details
 
@@ -130,6 +135,13 @@ First Contentful Paint measured at 522.9 ms: one Opera GX measurement on the pro
 Each mini-game in `src/components/skills/games/` is loaded with `React.lazy` from `SkillCard.jsx` and rendered inside a `Suspense` boundary. It becomes its own chunk (0.95 kB to 3.31 kB, 0.62 kB to 1.58 kB gzipped) fetched on the first battle of that skill. The saving at startup is small because the games are tiny; no speedup is claimed.
 
 While adding this, a missing import of `GameErrorBoundary` in `SkillCard.jsx` was found and fixed: it made every battle crash with `GameErrorBoundary is not defined`.
+
+### Related changes
+
+- **Music (#63):** see section 4.5 for the sizes. The tracks are not preloaded, so the gain is in download size, build size and the Docker image, not in the startup time.
+- **CSS split (DEBT-002, #65):** the five files put end to end are identical to the previous stylesheet, and the built CSS file is byte-identical to the one before. This is a maintainability change. It has no effect on performance, and class names are still global. The unused `GlobalStyles.jsx` copy (1,302 lines) was deleted.
+- **Offline resources (DEBT-019, #68):** the VT323 font is now a local `@font-face` (SIL Open Font License file included) and the two textures are bundled. The built game no longer asks Google Fonts or transparenttextures.com for anything, which makes the first paint independent of a third-party server and lets the game start offline. `noExternalResources.test.js` fails if a source file points to an external website again. The effect on load time was not measured.
+- **WebAssembly/Rust rewrite (#14):** not done. The candidate functions take from 0.02 to 2.4 microseconds per call in JavaScript (200,000 calls each, measured with `vite-node`), against a Total Blocking Time of 20 ms, so there is no bottleneck to remove.
 
 ---
 
@@ -173,6 +185,8 @@ Medians:
 | TBT | 80 ms | 20 ms |
 | CLS | 0.071 | 0 |
 | Speed Index | 0.8 s | 3.1 s |
+
+**What a fair comparison means.** Both versions must be measured under the same conditions: same theme, same browser and window, same machine load, several runs each. Here the "before" runs used the `spy` theme, whose logo and card back images are missing, so the page painted less content. The "after" runs used the `minecraft` theme with its large logo. The score, the FCP and the LCP of the two series therefore cannot be compared, and no speedup or slowdown can be concluded from them. Only the TBT difference (80 ms to 20 ms) is large enough to be informative. The runs have to be redone on the `minecraft` theme for both versions (see section 6).
 
 ### 4.3 Earlier Lighthouse runs (DEBT-001)
 
@@ -223,6 +237,70 @@ The six background tracks were uncompressed WAV files (44.1 kHz, stereo, 1411 kb
 | **Total** | | **191 MB** | **18 MB** |
 
 The music is about 10.6 times smaller. Durations were compared for two tracks only, and sound quality was not compared by ear. `soundManager.test.js` checks that the track list points to existing MP3 files under 10 MB.
+
+### 4.6 Paused off-screen animations
+
+The global styles have about 40 `infinite` animations. At least 20 animate `filter` or `box-shadow`, which the browser repaints on every frame. Before this change they ran even when nobody could see them: carousel cards outside the viewport or at `opacity: 0`, the closed Cosmetics and Settings drawers, and the whole page in a hidden tab.
+
+They are now paused with `animation-play-state: paused` while their element is off-screen or the page is hidden. The keyframes did not change. The design is in [ADR-010](../adr/010-pause-offscreen-animations.md).
+
+#### Protocol: animation count
+
+This count does not depend on machine speed.
+
+1. Run `npm run build`, then `npx vite preview --port 4199`.
+2. Start Chromium with a DevTools port: `chromium --headless=new --remote-debugging-port=9333 --window-size=1280,720 about:blank`.
+3. Run `node tools/measure-animations.mjs 9333 http://localhost:4199/ after 5`.
+4. Run it again with `before` in place of `after`.
+
+The script waits for the loading screen to end. It opens and closes the Cosmetics and Settings drawers, so both stay mounted off-screen. It then counts the animations from `document.getAnimations()` by play state. In `before` mode it first deletes the pause rules from the page's CSSOM. The attributes stay on the elements but have no effect, as before the change.
+
+#### Results
+
+Chromium headless, 1280 x 720, production build, `minecraft` theme, 6 runs.
+
+| Mode | Runs | Animations | Running | Paused |
+| --- | --- | --- | --- | --- |
+| Before | 3 | 37 | 37 | 0 |
+| After | 3 | 33 to 37 | 15 to 18 | 15 to 19 |
+
+About half of the animations are paused after the change. The totals differ between "after" runs because the carousel was sometimes still moving when the count was taken.
+
+The same script also reads `Performance.getMetrics` (style recalculation time, task time) and counts `requestAnimationFrame` calls over 5 seconds. These figures are not reported. The machine had a load average above 17 during the runs, the page drew only 6 to 22 frames in 5 seconds, and the timings varied by a factor of 20 within one mode.
+
+#### Protocol: frame rate and paint time (manual)
+
+Use this on a quiet machine to measure the effect on frame time.
+
+1. Open the production preview in Chrome at 1280 x 720 and pass the loading screen.
+2. Open and close the Cosmetics drawer, then the Settings drawer.
+3. In DevTools, open the Rendering panel and enable "Frame Rendering Stats" and "Paint flashing". Green flashes should appear only on the center card and the visible mobs, not on the left edge where the drawers sit.
+4. In the Performance panel, set CPU throttling to 4x slowdown. Record 10 seconds without touching the page.
+5. Note the FPS, and the "Rendering" and "Painting" totals from the Summary tab.
+6. To get the "before" figures in the same build, run this in the console, then repeat steps 4 and 5:
+
+   ```js
+   for (const s of document.styleSheets) {
+       const walk = (list, owner) => {
+           for (let i = list.length - 1; i >= 0; i--) {
+               const r = list[i];
+               if (r.cssRules) walk(r.cssRules, r);
+               if (r.selectorText?.includes('data-offscreen')) owner.deleteRule(i);
+           }
+       };
+       walk(s.cssRules, s);
+   }
+   ```
+
+7. Repeat three times per mode and keep the median.
+
+These figures have not been recorded yet.
+
+#### Limits
+
+- Visible animations cost the same as before. The center card border and the visible auras still repaint `filter` and `box-shadow` on every frame.
+- Browsers already slow down hidden tabs. The page-hidden rule mainly helps the Electron window when it is minimized.
+- `useAnimationPause.test.jsx`, `MobWithAura.test.jsx`, `SkillCard.test.jsx`, `app.test.jsx` and `globalStyles.test.js` cover the attributes and the CSS rule. jsdom does not run CSS animations, so the tests cannot count them.
 
 ### 4.7 Animated sprites
 
@@ -303,6 +381,7 @@ The script converts every GIF under `public/`. It keeps a GIF when the WebP woul
 | `SkillCard.test.jsx` | The right mini-game renders after loading for each skill, and none outside a battle |
 | `webVitals.test.js` | Metric collection and rating thresholds |
 | `performanceBudget.test.js` | Drawers, modals and mini-games stay lazy; global styles stay out of `App`; images stay lazy by default |
+| `useAnimationPause.test.jsx` | Off-screen and hidden-page attributes, shared observer cleanup, fallback without `IntersectionObserver` |
 | `assetPaths.test.js` | Every image path in `gameData` and `src/` exists under `public/`, except the four known missing theme images ([#53](https://github.com/0x11semprez/codewash/issues/53)); no referenced GIF is above 200 KB |
 
 ---

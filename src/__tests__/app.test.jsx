@@ -66,4 +66,20 @@ describe('App', () => {
         render(<App startupLoadSeconds={1.234} />);
         await waitFor(() => expect(screen.getByText(/loaded successfully in 1.23 seconds/)).toBeInTheDocument());
     });
+
+    it('pauses the two invisible carousel cards and pauses the page while it is hidden', () => {
+        localStorage.clear();
+        const { container, unmount } = render(<App />);
+        const paused = [...container.querySelectorAll('[data-offscreen]')];
+        expect(paused).toHaveLength(2);
+        paused.forEach((card) => expect(card.style.opacity).toBe('0'));
+
+        Object.defineProperty(document, 'hidden', { configurable: true, get: () => true });
+        fireEvent(document, new Event('visibilitychange'));
+        expect(document.documentElement).toHaveAttribute('data-page-hidden');
+        delete document.hidden;
+        fireEvent(document, new Event('visibilitychange'));
+        expect(document.documentElement).not.toHaveAttribute('data-page-hidden');
+        unmount();
+    });
 });
