@@ -260,7 +260,7 @@ Each item links to its GitHub issue for full context and to the PR that addresse
 
 ### DEBT-005: No tests [P0] [Done ✓]
 
-- **Issue:** [#28](https://github.com/0x11semprez/codewash/issues/28) — **PR:** [#3](https://github.com/0x11semprez/codewash/pull/3), [#4](https://github.com/0x11semprez/codewash/pull/4), [#6](https://github.com/0x11semprez/codewash/pull/6), [#46](https://github.com/0x11semprez/codewash/pull/46) (merged). Coverage target of 80% still tracked in [#17](https://github.com/0x11semprez/codewash/issues/17)
+- **Issue:** [#28](https://github.com/0x11semprez/codewash/issues/28) — **PR:** [#3](https://github.com/0x11semprez/codewash/pull/3), [#4](https://github.com/0x11semprez/codewash/pull/4), [#6](https://github.com/0x11semprez/codewash/pull/6), [#46](https://github.com/0x11semprez/codewash/pull/46) (merged). Coverage is now 100% on every metric, with 100% thresholds ([#17](https://github.com/0x11semprez/codewash/issues/17))
 - **Location:** Entire codebase
 - **Smell:** Zero test coverage. No testing framework was present in the original project.
 - **Impact:** No safety net for refactoring. Bugs from DEBT-014, 015, 016 were only caught by manual code review.
@@ -423,14 +423,15 @@ Each item links to its GitHub issue for full context and to the PR that addresse
 - **Done:** Done with the Themes mission (#21). Each theme now has its own folder with a logo and a card back, and the Spy theme has its own background. `src/__tests__/themeFiles.test.js` fails when a theme points to a missing file. See [ADR-013](adr/013-themes-as-data-folders.md).
 - **Effort:** S
 
-### DEBT-022: Docker build fails on `npm ci` [P1] [Open]
+### DEBT-022: Docker build fails on `npm ci` [P1] [Done ✓]
 
 - **Issue:** [#54](https://github.com/0x11semprez/codewash/issues/54) — **PR:** none yet
 - **Location:** `Dockerfile` line 4, `package.json` (`vitest`, `@vitest/coverage-v8`)
-- **Smell:** Inconsistent install. CI and the README use `npm ci --legacy-peer-deps`, the `Dockerfile` uses plain `npm ci`. npm stops with `ERESOLVE could not resolve` because `@vitest/coverage-v8@3.2.7` wants `vitest@3.2.7` as a peer.
+- **Smell:** Inconsistent install. CI and the README used `npm ci --legacy-peer-deps`, the `Dockerfile` used plain `npm ci`. npm stopped with `ERESOLVE could not resolve`.
 - **Impact:** `docker build .` fails, so the container from DEBT-012 cannot be built today.
 - **Risk:** Medium impact, high likelihood: every Docker build fails.
 - **Fix:** Align the two Vitest package versions so no flag is needed, then add a `docker build` step to CI.
+- **Done:** The real conflict was `@testing-library/jest-dom` 8, which wants Vitest 5. Version 7.0.1 accepts Vitest 3 and has the same `vitest` entry point, so `npm ci` now works with no flag. The flag is gone from CI and the docs. CI builds the Docker image on every pull request. A new `.dockerignore` keeps `node_modules`, `.git` and other local files out of the image.
 - **Effort:** XS
 
 ### DEBT-023: Game logic calls `Math.random` and `Date` directly [P2] [Done ✓]
@@ -541,7 +542,7 @@ Low Impact    │ DEBT-018 ✓, 019│                 │ DEBT-004 ✓      │
 | 19 | DEBT-011 | Refactor sound manager + audio pooling | Open |
 | 20 | DEBT-013 | Add error tracking | Open |
 | 21 | DEBT-021 | Add missing theme images + path test | Done ✓ |
-| 22 | DEBT-022 | Fix Docker build + add it to CI | Open |
+| 22 | DEBT-022 | Fix Docker build + add it to CI | Done |
 
 ---
 
@@ -570,7 +571,7 @@ Low Impact    │ DEBT-018 ✓, 019│                 │ DEBT-004 ✓      │
 | DEBT-019 | [#42](https://github.com/0x11semprez/codewash/issues/42) | — | Open |
 | DEBT-020 | [#11](https://github.com/0x11semprez/codewash/issues/11) | Epitech PR #48 (merge `f69df57`) | In Progress |
 | DEBT-021 | [#53](https://github.com/0x11semprez/codewash/issues/53) | Themes mission (#21), not merged yet | Done ✓ |
-| DEBT-022 | [#54](https://github.com/0x11semprez/codewash/issues/54) | — | Open |
+| DEBT-022 | [#54](https://github.com/0x11semprez/codewash/issues/54) | fix/debt-022-docker-build | Done |
 | DEBT-023 | [#59](https://github.com/0x11semprez/codewash/issues/59) | [#60](https://github.com/0x11semprez/codewash/pull/60), [#66](https://github.com/0x11semprez/codewash/pull/66) (merged) | Done ✓ |
 
 ---

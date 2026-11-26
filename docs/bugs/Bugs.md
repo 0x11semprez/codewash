@@ -148,4 +148,5 @@ The two test files failed before the fix (5 tests) and pass after.
 
 | Item | Notes |
 | --- | --- |
-| [#54](https://github.com/0x11semprez/codewash/issues/54) Docker build fails | The `Dockerfile` runs `npm ci` without `--legacy-peer-deps` |
+| [#37](https://github.com/0x11semprez/codewash/issues/37) `perfectMemoryGames` never incremented | The "Perfectionist" achievement cannot be unlocked |
+| [#54](https://github.com/0x11semprez/codewash/issues/54) Docker build fails | `@testing-library/jest-dom` 8 wanted Vitest 5. Fixed: version 7.0.1 and a Docker build step in CI |

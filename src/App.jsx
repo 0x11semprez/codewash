@@ -166,7 +166,7 @@ const App = ({ startupLoadSeconds = null }) => {
             writing: userSkill.writingMobAura,
             patterns: userSkill.patternMobAura,
         };
-        return combatSkillAuras[skillConfig.id] || null;
+        return combatSkillAuras[skillConfig.id];
     };
 
     const visibleItems = React.useMemo(() => {

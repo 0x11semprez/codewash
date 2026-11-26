@@ -9,12 +9,10 @@ The game was first written by a non-developer with AI tools. This repository is 
 You need Node.js 20 or later and npm 10 or later.
 
 ```bash
-npm install --legacy-peer-deps   # install dependencies
+npm install                      # install dependencies
 npm run dev                      # start the game at http://localhost:5173
 npm test                         # run all tests
 ```
-
-`--legacy-peer-deps` is required: without it, npm refuses to install because of a peer dependency conflict.
 
 ## Other commands
 
@@ -34,7 +32,7 @@ docker build -t codewash .
 docker run --rm -p 8080:80 codewash   # open http://localhost:8080
 ```
 
-The Docker build is broken right now: the `Dockerfile` runs `npm ci` without `--legacy-peer-deps`. See [DEBT-022](https://github.com/0x11semprez/codewash/issues/54).
+CI builds this image on every pull request, so a broken `Dockerfile` fails the checks.
 
 ## Project structure
 
@@ -77,7 +75,7 @@ Start with [docs/SUBJECT_MAP.md](docs/SUBJECT_MAP.md). It lists every requiremen
 
 GitHub Actions runs on every pull request to `main` and on every push to `main`. It installs dependencies, runs ESLint with zero warnings allowed, builds the app, runs the tests and checks coverage. The team rule is to never merge on red. GitHub enforces it: `main` is protected, so a pull request with a green `build-and-test` check is needed to merge.
 
-Coverage thresholds live in `vitest.config.js`: 60% of lines and statements, 50% of branches and 40% of functions. The subject asks for 80% on modified code. Raising the thresholds is tracked in [#17](https://github.com/0x11semprez/codewash/issues/17).
+Coverage thresholds live in `vitest.config.js`. They are 100% for lines, statements, branches and functions, so any new code without tests fails CI. Two files are left out of the count: `src/main.jsx`, which only starts React, and `src/constants/assets.js`, a list of placeholder paths that nothing imports.
 
 ## Tech stack
 

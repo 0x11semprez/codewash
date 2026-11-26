@@ -31,12 +31,10 @@ const ProfileCard = ({ id, name, stats, isCurrent, onSwitch, onRename, isParent,
         return 'text-white border-slate-600';
     };
 
+    // The checkbox only shows while the profile is not a parent yet, so it can only be checked, never unchecked.
     const handleParentCheckboxChange = (e) => {
         e.stopPropagation();
-        // Only allow checking the box to become a parent (not unchecking)
-        if (!isParent) {
-            setShowParentalModal(true);
-        }
+        setShowParentalModal(true);
     };
 
     const handleParentalVerified = () => {

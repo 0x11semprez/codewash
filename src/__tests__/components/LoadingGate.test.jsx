@@ -1,3 +1,4 @@
+import React from 'react';
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen, waitFor, fireEvent } from '@testing-library/react';
 
@@ -37,5 +38,17 @@ describe('LoadingGate', () => {
         vi.spyOn(console, 'error').mockImplementation(() => {});
         render(<LoadingGate />);
         await waitFor(() => expect(screen.getByText('LOADING INCOMPLETE')).toBeInTheDocument());
+    });
+
+    it('preloads only once when React runs the effect twice in strict mode', async () => {
+        preload.mockClear();
+        preload.mockResolvedValue({ failedCritical: [] });
+        render(
+            <React.StrictMode>
+                <LoadingGate />
+            </React.StrictMode>,
+        );
+        await waitFor(() => expect(screen.getByText('GAME READY')).toBeInTheDocument());
+        expect(preload).toHaveBeenCalledOnce();
     });
 });
