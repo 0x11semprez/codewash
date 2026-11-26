@@ -11,12 +11,18 @@ export default defineConfig({
       provider: 'v8',
       reporter: ['text', 'lcov', 'json-summary'],
       include: ['src/**/*.{js,jsx}'],
-      exclude: ['src/__tests__/**', 'src/main.jsx'],
+      exclude: [
+        'src/__tests__/**',
+        // Bootstraps React into the page, no logic to test.
+        'src/main.jsx',
+        // Static placeholder paths that nothing imports.
+        'src/constants/assets.js',
+      ],
       thresholds: {
-        lines: 60,
-        functions: 40,
-        branches: 50,
-        statements: 60,
+        lines: 100,
+        functions: 100,
+        branches: 100,
+        statements: 100,
       },
     },
   },
