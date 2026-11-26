@@ -2,6 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import LoadingGate from './components/LoadingGate.jsx';
 import ErrorBoundary from './components/ui/ErrorBoundary.jsx';
+import I18nProvider from './i18n/I18nProvider.jsx';
 import { reportWebVitals } from './utils/webVitals.js';
 import { migrateStorage } from './services/storageKeys.js';
 import { installLogCapture } from './utils/bugReport/logBuffer.js';
@@ -17,8 +18,10 @@ reportWebVitals(({ name, value, rating }) => {
 
 ReactDOM.createRoot(document.getElementById('root')).render(
     <React.StrictMode>
-        <ErrorBoundary>
-            <LoadingGate />
-        </ErrorBoundary>
+        <I18nProvider>
+            <ErrorBoundary>
+                <LoadingGate />
+            </ErrorBoundary>
+        </I18nProvider>
     </React.StrictMode>,
 );

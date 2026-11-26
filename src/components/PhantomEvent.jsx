@@ -2,6 +2,7 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { HOSTILE_MOBS } from '../constants/gameData';
 import { playSuccessfulHit } from '../services/soundManager';
 import { STORAGE_KEYS } from '../services/storageKeys';
+import { useTranslation } from '../i18n/useTranslation';
 
 const PHANTOM_COOLDOWN_KEY = STORAGE_KEYS.phantomLastSpawn;
 const MIN_COOLDOWN_MS = 5 * 60 * 1000; // 5 minutes
@@ -10,6 +11,7 @@ const FLIGHT_DURATION_MS = 8000; // 8 seconds to cross the screen (slow enough f
 const PHANTOM_OFFSCREEN_LEFT = '-120px'; // Start position offscreen on the left
 
 const PhantomEvent = ({ battlingSkillId, onAwardLevel, onPhantomCaught }) => {
+    const { t } = useTranslation();
     const [isActive, setIsActive] = useState(false);
     const [fromLeft, setFromLeft] = useState(true);
     const [clicked, setClicked] = useState(false);
@@ -132,7 +134,7 @@ const PhantomEvent = ({ battlingSkillId, onAwardLevel, onPhantomCaught }) => {
                 <img
                     key={`phantom-${fromLeft}`}
                     src={phantomSrc}
-                    alt="Phantom"
+                    alt={t('phantom.alt')}
                     loading="lazy"
                     className="w-24 h-24 object-contain drop-shadow-[0_0_10px_rgba(100,200,255,0.8)]"
                     draggable={false}
@@ -141,7 +143,7 @@ const PhantomEvent = ({ battlingSkillId, onAwardLevel, onPhantomCaught }) => {
             {clicked && (
                 <div className="absolute inset-0 flex items-center justify-center">
                     <span className="text-yellow-400 text-2xl font-bold animate-bounce drop-shadow-[0_0_5px_rgba(255,215,0,0.8)]">
-                        +1 Level!
+                        {t('phantom.bonus')}
                     </span>
                 </div>
             )}

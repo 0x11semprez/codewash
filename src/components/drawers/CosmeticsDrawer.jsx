@@ -17,39 +17,29 @@ import SafeImage from '../ui/SafeImage';
 import { THEMES_LIST } from '../../constants/gameData';
 import { ACHIEVEMENTS } from '../../constants/achievements';
 import { pauseWhenOffscreen } from '../../hooks/useAnimationPause';
+import { useTranslation } from '../../i18n/useTranslation';
+import { achievementDescription, achievementName } from '../../i18n/gameText';
 
 const BORDER_EFFECTS = [
-    { id: 'solid', name: 'Default', badge: null, description: 'Eternal golden radiance', icon: Star },
-    { id: 'solid-picker', name: 'Default', badge: 'Wood', description: 'Customizable eternal glow', icon: Star },
-    { id: 'gradient', name: 'Copper', badge: 'Stone', description: 'Mesmerizing arcane rotation', icon: Atom },
-    { id: 'sparkle', name: 'Cloudy', badge: 'Gold', description: 'Celestial stardust shimmer', icon: Sparkles },
-    { id: 'electric', name: 'Lightning Rod', badge: 'Iron', description: 'Thunderous plasma surge', icon: Zap },
-    { id: 'lifestream', name: 'Lifestream', badge: 'Emerald', description: 'Flowing ethereal energy', icon: Activity },
-    { id: 'frost', name: 'Frost', badge: 'Diamond', description: 'Glacial crystal majesty', icon: Snowflake },
-    { id: 'fire', name: 'Lava', badge: 'Netherite', description: 'Infernal blazing fury', icon: Flame },
-    { id: 'shadow', name: 'Nether Portal', badge: 'Obsidian', description: 'Abyssal void whispers', icon: Skull },
-    { id: 'rainbow', name: 'Legendary!', badge: 'Star', description: 'Prismatic legendary aura', icon: Gem },
+    { id: 'solid', badge: null, icon: Star },
+    { id: 'solid-picker', badge: 'Wood', icon: Star },
+    { id: 'gradient', badge: 'Stone', icon: Atom },
+    { id: 'sparkle', badge: 'Gold', icon: Sparkles },
+    { id: 'electric', badge: 'Iron', icon: Zap },
+    { id: 'lifestream', badge: 'Emerald', icon: Activity },
+    { id: 'frost', badge: 'Diamond', icon: Snowflake },
+    { id: 'fire', badge: 'Netherite', icon: Flame },
+    { id: 'shadow', badge: 'Obsidian', icon: Skull },
+    { id: 'rainbow', badge: 'Star', icon: Gem },
 ];
 
 // Achievement-unlocked border effects
 const ACHIEVEMENT_EFFECTS = [
-    { id: 'livewire', name: 'Live Wire', achievement: 'speed_demon', description: 'Volatile electric arcs', icon: Zap },
-    {
-        id: 'void',
-        name: 'Cosmic Void',
-        achievement: 'world_ender',
-        description: 'Infinite starlit expanse',
-        icon: Atom,
-    },
-    { id: 'toxic', name: 'Toxin', achievement: 'monster_manual', description: 'Caustic acid drip', icon: Droplet },
-    {
-        id: 'holo',
-        name: 'Hologram',
-        achievement: 'perfectionist',
-        description: 'Digital reality glitch',
-        icon: Grid3x3,
-    },
-    { id: 'crystal', name: 'Crystalline', achievement: 'full_set', description: 'Prismatic shard array', icon: Gem },
+    { id: 'livewire', achievement: 'speed_demon', icon: Zap },
+    { id: 'void', achievement: 'world_ender', icon: Atom },
+    { id: 'toxic', achievement: 'monster_manual', icon: Droplet },
+    { id: 'holo', achievement: 'perfectionist', icon: Grid3x3 },
+    { id: 'crystal', achievement: 'full_set', icon: Gem },
 ];
 
 const CosmeticsDrawer = ({
@@ -64,6 +54,7 @@ const CosmeticsDrawer = ({
     unlockedAchievements = [], // New prop for unlocked achievements
 }) => {
     const [showColorPicker, setShowColorPicker] = useState(false);
+    const { t } = useTranslation();
 
     const isBorderUnlocked = (badge) => {
         // Default (locked on yellow) is always unlocked
@@ -88,14 +79,14 @@ const CosmeticsDrawer = ({
                         className="text-4xl text-yellow-400 font-bold uppercase tracking-widest drop-shadow-md"
                         style={{ fontFamily: '"VT323", monospace' }}
                     >
-                        Themes & Cosmetics
+                        {t('cosmetics.title')}
                     </h2>
                 </div>
 
                 {/* Theme Selection */}
                 <div>
                     <h3 className="text-xl text-blue-300 mb-5 font-bold flex items-center gap-3 uppercase tracking-wider">
-                        <Sparkles size={20} /> Theme Select
+                        <Sparkles size={20} /> {t('cosmetics.themeSelect')}
                     </h3>
                     <div className="grid grid-cols-2 gap-4">
                         {THEMES_LIST.map((theme) => (
@@ -135,7 +126,7 @@ const CosmeticsDrawer = ({
                 {/* Border Effect Selection - Optimized Grid Layout */}
                 <div>
                     <h3 className="text-xl text-blue-300 mb-4 font-bold flex items-center gap-3 uppercase tracking-wider">
-                        <Sparkles size={20} /> Border Effects
+                        <Sparkles size={20} /> {t('cosmetics.borderEffects')}
                     </h3>
                     <div className="grid grid-cols-3 gap-3">
                         {/* All border effects (badge-unlocked and achievement-unlocked) */}
@@ -201,17 +192,17 @@ const CosmeticsDrawer = ({
                                                 <div
                                                     className={`text-sm font-bold ${!unlocked ? 'text-slate-500' : 'text-yellow-400'}`}
                                                 >
-                                                    {effect.name}
+                                                    {t(`borders.${effect.id}.name`)}
                                                 </div>
                                                 <div
                                                     className={`text-xs ${!unlocked ? 'text-slate-600' : 'text-slate-400'}`}
                                                 >
-                                                    {effect.description}
+                                                    {t(`borders.${effect.id}.description`)}
                                                 </div>
                                             </div>
                                             {isSelected && (
                                                 <div className="absolute top-1 right-1 bg-yellow-400 text-black text-[9px] font-bold px-1.5 py-0.5 rounded">
-                                                    ACTIVE
+                                                    {t('cosmetics.active')}
                                                 </div>
                                             )}
 
@@ -228,7 +219,7 @@ const CosmeticsDrawer = ({
                                                         />
                                                         <div className="flex-1">
                                                             <div className="text-[9px] text-slate-400 mb-0.5">
-                                                                Color
+                                                                {t('cosmetics.color')}
                                                             </div>
                                                             <div className="text-[11px] font-mono text-white">
                                                                 {borderColor.toUpperCase()}
@@ -250,15 +241,19 @@ const CosmeticsDrawer = ({
                                                 </div>
                                                 <div className="flex-1">
                                                     <h4 className="text-sm font-bold text-slate-300">
-                                                        {effect.badge} Badge Required
+                                                        {t('cosmetics.badgeRequired', {
+                                                            badge: t(`badges.${effect.badge}`),
+                                                        })}
                                                     </h4>
                                                     <p className="text-xs text-slate-400 mt-0.5">
-                                                        Earn the {effect.badge} badge to unlock this effect
+                                                        {t('cosmetics.earnBadge', {
+                                                            badge: t(`badges.${effect.badge}`),
+                                                        })}
                                                     </p>
                                                 </div>
                                             </div>
                                             <div className="text-xs px-2 py-1 rounded bg-red-900/30 text-red-400">
-                                                ✗ Locked
+                                                {t('cosmetics.locked')}
                                             </div>
                                         </div>
                                     )}
@@ -313,17 +308,17 @@ const CosmeticsDrawer = ({
                                                 <div
                                                     className={`text-sm font-bold ${!unlocked ? 'text-slate-500' : 'text-yellow-400'}`}
                                                 >
-                                                    {effect.name}
+                                                    {t(`borders.${effect.id}.name`)}
                                                 </div>
                                                 <div
                                                     className={`text-xs ${!unlocked ? 'text-slate-600' : 'text-slate-400'}`}
                                                 >
-                                                    {effect.description}
+                                                    {t(`borders.${effect.id}.description`)}
                                                 </div>
                                             </div>
                                             {isSelected && (
                                                 <div className="absolute top-1 right-1 bg-yellow-400 text-black text-[9px] font-bold px-1.5 py-0.5 rounded">
-                                                    ACTIVE
+                                                    {t('cosmetics.active')}
                                                 </div>
                                             )}
                                         </div>
@@ -347,10 +342,10 @@ const CosmeticsDrawer = ({
                                                         <h4
                                                             className={`text-sm font-bold ${unlocked ? 'text-yellow-400' : 'text-slate-300'}`}
                                                         >
-                                                            {achievement.name}
+                                                            {achievementName(t, achievement)}
                                                         </h4>
                                                         <p className="text-xs text-slate-400 mt-0.5">
-                                                            {achievement.description}
+                                                            {achievementDescription(t, achievement)}
                                                         </p>
                                                     </div>
                                                 </>
@@ -359,7 +354,7 @@ const CosmeticsDrawer = ({
                                         <div
                                             className={`text-xs px-2 py-1 rounded ${unlocked ? 'bg-green-900/30 text-green-400' : 'bg-red-900/30 text-red-400'}`}
                                         >
-                                            {unlocked ? '✓ Unlocked' : '✗ Locked'}
+                                            {unlocked ? t('cosmetics.unlocked') : t('cosmetics.locked')}
                                         </div>
                                     </div>
                                 </div>

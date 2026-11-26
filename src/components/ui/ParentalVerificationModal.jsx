@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 import ReactDOM from 'react-dom';
 import { Save, X } from 'lucide-react';
+import { useTranslation } from '../../i18n/useTranslation';
 
 const ParentalVerificationModal = ({ isOpen, onClose, onVerified }) => {
     const [answer, setAnswer] = useState('');
     const [error, setError] = useState(false);
-    const correctAnswer = 'FLOPPY DISK';
+    const { t } = useTranslation();
+    const correctAnswer = t('parental.answer').toUpperCase();
     const correctAnswerNoSpaces = correctAnswer.replace(/\s/g, '');
     const inputRef = React.useRef(null);
 
@@ -71,6 +73,7 @@ const ParentalVerificationModal = ({ isOpen, onClose, onVerified }) => {
             <div className="relative bg-stone-900 border-4 border-blue-600 rounded-2xl p-8 max-w-md mx-4 shadow-2xl">
                 <button
                     onClick={handleClose}
+                    aria-label={t('parental.close')}
                     className="absolute top-4 right-4 text-gray-400 hover:text-white transition-colors"
                 >
                     <X size={24} />
@@ -79,7 +82,9 @@ const ParentalVerificationModal = ({ isOpen, onClose, onVerified }) => {
                     <div className="bg-blue-600/20 p-6 rounded-full mb-4 border-2 border-blue-600">
                         <Save size={64} className="text-blue-400" />
                     </div>
-                    <h2 className="text-2xl font-bold text-blue-400 uppercase tracking-wider mb-4">What is this?</h2>
+                    <h2 className="text-2xl font-bold text-blue-400 uppercase tracking-wider mb-4">
+                        {t('parental.title')}
+                    </h2>
                     <form onSubmit={handleSubmit} className="w-full">
                         <div className="relative w-full flex justify-center mb-4" onClick={handleSlotClick}>
                             <input
@@ -114,12 +119,12 @@ const ParentalVerificationModal = ({ isOpen, onClose, onVerified }) => {
                                 )}
                             </div>
                         </div>
-                        {error && <p className="text-red-400 text-sm mb-4">Incorrect answer. Try again!</p>}
+                        {error && <p className="text-red-400 text-sm mb-4">{t('parental.error')}</p>}
                         <button
                             type="submit"
                             className="w-full bg-blue-600 hover:bg-blue-500 text-white py-3 px-6 rounded-lg font-bold uppercase tracking-wider transition-all border-2 border-blue-400"
                         >
-                            Submit
+                            {t('parental.submit')}
                         </button>
                     </form>
                 </div>

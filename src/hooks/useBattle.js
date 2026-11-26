@@ -299,8 +299,8 @@ export const useBattle = (skills, setSkills, stats, setStats) => {
                                     newBadges.push(newTier);
                                     setLootBox({
                                         level: lvl,
-                                        skillName: skillConfig.fantasyName,
-                                        item: 'New Rank!',
+                                        skillId: skillConfig.id,
+                                        itemKey: 'loot.newRank',
                                         img: BASE_ASSETS.badges.Wood,
                                     });
                                     playNotification();
@@ -398,8 +398,8 @@ export const useBattle = (skills, setSkills, stats, setStats) => {
         if (skillConfig) {
             setLootBox({
                 level: skills[skillId].level + 1,
-                skillName: skillConfig.fantasyName,
-                item: 'Phantom Bonus!',
+                skillId: skillConfig.id,
+                itemKey: 'loot.phantomBonus',
                 img: HOSTILE_MOBS['Phantom'],
             });
             playNotification();
