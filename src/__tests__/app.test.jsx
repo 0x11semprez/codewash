@@ -74,6 +74,17 @@ describe('App', () => {
         APP_TEST_TIMEOUT,
     );
 
+    it('shows the language button on the main screen, after the other corner buttons', () => {
+        localStorage.clear();
+        const { container } = render(<App />);
+        const toggle = screen.getByRole('button', { name: 'Change language (current: English)' });
+        const cornerButtons = [...container.querySelectorAll('button.absolute.z-40')];
+        const last = cornerButtons[cornerButtons.length - 1];
+        expect(last.compareDocumentPosition(toggle) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+        fireEvent.click(toggle);
+        expect(screen.getByRole('list', { name: 'Choose a language' })).toBeInTheDocument();
+    });
+
     it('shows the startup achievement toast with the load time', async () => {
         localStorage.clear();
         render(<App startupLoadSeconds={1.234} />);

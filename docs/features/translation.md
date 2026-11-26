@@ -4,7 +4,12 @@
 
 The game is available in English and French. English is the default language.
 
-Players change the language in the settings drawer (the gear button, top left). The "Language" section at the top has a button that shows the current language. Click it to open the list, then pick a language. All the text changes at once.
+There are two ways to change the language. Both use the same list, and all the text changes at once.
+
+- On the main screen, click the language button in the bottom left corner (the translation icon). A short list of languages opens above it. Pick one and the list closes.
+- In the settings drawer (the gear button, top left), the "Language" section at the top has a button that shows the current language. Click it to open the list, then pick a language.
+
+The main screen button works with the keyboard. When the list opens, focus goes to the current language. Tab and Enter pick another one. Escape closes the list and puts focus back on the button. A click anywhere else also closes it. Screen readers hear "Change language (current: English)" and whether the list is open.
 
 The choice is saved in the browser. On the first visit, the game uses the browser language if it is supported. Otherwise it uses English.
 
@@ -21,7 +26,8 @@ The design and its limits are explained in [ADR-012](../adr/012-translation.md).
 | `src/i18n/I18nProvider.jsx` | Holds the current language, saves it, and sets `<html lang>`. |
 | `src/i18n/useTranslation.js` | The hook that components use. |
 | `src/i18n/gameText.js` | Helpers for achievement, skill and mob text. |
-| `src/components/ui/LanguageSelector.jsx` | The language button and list. |
+| `src/components/ui/LanguageSelector.jsx` | The language button and list in the settings drawer. |
+| `src/components/ui/LanguageMenuButton.jsx` | The language button and list on the main screen. |
 
 ## How to add a language
 
@@ -32,7 +38,7 @@ The design and its limits are explained in [ADR-012](../adr/012-translation.md).
 5. Keep every placeholder such as `{{level}}` exactly as it is. You can move it inside the sentence.
 6. Run the tests (see below).
 
-You do not need to change any other file. The new language appears in the selector by itself.
+You do not need to change any other file. The new language appears in both language lists by itself.
 
 If a key is missing in the new file, the game shows the English text and logs a warning in development. The tests fail until the file is complete.
 
@@ -119,6 +125,7 @@ They check:
 - `translate.test.js`: key lookup, placeholders, plurals, the English fallback, missing keys and the browser language.
 - `locales.test.js`: every language has the same keys and placeholders as English, and English covers all game data ids.
 - `I18nProvider.test.jsx`: the saved choice, the browser default, `<html lang>`, and the selector switching the text of another component.
+- `components/LanguageMenuButton.test.jsx`: the main screen button, its list, Escape, a click outside and the focus.
 - `translatedScreens.test.jsx`: the main screens rendered in French.
 
 Run the full suite before a merge:
@@ -131,7 +138,9 @@ npm run format:check
 
 ### Manual check
 
-- [ ] Open the settings drawer and switch to Français. The drawer, the skill cards and the title change.
+- [ ] Click the language button in the bottom left corner and switch to Français. The skill cards and the title change, and the list closes.
+- [ ] Open the list again with the keyboard (Tab to the button, then Enter) and press Escape. The list closes and the button keeps the focus.
+- [ ] Open the settings drawer and switch back to English. The drawer, the skill cards and the title change.
 - [ ] Reload the page. The game stays in French.
 - [ ] Open the achievements drawer. Names, descriptions and tiers are in French.
 - [ ] Open "Effacer la progression". The modal asks you to type EFFACER.

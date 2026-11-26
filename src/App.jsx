@@ -6,6 +6,7 @@ import PixelHeart from './components/ui/PixelHeart';
 import SkillCard from './components/skills/SkillCard';
 import PhantomEvent from './components/PhantomEvent';
 import AchievementToast from './components/ui/AchievementToast';
+import LanguageMenuButton from './components/ui/LanguageMenuButton';
 
 import { getMobForSkill, getEncounterType } from './utils/gameUtils';
 import { getTheme, SKILL_DATA } from './constants/gameData';
@@ -26,6 +27,9 @@ const BugReportModal = lazy(() => import('./components/modals/BugReportModal'));
 const SettingsDrawer = lazy(() => import('./components/drawers/SettingsDrawer'));
 const CosmeticsDrawer = lazy(() => import('./components/drawers/CosmeticsDrawer'));
 const MenuDrawer = lazy(() => import('./components/drawers/MenuDrawer'));
+
+// Closes several drawers or modals at once.
+const closeAll = (...setters) => setters.forEach((setOpen) => setOpen(false));
 
 const App = ({ startupLoadSeconds = null }) => {
     const { t, language } = useTranslation();
@@ -192,8 +196,7 @@ const App = ({ startupLoadSeconds = null }) => {
             <button
                 onClick={() => {
                     setHasOpenedSettings(true);
-                    setIsMenuOpen(false);
-                    setIsCosmeticsOpen(false);
+                    closeAll(setIsMenuOpen, setIsCosmeticsOpen);
                     setIsSettingsOpen(true);
                     playClick();
                 }}
@@ -206,8 +209,7 @@ const App = ({ startupLoadSeconds = null }) => {
             <button
                 onClick={() => {
                     setHasOpenedCosmetics(true);
-                    setIsMenuOpen(false);
-                    setIsSettingsOpen(false);
+                    closeAll(setIsMenuOpen, setIsSettingsOpen);
                     setIsCosmeticsOpen(true);
                     playClick();
                 }}
@@ -310,8 +312,7 @@ const App = ({ startupLoadSeconds = null }) => {
             <button
                 onClick={() => {
                     setHasOpenedMenu(true);
-                    setIsSettingsOpen(false);
-                    setIsCosmeticsOpen(false);
+                    closeAll(setIsSettingsOpen, setIsCosmeticsOpen);
                     setIsMenuOpen(true);
                     playClick();
                 }}
@@ -339,9 +340,7 @@ const App = ({ startupLoadSeconds = null }) => {
 
             <button
                 onClick={() => {
-                    setIsMenuOpen(false);
-                    setIsCosmeticsOpen(false);
-                    setIsSettingsOpen(false);
+                    closeAll(setIsMenuOpen, setIsCosmeticsOpen, setIsSettingsOpen);
                     setIsBugReportOpen(true);
                     playClick();
                 }}
@@ -351,6 +350,7 @@ const App = ({ startupLoadSeconds = null }) => {
             >
                 <Bug size={48} className="text-red-400" />
             </button>
+            <LanguageMenuButton />
 
             {battlingSkillId && (
                 <div

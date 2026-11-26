@@ -10,6 +10,7 @@ export default {
             openCosmetics: 'Ouvrir les thèmes et cosmétiques',
             openAchievements: 'Ouvrir les succès',
             reportBug: 'Signaler un bug',
+            changeLanguage: 'Changer de langue (actuelle : {{language}})',
             enterFullscreen: 'Passer en plein écran',
             exitFullscreen: 'Quitter le plein écran',
             previousSkill: 'Compétence précédente',
