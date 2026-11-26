@@ -1,4 +1,4 @@
-const { app, BrowserWindow } = require('electron');
+const { app, BrowserWindow, shell } = require('electron');
 const path = require('path');
 
 let mainWindow;
@@ -30,6 +30,15 @@ function createWindow() {
       }
     });
   }
+
+  // Bug reports without an HTTP endpoint open a mailto: link. Hand it to the system mail app
+  // instead of navigating the game window away.
+  mainWindow.webContents.on('will-navigate', (event, url) => {
+    if (url.startsWith('mailto:')) {
+      event.preventDefault();
+      shell.openExternal(url);
+    }
+  });
 
   mainWindow.on('closed', () => {
     mainWindow = null;

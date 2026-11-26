@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { playActionCardLeft, playActionCardRight } from '../utils/soundManager';
+import { playActionCardLeft, playActionCardRight } from '../services/soundManager';
 
 export const useCarousel = (battlingSkillId) => {
     const [selectedIndex, setSelectedIndex] = useState(0);

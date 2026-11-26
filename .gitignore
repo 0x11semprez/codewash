@@ -33,6 +33,8 @@ coverage/
 .env
 .env.local
 .env.*
+!.env.example
 
-# Local scripts
-scripts
+# Local scripts (only the asset conversion script is tracked)
+scripts/*
+!scripts/convert-gifs.mjs

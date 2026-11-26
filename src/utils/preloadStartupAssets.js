@@ -1,6 +1,6 @@
 import { SKILL_DATA, THEME_CONFIG, THEMES_LIST } from '../constants/gameData';
-import { parseJSON } from './storage';
-import { STORAGE_KEYS, skillsKey } from './storageKeys';
+import { parseJSON } from '../services/storage';
+import { STORAGE_KEYS, skillsKey } from '../services/storageKeys';
 
 const UI_SOUND_ASSETS = [
     'assets/sounds/ui/ui/actioncard_left.wav',

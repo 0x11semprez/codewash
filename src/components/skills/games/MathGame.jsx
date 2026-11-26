@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { BASE_ASSETS } from '../../../constants/gameData';
-import { getSfxVolume } from '../../../utils/soundManager';
+import { getSfxVolume } from '../../../services/soundManager';
 
 const MathGame = ({ challenge, onMathSubmit }) => {
     const [mathInput, setMathInput] = useState('');

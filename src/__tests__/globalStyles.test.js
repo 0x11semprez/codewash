@@ -11,6 +11,7 @@ const PARTS = [
     ['aura-animations.css', '@keyframes'],
     ['auras.css', '.mob-with-aura-container'],
     ['achievement-borders.css', '.border-effect-livewire'],
+    ['animation-pause.css', '[data-offscreen]'],
 ];
 
 describe('global styles', () => {
@@ -30,5 +31,17 @@ describe('global styles', () => {
 
     it('no longer has the unused GlobalStyles.jsx copy', () => {
         expect(existsSync(join(root, 'components/ui/GlobalStyles.jsx'))).toBe(false);
+    });
+
+    it('pauses animations, pseudo-elements included, under the pause attributes', () => {
+        const css = read('styles/animation-pause.css');
+        ['[data-offscreen] *::before', '[data-offscreen] *::after', 'html[data-page-hidden] *::before'].forEach((sel) =>
+            expect(css).toContain(sel),
+        );
+        expect(css).toMatch(/animation-play-state:\s*paused !important/);
+    });
+
+    it('keeps the pause rules out of the keyframes of the other parts', () => {
+        PARTS.slice(0, -1).forEach(([file]) => expect(read(`styles/${file}`)).not.toMatch(/animation-play-state/));
     });
 });

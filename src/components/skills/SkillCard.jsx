@@ -6,6 +6,7 @@ import MobWithAura from '../ui/MobWithAura';
 import ParentalVerificationModal from '../ui/ParentalVerificationModal';
 import GameErrorBoundary from '../ui/GameErrorBoundary';
 import cubesTexture from '../../assets/textures/cubes.png';
+import { pauseWhenOffscreen } from '../../hooks/useAnimationPause';
 import {
     BASE_ASSETS,
     HOSTILE_MOBS,
@@ -266,6 +267,7 @@ const SkillCard = ({
 
     const cardContent = (
         <div
+            ref={pauseWhenOffscreen}
             className={`bg-[#2b2b2b] border-4 rounded-lg overflow-visible flex flex-col transition-all duration-500 ${isCenter ? `${appliedBorderEffect} ${!appliedBorderEffect ? borderClass : ''}` : 'border-stone-700'} w-[300px] h-[600px] ${!isBattlingCenter ? 'relative' : ''}`}
             style={isCenter ? borderStyle : {}}
         >

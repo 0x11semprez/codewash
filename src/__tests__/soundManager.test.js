@@ -1,7 +1,7 @@
 import { describe, it, expect, vi } from 'vitest';
 import { existsSync, statSync } from 'node:fs';
 import { join } from 'node:path';
-import { getBGMManager, setSfxVolume, getSfxVolume, UI_SOUND_NAMES } from '../utils/soundManager';
+import { getBGMManager, setSfxVolume, getSfxVolume, UI_SOUND_NAMES } from '../services/soundManager';
 
 vi.stubGlobal(
     'Audio',

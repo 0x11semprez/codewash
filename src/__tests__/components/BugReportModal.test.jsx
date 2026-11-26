@@ -1,6 +1,32 @@
 import { describe, it, expect, vi } from 'vitest';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import BugReportModal from '../../components/modals/BugReportModal';
+import { createLogBuffer } from '../../utils/bugReport/logBuffer.js';
+
+const makeLogs = (...messages) => {
+    const buffer = createLogBuffer({ clock: () => 0 });
+    messages.forEach((message) => buffer.add('error', [message]));
+    return buffer;
+};
+
+const renderModal = (props = {}) => {
+    const transport = { send: vi.fn().mockResolvedValue({ kind: 'http' }) };
+    const onClose = vi.fn();
+    render(
+        <BugReportModal
+            isOpen={true}
+            onClose={onClose}
+            transport={transport}
+            logBuffer={makeLogs()}
+            context={{ profileId: 3, theme: 'pokemon' }}
+            {...props}
+        />,
+    );
+    return { transport: props.transport ?? transport, onClose };
+};
+
+const describeBug = (text = 'Boss never dies') =>
+    fireEvent.change(screen.getByLabelText(/What happened/), { target: { value: text } });
 
 describe('BugReportModal', () => {
     it('renders nothing when closed', () => {
@@ -8,16 +34,129 @@ describe('BugReportModal', () => {
         expect(container.innerHTML).toBe('');
     });
 
-    it('renders content when open', () => {
+    it('renders the form when open', () => {
         render(<BugReportModal isOpen={true} onClose={() => {}} />);
-        expect(screen.getByText('Discovered a bug?')).toBeInTheDocument();
+        expect(screen.getByRole('dialog', { name: 'Discovered a bug?' })).toBeInTheDocument();
+        expect(screen.getByLabelText(/Steps to reproduce/)).toBeInTheDocument();
+        expect(screen.getByLabelText(/Your email/)).toBeInTheDocument();
+        expect(screen.getByLabelText(/Screenshots or files/)).toBeInTheDocument();
+        expect(screen.getByText(/Up to 3 files, 5.0 MB each/)).toBeInTheDocument();
     });
 
-    it('calls onClose when backdrop clicked', () => {
-        const onClose = vi.fn();
-        render(<BugReportModal isOpen={true} onClose={onClose} />);
-        const backdrop = document.querySelector('.bg-black\\/70');
-        fireEvent.click(backdrop);
-        expect(onClose).toHaveBeenCalledOnce();
+    it('closes on backdrop click, close button and Escape', () => {
+        const { onClose } = renderModal();
+        fireEvent.click(document.querySelector('.bg-black\\/70'));
+        fireEvent.click(screen.getByRole('button', { name: 'Close' }));
+        fireEvent.keyDown(window, { key: 'Escape' });
+        fireEvent.keyDown(window, { key: 'Enter' });
+        expect(onClose).toHaveBeenCalledTimes(3);
+    });
+
+    it('requires a description', () => {
+        const { transport } = renderModal();
+        fireEvent.click(screen.getByRole('button', { name: /Send/ }));
+        expect(screen.getByRole('alert')).toHaveTextContent('Please describe the bug.');
+        expect(transport.send).not.toHaveBeenCalled();
+    });
+
+    it('rejects an invalid reporter email', () => {
+        const { transport } = renderModal();
+        describeBug();
+        fireEvent.change(screen.getByLabelText(/Your email/), { target: { value: 'nope' } });
+        fireEvent.click(screen.getByRole('button', { name: /Send/ }));
+        expect(screen.getByRole('alert')).toHaveTextContent('does not look valid');
+        expect(transport.send).not.toHaveBeenCalled();
+    });
+
+    it('sends the report with files and logs, then shows success', async () => {
+        const { transport } = renderModal({ logBuffer: makeLogs('TypeError: x is undefined') });
+        describeBug();
+        fireEvent.change(screen.getByLabelText(/Steps/), { target: { value: 'Open reading' } });
+        fireEvent.change(screen.getByLabelText(/Your email/), { target: { value: 'mom@example.test' } });
+        const shot = new File(['png'], 'shot.png', { type: 'image/png' });
+        fireEvent.change(screen.getByLabelText(/Screenshots or files/), { target: { files: [shot] } });
+        expect(screen.getByText(/shot\.png/)).toBeInTheDocument();
+        expect(screen.getByLabelText('Log preview')).toHaveTextContent('TypeError: x is undefined');
+
+        fireEvent.click(screen.getByRole('button', { name: /Send/ }));
+        expect(screen.getByRole('button', { name: /Sending/ })).toBeDisabled();
+
+        expect(await screen.findByRole('status')).toHaveTextContent('Your report was sent');
+        const [report, files] = transport.send.mock.calls[0];
+        expect(report).toMatchObject({
+            description: 'Boss never dies',
+            steps: 'Open reading',
+            reporterEmail: 'mom@example.test',
+            context: { profileId: 3, theme: 'pokemon' },
+            attachments: [{ name: 'shot.png', type: 'image/png' }],
+        });
+        expect(report.logs).toHaveLength(1);
+        expect(files).toEqual([shot]);
+    });
+
+    it('leaves logs out when the box is unchecked and lets the user remove a file', async () => {
+        const { transport } = renderModal({ logBuffer: makeLogs('secret-free error') });
+        describeBug();
+        fireEvent.click(screen.getByLabelText(/Include recent error logs \(1\)/));
+        expect(screen.queryByLabelText('Log preview')).not.toBeInTheDocument();
+        const note = new File(['log'], 'game.log', { type: 'text/plain' });
+        fireEvent.change(screen.getByLabelText(/Screenshots or files/), { target: { files: [note] } });
+        fireEvent.click(screen.getByRole('button', { name: 'Remove game.log' }));
+
+        fireEvent.click(screen.getByRole('button', { name: /Send/ }));
+        await screen.findByRole('status');
+        const [report, files] = transport.send.mock.calls[0];
+        expect(report.logs).toEqual([]);
+        expect(files).toEqual([]);
+    });
+
+    it('shows file errors for rejected files', () => {
+        renderModal();
+        const exe = new File(['x'], 'game.exe', { type: 'application/octet-stream' });
+        fireEvent.change(screen.getByLabelText(/Screenshots or files/), { target: { files: [exe] } });
+        expect(screen.getByRole('alert')).toHaveTextContent('game.exe: only images');
+    });
+
+    it('shows the mailto hint after a mailto send', async () => {
+        const transport = { send: vi.fn().mockResolvedValue({ kind: 'mailto' }) };
+        renderModal({ transport });
+        describeBug();
+        fireEvent.click(screen.getByRole('button', { name: /Send/ }));
+        expect(await screen.findByRole('status')).toHaveTextContent('mail app should open');
+    });
+
+    it('shows an error when sending fails', async () => {
+        const transport = { send: vi.fn().mockRejectedValue(new Error('Network down.')) };
+        renderModal({ transport });
+        describeBug();
+        fireEvent.click(screen.getByRole('button', { name: /Send/ }));
+        await waitFor(() => expect(screen.getByRole('status')).toHaveTextContent('Sending failed. Network down.'));
+        expect(screen.getByRole('button', { name: /Send/ })).toBeEnabled();
+    });
+
+    it('downloads the report as JSON', () => {
+        const download = vi.fn();
+        renderModal({ download });
+        const button = screen.getByRole('button', { name: /JSON/ });
+        expect(button).toBeDisabled();
+        describeBug();
+        fireEvent.click(button);
+        expect(download).toHaveBeenCalledWith(expect.objectContaining({ description: 'Boss never dies' }));
+    });
+
+    it('builds the transport from config when none is given', async () => {
+        const fetchSpy = vi.spyOn(globalThis, 'fetch').mockResolvedValue({ ok: true });
+        render(
+            <BugReportModal
+                isOpen={true}
+                onClose={() => {}}
+                config={{ endpoint: 'https://example.test/bugs', email: '' }}
+            />,
+        );
+        describeBug();
+        fireEvent.click(screen.getByRole('button', { name: /Send/ }));
+        expect(await screen.findByRole('status')).toHaveTextContent('Your report was sent');
+        expect(fetchSpy).toHaveBeenCalledWith('https://example.test/bugs', expect.objectContaining({ method: 'POST' }));
+        fetchSpy.mockRestore();
     });
 });

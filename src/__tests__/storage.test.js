@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { createMemoryStorage } from './helpers/memoryStorage';
-import { parseJSON, readJSON, backupCorrupted } from '../utils/storage';
+import { parseJSON, readJSON, backupCorrupted } from '../services/storage';
 
 describe('storage helpers', () => {
     let warn;
