@@ -276,7 +276,8 @@ describe('MemoryGame', () => {
         }
         expect(cards(container)).toHaveLength(0);
         act(() => vi.advanceTimersByTime(500));
-        expect(onSubmit).toHaveBeenCalledWith('WIN');
+        // No card was flipped by mistake, so the game counts as perfect.
+        expect(onSubmit).toHaveBeenCalledWith('WIN', { perfect: true });
     });
 
     it('turns two different cards back after a short shake, and ignores clicks meanwhile', () => {
