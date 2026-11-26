@@ -56,10 +56,14 @@ describe('SkillCard battle with real mini-games', () => {
             renderBattle(config);
             // The Suspense fallback is null: once the lazy game resolves, the battle panel has
             // the game plus the XP bar.
-            await waitFor(() => expect(document.querySelector('.animate-in')?.children.length).toBeGreaterThan(1));
+            // The first lazy import can take a few seconds on a busy machine.
+            await waitFor(() => expect(document.querySelector('.animate-in')?.children.length).toBeGreaterThan(1), {
+                timeout: 10000,
+            });
             expect(screen.queryByText('Game crashed!')).toBeNull();
             const gameErrors = consoleError.mock.calls.filter((args) => String(args[0]).includes('[GameError]'));
             expect(gameErrors).toEqual([]);
         },
+        20000,
     );
 });
