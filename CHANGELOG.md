@@ -48,11 +48,15 @@ Links to pull requests point to this repository. Work done before the move from 
 - A step-by-step guide to add a theme, for non-technical readers, and the audit of the old themes: `docs/features/themes.md`. Issue [#21](https://github.com/0x11semprez/codewash/issues/21).
 
 - Tests for every file in `src/`: the hooks, the six mini-games, the drawers, the modals, the skill card, the bonus creature and the app itself. Coverage is now 100% for lines, statements, branches and functions. Issue [#17](https://github.com/0x11semprez/codewash/issues/17).
+- `docs/ARCHITECTURE.md`: the system as it is today, with a module graph, where the state lives, where I/O happens, the main flows and the folder map. It is linked from the README and `docs/SUBJECT_MAP.md`.
+- `npm run metrics` (`tools/measure-metrics.mjs`): measures files, lines, complexity, duplication, dead files, direct random and clock calls, tests, coverage and lint in one command. `--ref <commit>` measures an old commit.
+- "Final metrics" and "Residual debt handed over" sections in `docs/DEBT.md`, with before and after numbers measured by that script.
 
 ### Changed
 
 - The "Static analysis" step in `ci.yml` is removed. It ran ESLint a second time with the same rules. The lint step is renamed "Lint and complexity ceilings (zero warnings)". No pull request yet.
-- `App.jsx` is split into six hooks: `useGameState`, `useBattle`, `useAudio`, `useCarousel`, `useVoiceRecognition` and `useFullscreen` (DEBT-001). `App.jsx` went from 1,492 lines in the received version to 353 after this PR. Later features brought it back to 579 lines today. [#45](https://github.com/0x11semprez/codewash/pull/45)
+- The debt register (`docs/DEBT.md`) matches the merged pull requests: each done item names its pull request, and DEBT-002, DEBT-004, DEBT-020 and DEBT-023 are "Partly done" because a residual part is still in the code. The risk matrix, the plan and the summary use the same statuses. The old codebase map is kept as the "received version".
+- `App.jsx` is split into six hooks: `useGameState`, `useBattle`, `useAudio`, `useCarousel`, `useVoiceRecognition` and `useFullscreen` (DEBT-001). `App.jsx` went from 1,492 lines in the received version to 353 after this PR. Later features brought it back to 607 lines today. [#45](https://github.com/0x11semprez/codewash/pull/45)
 - `SkillCard.jsx` is split into one component per mini-game under `src/components/skills/games/` (DEBT-003). [#48](https://github.com/0x11semprez/codewash/pull/48)
 - Drawers, modals and the six mini-games load on demand with `React.lazy`. Display components and closed drawers are memoized. Startup JavaScript went from 392.46 kB to 319.27 kB. [#51](https://github.com/0x11semprez/codewash/pull/51)
 - Global CSS moved from `GlobalStyles.jsx` to `GlobalStyles.css`, loaded by the loading screen. [#51](https://github.com/0x11semprez/codewash/pull/51)

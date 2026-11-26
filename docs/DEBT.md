@@ -1,12 +1,14 @@
 # Technical debt register
 
-> Living document — Last updated: 2026-11-25
+> Living document. Last updated: 2026-11-26.
+>
+> Status values: **Done ✓** (fixed on `main`), **Partly done** (the main fix is merged, a residual part stays), **Open** (not started). Partly done and Open items are the residual debt handed to the next team, listed in [section 9](#9-residual-debt-handed-over).
 
 ---
 
 ## 1. Codebase map
 
-This section describes the original codebase at commit `f12cd74` (initial push, before any refactoring). All paths, line counts, and graphs reflect that baseline. A post-refactoring map will be added in [section 7](#7-post-refactoring-call-graph) once the cleanup is complete.
+This section is the **received version**: the codebase as the team got it, before any refactoring. It describes commit `f12cd74` (initial push) plus `MenuDrawer_old.jsx`, which came in the next commit `a4f337f` with the other original files. All paths, line counts and graphs reflect that baseline. The current system is described in [ARCHITECTURE.md](ARCHITECTURE.md).
 
 ### 1.1 Module overview
 
@@ -190,7 +192,7 @@ graph TD
 | Profile names, parent status | localStorage |
 | Theme, cosmetics | localStorage per profile |
 | UI state (drawers, modals, carousel) | No |
-| BGM/SFX volume | localStorage |
+| BGM/SFX volume | No (`useState` in `App.jsx`) |
 | Voice recognition, battle state | No |
 
 ### 1.5 I/O boundaries
@@ -219,9 +221,9 @@ Each item links to its GitHub issue for full context and to the PR that addresse
 - **Fix:** Extract custom hooks (`useBattle`, `useProfile`, `useVoiceRecognition`, `useCarousel`, `useAchievements`), move state into context providers.
 - **Effort:** L
 
-### DEBT-002: GlobalStyles monolith [P2] [In Progress]
+### DEBT-002: GlobalStyles monolith [P2] [Partly done]
 
-- **Issue:** [#25](https://github.com/0x11semprez/codewash/issues/25) — **PR:** none yet
+- **Issue:** [#25](https://github.com/0x11semprez/codewash/issues/25) (open) — **PR:** [#65](https://github.com/0x11semprez/codewash/pull/65) (merged)
 - **Location:** `src/styles/` (5 files, 1,777 lines), loaded through `src/components/ui/GlobalStyles.css`
 - **Smell:** Monolith. All CSS was in one `<style>` tag: animations, layouts, themes, aura effects. No scoping, no tree-shaking.
 - **Done:** the CSS moved out of `GlobalStyles.jsx` into a stylesheet, then was split into 5 files by topic (`base`, `card-borders`, `aura-animations`, `auras`, `achievement-borders`). The built CSS is byte-identical to the one before the split. The unused `GlobalStyles.jsx` copy was deleted.
@@ -229,6 +231,7 @@ Each item links to its GitHub issue for full context and to the PR that addresse
 - **Impact:** Any style change risks breaking unrelated components.
 - **Risk:** High impact, medium likelihood.
 - **Fix (next step):** CSS modules or Tailwind utilities per component.
+- **Why it stays:** moving about 1,800 lines of global CSS to modules touches every component and needs visual checks of all six themes. It was less urgent than the tests and the missions.
 - **Effort:** M
 
 ### DEBT-003: SkillCard does too much [P1] [Done ✓]
@@ -241,7 +244,7 @@ Each item links to its GitHub issue for full context and to the PR that addresse
 - **Fix:** Extract per-skill components (`PatternGame`, `MathGame`, `ReadingGame`, etc.) with shared interface.
 - **Effort:** M
 
-### DEBT-004: Dead code [P0] [Done ✓]
+### DEBT-004: Dead code [P0] [Partly done]
 
 - **Issue:** [#27](https://github.com/0x11semprez/codewash/issues/27) — **PR:** commit `883e02f` (Epitech PR #43)
 - **Location:** Scattered across 5 files
@@ -255,7 +258,8 @@ Each item links to its GitHub issue for full context and to the PR that addresse
   - `WRITING_ITEMS_BY_LENGTH` — gameData.jsx:397
   - `assets.js` — entire dead file
   - `MenuDrawer_old.jsx` — entire dead file
-- **Residual:** commit `883e02f` did not delete `src/constants/assets.js`. Nothing imports it. It still has to be removed.
+- **Residual:** commit `883e02f` did not delete `src/constants/assets.js`. Nothing imports it (`npm run metrics` lists it as the only dead file). It is also excluded from coverage in `vitest.config.js` and skipped in `assetPaths.test.js`, so removing it means editing those two places too.
+- **Why it stays:** it costs nothing at run time and is not in the bundle. It is a two-minute task for the next team.
 - **Effort:** XS
 
 ### DEBT-005: No tests [P0] [Done ✓]
@@ -289,18 +293,20 @@ Each item links to its GitHub issue for full context and to the PR that addresse
 
 ### DEBT-008: Duplicated code [P2] [Open]
 
-- **Issue:** [#31](https://github.com/0x11semprez/codewash/issues/31) — **PR:** none yet
+- **Issue:** [#31](https://github.com/0x11semprez/codewash/issues/31) (open) — **PR:** none
 - **Location:**
   - `CosmeticsDrawer.jsx` lines 108-224 vs 227-314 (near-identical border/achievement effect render blocks)
-  - `MenuDrawer.jsx` / `MenuDrawer_old.jsx` (massive overlap, old file now deleted via DEBT-004)
+  - `MenuDrawer.jsx` / `MenuDrawer_old.jsx` (massive overlap). Fixed: the old file was deleted by DEBT-004.
+  - Still there today (`npm run metrics`): the three CosmeticsDrawer clones, plus clones listed in [section 8](#8-final-metrics).
 - **Smell:** Copy-paste. Same rendering logic duplicated within one file.
 - **Impact:** Bug fixes must be applied twice. Divergence risk.
 - **Fix:** Extract shared `BorderEffectCard` component.
+- **Why it stays:** the two blocks render different unlock rules. Merging them needs a test of every border and effect first. Duplication is already below the baseline (see [section 8](#8-final-metrics)).
 - **Effort:** S
 
 ### DEBT-009: Hardcoded localStorage keys [P2] [Done ✓]
 
-- **Issue:** [#32](https://github.com/0x11semprez/codewash/issues/32) — **PR:** pending
+- **Issue:** [#32](https://github.com/0x11semprez/codewash/issues/32) — **PR:** [#70](https://github.com/0x11semprez/codewash/pull/70) (merged)
 - **Location (before):** `useGameState.js`, `preloadStartupAssets.js` and `PhantomEvent.jsx` (21 occurrences of key names typed by hand)
 - **Smell:** Scattered magic strings. No central registry. No migration path.
 - **Impact:** Renaming a key silently loses all saved player data.
@@ -320,17 +326,18 @@ Each item links to its GitHub issue for full context and to the PR that addresse
 
 ### DEBT-011: Sound manager — singleton + no audio pooling [P3] [Open]
 
-- **Issue:** [#34](https://github.com/0x11semprez/codewash/issues/34) — **PR:** none yet
-- **Location:** `src/services/soundManager.js` (287 lines)
+- **Issue:** [#34](https://github.com/0x11semprez/codewash/issues/34) (open) — **PR:** none
+- **Location:** `src/services/soundManager.js` (273 lines)
 - **Smell:** Module-level mutable state (`sfxVolume`, `bgmManager`). Creates a new `Audio()` object on every play call. No pooling.
 - **Impact:** Not testable in isolation. Dozens of `Audio` objects during rapid battles increase memory pressure.
 - **Risk:** Low impact, low likelihood.
 - **Fix:** Refactor to class or React context. Add audio pooling with fixed pool size.
+- **Why it stays:** low impact and low likelihood. No player reported a sound problem. Every caller goes through the `play*` functions, so a pool can be added later inside `soundManager.js` without touching the callers.
 - **Effort:** M
 
 ### DEBT-012: No containerization [P0] [Done ✓]
 
-- **Issue:** [#35](https://github.com/0x11semprez/codewash/issues/35) — **PR:** Epitech PR #37 (merged)
+- **Issue:** [#35](https://github.com/0x11semprez/codewash/issues/35) — **PR:** Epitech PR #37 (merged). The image only builds since [#81](https://github.com/0x11semprez/codewash/pull/81) (DEBT-022).
 - **Location:** Project root
 - **Smell:** No Dockerfile. No reproducible build environment.
 - **Fix:** Added multi-stage Dockerfile (Node build + nginx serve) and docker-compose.
@@ -338,7 +345,7 @@ Each item links to its GitHub issue for full context and to the PR that addresse
 
 ### DEBT-013: No monitoring [P2] [Done ✓]
 
-- **Issue:** [#36](https://github.com/0x11semprez/codewash/issues/36) — **PR:** `fix/debt-013-error-tracking`
+- **Issue:** [#36](https://github.com/0x11semprez/codewash/issues/36) — **PR:** [#83](https://github.com/0x11semprez/codewash/pull/83) (merged)
 - **Location:** Entire app
 - **Smell:** No error tracking, no metrics, no crash reporting. Errors vanish silently.
 - **Impact:** Cannot detect production issues without user reports.
@@ -350,7 +357,7 @@ Each item links to its GitHub issue for full context and to the PR that addresse
 
 ### DEBT-014: `perfectMemoryGames` never incremented [P1] [Done ✓]
 
-- **Issue:** [#37](https://github.com/0x11semprez/codewash/issues/37) — **PR:** pending
+- **Issue:** [#37](https://github.com/0x11semprez/codewash/issues/37) — **PR:** [#82](https://github.com/0x11semprez/codewash/pull/82) (merged)
 - **Location (before):** `achievements.js` read the counter, but no code raised it
 - **Smell:** Dead achievement. `stats.perfectMemoryGames >= 1` checked for "Perfectionist" unlock, but no code path increments this counter.
 - **Impact:** Achievement was unreachable for all players.
@@ -395,7 +402,7 @@ Each item links to its GitHub issue for full context and to the PR that addresse
 
 ### DEBT-019: External resources in component render [P3] [Done ✓]
 
-- **Issue:** [#42](https://github.com/0x11semprez/codewash/issues/42) — **PR:** none yet
+- **Issue:** [#42](https://github.com/0x11semprez/codewash/issues/42) — **PR:** [#68](https://github.com/0x11semprez/codewash/pull/68) (merged)
 - **Location:**
   - `src/index.css:1` — Google Fonts `@import`. A second copy lived in `GlobalStyles.jsx` and was fetched again on every remount. That file is now deleted (DEBT-002).
   - `ProfileCard.jsx:81`, `SkillCard.jsx:277` — `transparenttextures.com` pattern URLs
@@ -403,20 +410,21 @@ Each item links to its GitHub issue for full context and to the PR that addresse
 - **Fix:** The VT323 font is self-hosted in `src/assets/fonts/` with a local `@font-face` (SIL Open Font License file included). The two textures are stored in `src/assets/textures/` and imported by the components. The unused `placehold.co` prop was removed. `noExternalResources.test.js` fails if a source file points to an external website again.
 - **Effort:** XS
 
-### DEBT-020: Flat file structure — no feature boundaries [P1] [In Progress]
+### DEBT-020: Flat file structure — no feature boundaries [P1] [Partly done]
 
-- **Issue:** [#11](https://github.com/0x11semprez/codewash/issues/11) — **PR:** Epitech PR #48 (merge `f69df57`): init graph only; hooks and per-game folders done in [#45](https://github.com/0x11semprez/codewash/pull/45) and [#48](https://github.com/0x11semprez/codewash/pull/48)
+- **Issue:** [#11](https://github.com/0x11semprez/codewash/issues/11) (closed) — **PR:** [#72](https://github.com/0x11semprez/codewash/pull/72) (merged). Before that: Epitech PR #48 (merge `f69df57`) for the init graph, then hooks and per-game folders in [#45](https://github.com/0x11semprez/codewash/pull/45) and [#48](https://github.com/0x11semprez/codewash/pull/48)
 - **Location:** `src/` root
 - **Smell:** All components in flat `src/components/` folders by UI type (drawers, modals, ui). Constants and utils mixed across unrelated domains. No feature boundaries.
 - **Impact:** Cannot reason about which files belong to which feature. Imports cross every boundary.
 - **Fix:** Reorganize into `src/features/{battle,skills,achievements,cosmetics,profile,settings,menu,events}/` with co-located components, constants, and utils. Shared code in `src/shared/`.
 - **Done:** `src/constants/gameData.js` (702 lines) is split into six topic files under `src/constants/game/` (items, mobs, difficulty, themes, words, skills). `gameData.js` re-exports them, so no import had to change. Code that talks to the browser (`soundManager`, `storage`, `storageKeys`) moved from `src/utils/` to `src/services/`. `src/utils/` now holds pure game logic only.
 - **Remaining:** the full `src/features/` layout from ADR-006 is not started.
+- **Why it stays:** moving every file at once would break all open branches and the history of each file. The current layout already separates hooks, services, pure utils, i18n and theme data (see [ARCHITECTURE.md](ARCHITECTURE.md#folder-map)). The next team can move one feature at a time.
 - **Effort:** M
 
 ### DEBT-021: Missing theme assets [P2] [Done ✓]
 
-- **Issue:** [#53](https://github.com/0x11semprez/codewash/issues/53) — **PR:** none yet
+- **Issue:** [#53](https://github.com/0x11semprez/codewash/issues/53) — **PR:** [#79](https://github.com/0x11semprez/codewash/pull/79) (merged)
 - **Location:** `src/constants/game/themes.js` (`THEME_CONFIG`), `public/assets/themes/`
 - **Smell:** Broken references. Four images used by themes do not exist: `spy_logo.png`, `spy_memorycard.jpg`, `kpop_memorycard.jpg`, `pokemon_memorycard.jpg`.
 - **Impact:** With the spy, kpop or pokemon theme, the loading screen reports failed critical images and the player has to press Continue. In game, the logo or the memory card back is missing.
@@ -427,7 +435,7 @@ Each item links to its GitHub issue for full context and to the PR that addresse
 
 ### DEBT-022: Docker build fails on `npm ci` [P1] [Done ✓]
 
-- **Issue:** [#54](https://github.com/0x11semprez/codewash/issues/54) — **PR:** none yet
+- **Issue:** [#54](https://github.com/0x11semprez/codewash/issues/54) — **PR:** [#81](https://github.com/0x11semprez/codewash/pull/81) (merged)
 - **Location:** `Dockerfile` line 4, `package.json` (`vitest`, `@vitest/coverage-v8`)
 - **Smell:** Inconsistent install. CI and the README used `npm ci --legacy-peer-deps`, the `Dockerfile` used plain `npm ci`. npm stopped with `ERESOLVE could not resolve`.
 - **Impact:** `docker build .` fails, so the container from DEBT-012 cannot be built today.
@@ -436,7 +444,7 @@ Each item links to its GitHub issue for full context and to the PR that addresse
 - **Done:** The real conflict was `@testing-library/jest-dom` 8, which wants Vitest 5. Version 7.0.1 accepts Vitest 3 and has the same `vitest` entry point, so `npm ci` now works with no flag. The flag is gone from CI and the docs. CI builds the Docker image on every pull request. A new `.dockerignore` keeps `node_modules`, `.git` and other local files out of the image.
 - **Effort:** XS
 
-### DEBT-023: Game logic calls `Math.random` and `Date` directly [P2] [Done ✓]
+### DEBT-023: Game logic calls `Math.random` and `Date` directly [P2] [Partly done]
 
 - **Issue:** [#59](https://github.com/0x11semprez/codewash/issues/59) — **PR:** [#60](https://github.com/0x11semprez/codewash/pull/60), merged to `main` with [#66](https://github.com/0x11semprez/codewash/pull/66)
 - **Location:** 36 calls to `Math.random`, `Date.now` or `new Date` in 8 files under `src/`, mostly in `gameUtils.js` and `mobDisplayUtils.js`
@@ -444,8 +452,9 @@ Each item links to its GitHub issue for full context and to the PR that addresse
 - **Impact:** Edge cases are tested only by luck. One known bug hides in such a corner: at difficulty 3 and up, a subtraction can give `0 - 1 = -1`.
 - **Risk:** Medium impact, medium likelihood.
 - **Fix:** Pass the random source and the clock as arguments, with the real ones as defaults ([ADR-008](adr/008-inject-randomness-and-clock.md)).
-- **Done:** `src/utils/random.js` and `src/utils/clock.js`. Game utilities take an optional `random`, and `useGameState` takes an optional `{ now }`. Direct calls went from 36 to 10. A named test pins the `-1` subtraction bug, which is not fixed yet.
-- **Remaining:** the 10 calls left in `useBattle`, `soundManager`, `PhantomEvent`, `MemoryGame` and `PatternGame`.
+- **Done:** `src/utils/random.js` and `src/utils/clock.js`. Game utilities take an optional `random`, and `useGameState` takes an optional `{ now }`. Direct calls went from 36 to 10 by the count used in that PR. The script of [section 8](#8-final-metrics) counts every `Math.random()`, `Date.now()` and `new Date(` call outside the two wrappers: 39 before, 16 today. A named test pins the `-1` subtraction bug, which is not fixed yet.
+- **Remaining:** the direct calls left in `useBattle`, `soundManager`, `PhantomEvent`, `MemoryGame` and `PatternGame`, plus `Math.random` passed by hand from `useBattle` and `App.jsx` (see [section 8](#8-final-metrics) for the count). The `0 - 1 = -1` subtraction bug is still pinned by a test and not fixed.
+- **Why it stays:** these calls sit in React components and hooks, where injecting a source means new props or hook arguments. The pure utilities, where the rules are, are done. Fixing the subtraction bug changes game behavior, so it needs a product decision first.
 - **Effort:** M
 
 ---
@@ -475,59 +484,63 @@ Complexity today, measured with ESLint on `src/` (2026-11-26): the highest cyclo
 
 Runtime performance (Lighthouse, Web Vitals, bundle size) is not a code metric. It is measured in the [performance report](missions/performance.md).
 
+These are the numbers recorded at the time. [Section 8](#8-final-metrics) measures the received version again with one script, next to today's numbers.
+
 ---
 
 ## 4. Risk matrix
 
+Placement is the impact and likelihood when the item was found. ✓ = done, ◐ = partly done (residual part listed in [section 9](#9-residual-debt-handed-over)), no mark = open.
+
 ```
               │ Low Likelihood │ Med Likelihood  │ High Likelihood │
 ──────────────┼────────────────┼─────────────────┼─────────────────┤
-High Impact   │ DEBT-010 ✓     │ DEBT-002        │ DEBT-001 ✓      │
+High Impact   │ DEBT-010 ✓     │ DEBT-002 ◐      │ DEBT-001 ✓      │
               │                │                 │ DEBT-003 ✓      │
               │                │                 │ DEBT-005 ✓      │
               │                │                 │ DEBT-006 ✓      │
 ──────────────┼────────────────┼─────────────────┼─────────────────┤
-Med Impact    │ DEBT-011       │ DEBT-008        │ DEBT-009        │
-              │                │ DEBT-013        │ DEBT-012 ✓      │
-              │                │ DEBT-016 ✓      │ DEBT-014        │
+Med Impact    │ DEBT-011       │ DEBT-008        │ DEBT-009 ✓      │
+              │                │ DEBT-013 ✓      │ DEBT-012 ✓      │
+              │                │ DEBT-016 ✓      │ DEBT-014 ✓      │
               │                │ DEBT-017 ✓      │ DEBT-015 ✓      │
-              │                │                 │ DEBT-020        │
+              │                │ DEBT-023 ◐      │ DEBT-020 ◐      │
               │                │                 │ DEBT-021 ✓      │
-              │                │                 │ DEBT-022        │
+              │                │                 │ DEBT-022 ✓      │
 ──────────────┼────────────────┼─────────────────┼─────────────────┤
-Low Impact    │ DEBT-018 ✓, 019│                 │ DEBT-004 ✓      │
-              │                │                 │ DEBT-007 ✓      │
+Low Impact    │ DEBT-018 ✓     │                 │ DEBT-004 ◐      │
+              │ DEBT-019 ✓     │                 │ DEBT-007 ✓      │
 ──────────────┴────────────────┴─────────────────┴─────────────────┘
 ```
 
-✓ = resolved
+17 items done, 4 partly done, 2 open. No high-likelihood item is fully open. The only high-impact item left is DEBT-002, and its biggest part (the 1,302-line component) is gone.
 
 ---
 
 ## 5. Phased plan
 
-### Phase 0: quick wins (week 1) — done except DEBT-019
+### Phase 0: quick wins (week 1) — done
 
 | # | Debt | Task | Status |
 |---|------|------|--------|
 | 1 | DEBT-007 | Remove `._` files + `.gitignore` | Done ✓ — [#47](https://github.com/0x11semprez/codewash/pull/47) (merged) |
-| 2 | DEBT-004 | Delete dead code (7 functions + 2 files) | Done ✓ — commit `883e02f` (Epitech PR #43) |
+| 2 | DEBT-004 | Delete dead code (7 functions + 2 files) | Partly done — commit `883e02f` (Epitech PR #43). `assets.js` is left. |
 | 3 | DEBT-006 | CI pipeline (lint, test, build) | Done ✓ — [#5](https://github.com/0x11semprez/codewash/pull/5) (merged), originally Epitech PR #37 |
-| 4 | DEBT-012 | Dockerfile + nginx | Done ✓ — Epitech PR #37 (merged) |
+| 4 | DEBT-012 | Dockerfile + nginx | Done ✓ — Epitech PR #37 (merged), builds since [#81](https://github.com/0x11semprez/codewash/pull/81) |
 | 5 | DEBT-015 | Fix `battlesThisSession` reset | Done ✓ — Epitech PR #46 (merge `a9e408a`) |
 | 6 | DEBT-016 | Fix stale state reads | Done ✓ — Epitech PR #45 (merge `7b82098`) |
 | 7 | DEBT-017 | Replace setTimeout achievement checks | Done ✓ — Epitech PR #44 (merge `7fa5858`) |
 | 8 | DEBT-018 | Add try-catch to handleReset parse | Done ✓ — [#58](https://github.com/0x11semprez/codewash/pull/58), [#66](https://github.com/0x11semprez/codewash/pull/66) |
-| 9 | DEBT-019 | Move font import to `<head>` | Open |
+| 9 | DEBT-019 | Self-host the font and the textures | Done ✓ — [#68](https://github.com/0x11semprez/codewash/pull/68) (merged) |
 
 ### Phase 1: safety net + structure (week 2) — done except DEBT-020
 
 | # | Debt | Task | Status |
 |---|------|------|--------|
-| 10 | DEBT-005 | Vitest + test game logic utils | Done ✓ — [#3](https://github.com/0x11semprez/codewash/pull/3), [#4](https://github.com/0x11semprez/codewash/pull/4), [#6](https://github.com/0x11semprez/codewash/pull/6), [#46](https://github.com/0x11semprez/codewash/pull/46) (merged) |
+| 10 | DEBT-005 | Vitest + test game logic utils | Done ✓ — [#3](https://github.com/0x11semprez/codewash/pull/3), [#4](https://github.com/0x11semprez/codewash/pull/4), [#6](https://github.com/0x11semprez/codewash/pull/6), [#46](https://github.com/0x11semprez/codewash/pull/46), [#80](https://github.com/0x11semprez/codewash/pull/80) (merged) |
 | 11 | DEBT-010 | Error boundaries | Done ✓ — [#49](https://github.com/0x11semprez/codewash/pull/49) (merged) |
-| 12 | DEBT-020 | Reorganize into feature-based structure | In Progress — Epitech PR #48 (merge `f69df57`) |
-| 13 | DEBT-014 | Fix `perfectMemoryGames` counter | Done ✓ |
+| 12 | DEBT-020 | Reorganize into feature-based structure | Partly done — [#72](https://github.com/0x11semprez/codewash/pull/72) (merged). No `src/features/` yet. |
+| 13 | DEBT-014 | Fix `perfectMemoryGames` counter | Done ✓ — [#82](https://github.com/0x11semprez/codewash/pull/82) (merged) |
 
 ### Phase 2: break god components (weeks 3-4) — done
 
@@ -535,18 +548,19 @@ Low Impact    │ DEBT-018 ✓, 019│                 │ DEBT-004 ✓      │
 |---|------|------|--------|
 | 14 | DEBT-001 | Extract App.jsx into hooks + context | Done ✓ — [#45](https://github.com/0x11semprez/codewash/pull/45) (merged) |
 | 15 | DEBT-003 | Split SkillCard per skill type | Done ✓ — [#48](https://github.com/0x11semprez/codewash/pull/48) (merged) |
-| 16 | DEBT-009 | Extract storage layer | Done ✓ |
+| 16 | DEBT-009 | Extract storage layer | Done ✓ — [#70](https://github.com/0x11semprez/codewash/pull/70) (merged) |
 
 ### Phase 3: polish (week 5+)
 
 | # | Debt | Task | Status |
 |---|------|------|--------|
-| 17 | DEBT-002 | Break GlobalStyles into modules | In Progress |
+| 17 | DEBT-002 | Break GlobalStyles into modules | Partly done — [#65](https://github.com/0x11semprez/codewash/pull/65) (merged). Class names are still global. |
 | 18 | DEBT-008 | Remove internal duplication | Open |
 | 19 | DEBT-011 | Refactor sound manager + audio pooling | Open |
-| 20 | DEBT-013 | Add error tracking | Done ✓ |
-| 21 | DEBT-021 | Add missing theme images + path test | Done ✓ |
-| 22 | DEBT-022 | Fix Docker build + add it to CI | Done |
+| 20 | DEBT-013 | Add error tracking | Done ✓ — [#83](https://github.com/0x11semprez/codewash/pull/83) (merged) |
+| 21 | DEBT-021 | Add missing theme images + path test | Done ✓ — [#79](https://github.com/0x11semprez/codewash/pull/79) (merged) |
+| 22 | DEBT-022 | Fix Docker build + add it to CI | Done ✓ — [#81](https://github.com/0x11semprez/codewash/pull/81) (merged) |
+| 23 | DEBT-023 | Inject randomness and the clock | Partly done — [#60](https://github.com/0x11semprez/codewash/pull/60), [#66](https://github.com/0x11semprez/codewash/pull/66) (merged). Hooks and components still call `Math.random`. |
 
 ---
 
@@ -555,31 +569,132 @@ Low Impact    │ DEBT-018 ✓, 019│                 │ DEBT-004 ✓      │
 | Debt | Issue | PR | Status |
 |------|-------|----|--------|
 | DEBT-001 | [#24](https://github.com/0x11semprez/codewash/issues/24) | [#45](https://github.com/0x11semprez/codewash/pull/45) (merged) | Done ✓ |
-| DEBT-002 | [#25](https://github.com/0x11semprez/codewash/issues/25) | [#65](https://github.com/0x11semprez/codewash/pull/65) (merged) | In Progress |
+| DEBT-002 | [#25](https://github.com/0x11semprez/codewash/issues/25) (open) | [#65](https://github.com/0x11semprez/codewash/pull/65) (merged) | Partly done |
 | DEBT-003 | [#26](https://github.com/0x11semprez/codewash/issues/26) | [#48](https://github.com/0x11semprez/codewash/pull/48) (merged) | Done ✓ |
-| DEBT-004 | [#27](https://github.com/0x11semprez/codewash/issues/27) | commit `883e02f` (Epitech PR #43) | Done ✓ |
-| DEBT-005 | [#28](https://github.com/0x11semprez/codewash/issues/28) | [#3](https://github.com/0x11semprez/codewash/pull/3), [#4](https://github.com/0x11semprez/codewash/pull/4), [#6](https://github.com/0x11semprez/codewash/pull/6), [#46](https://github.com/0x11semprez/codewash/pull/46) (merged) | Done ✓ |
+| DEBT-004 | [#27](https://github.com/0x11semprez/codewash/issues/27) | commit `883e02f` (Epitech PR #43) | Partly done |
+| DEBT-005 | [#28](https://github.com/0x11semprez/codewash/issues/28) | [#3](https://github.com/0x11semprez/codewash/pull/3), [#4](https://github.com/0x11semprez/codewash/pull/4), [#6](https://github.com/0x11semprez/codewash/pull/6), [#46](https://github.com/0x11semprez/codewash/pull/46), [#80](https://github.com/0x11semprez/codewash/pull/80) (merged) | Done ✓ |
 | DEBT-006 | [#29](https://github.com/0x11semprez/codewash/issues/29) | [#5](https://github.com/0x11semprez/codewash/pull/5) (merged), originally Epitech PR #37 | Done ✓ |
 | DEBT-007 | [#30](https://github.com/0x11semprez/codewash/issues/30) | [#47](https://github.com/0x11semprez/codewash/pull/47) (merged) | Done ✓ |
-| DEBT-008 | [#31](https://github.com/0x11semprez/codewash/issues/31) | — | Open |
-| DEBT-009 | [#32](https://github.com/0x11semprez/codewash/issues/32) | pending | Done ✓ |
+| DEBT-008 | [#31](https://github.com/0x11semprez/codewash/issues/31) (open) | — | Open |
+| DEBT-009 | [#32](https://github.com/0x11semprez/codewash/issues/32) | [#70](https://github.com/0x11semprez/codewash/pull/70) (merged) | Done ✓ |
 | DEBT-010 | [#33](https://github.com/0x11semprez/codewash/issues/33) | [#49](https://github.com/0x11semprez/codewash/pull/49) (merged) | Done ✓ |
-| DEBT-011 | [#34](https://github.com/0x11semprez/codewash/issues/34) | — | Open |
-| DEBT-012 | [#35](https://github.com/0x11semprez/codewash/issues/35) | Epitech PR #37 (merged) | Done ✓ |
-| DEBT-013 | [#36](https://github.com/0x11semprez/codewash/issues/36) | [#83](https://github.com/0x11semprez/codewash/pull/83) | Done ✓ |
+| DEBT-011 | [#34](https://github.com/0x11semprez/codewash/issues/34) (open) | — | Open |
+| DEBT-012 | [#35](https://github.com/0x11semprez/codewash/issues/35) | Epitech PR #37 (merged), [#81](https://github.com/0x11semprez/codewash/pull/81) (merged) | Done ✓ |
+| DEBT-013 | [#36](https://github.com/0x11semprez/codewash/issues/36) | [#83](https://github.com/0x11semprez/codewash/pull/83) (merged) | Done ✓ |
 | DEBT-014 | [#37](https://github.com/0x11semprez/codewash/issues/37) | [#82](https://github.com/0x11semprez/codewash/pull/82) (merged) | Done ✓ |
 | DEBT-015 | [#38](https://github.com/0x11semprez/codewash/issues/38) | Epitech PR #46 (merge `a9e408a`) | Done ✓ |
 | DEBT-016 | [#39](https://github.com/0x11semprez/codewash/issues/39) | Epitech PR #45 (merge `7b82098`) | Done ✓ |
 | DEBT-017 | [#40](https://github.com/0x11semprez/codewash/issues/40) | Epitech PR #44 (merge `7fa5858`) | Done ✓ |
 | DEBT-018 | [#41](https://github.com/0x11semprez/codewash/issues/41) | [#58](https://github.com/0x11semprez/codewash/pull/58), [#66](https://github.com/0x11semprez/codewash/pull/66) (merged) | Done ✓ |
-| DEBT-019 | [#42](https://github.com/0x11semprez/codewash/issues/42) | — | Open |
-| DEBT-020 | [#11](https://github.com/0x11semprez/codewash/issues/11) | Epitech PR #48 (merge `f69df57`) | In Progress |
-| DEBT-021 | [#53](https://github.com/0x11semprez/codewash/issues/53) | Themes mission (#21), not merged yet | Done ✓ |
-| DEBT-022 | [#54](https://github.com/0x11semprez/codewash/issues/54) | fix/debt-022-docker-build | Done |
-| DEBT-023 | [#59](https://github.com/0x11semprez/codewash/issues/59) | [#60](https://github.com/0x11semprez/codewash/pull/60), [#66](https://github.com/0x11semprez/codewash/pull/66) (merged) | Done ✓ |
+| DEBT-019 | [#42](https://github.com/0x11semprez/codewash/issues/42) | [#68](https://github.com/0x11semprez/codewash/pull/68) (merged) | Done ✓ |
+| DEBT-020 | [#11](https://github.com/0x11semprez/codewash/issues/11) | [#72](https://github.com/0x11semprez/codewash/pull/72) (merged), Epitech PR #48 (merge `f69df57`) | Partly done |
+| DEBT-021 | [#53](https://github.com/0x11semprez/codewash/issues/53) | [#79](https://github.com/0x11semprez/codewash/pull/79) (merged) | Done ✓ |
+| DEBT-022 | [#54](https://github.com/0x11semprez/codewash/issues/54) | [#81](https://github.com/0x11semprez/codewash/pull/81) (merged) | Done ✓ |
+| DEBT-023 | [#59](https://github.com/0x11semprez/codewash/issues/59) | [#60](https://github.com/0x11semprez/codewash/pull/60), [#66](https://github.com/0x11semprez/codewash/pull/66) (merged) | Partly done |
+
+Issues #27, #11 and #59 are closed on GitHub, but their items keep a residual part here. The register is the reference for what is left.
 
 ---
 
 ## 7. Post-refactoring call graph
 
-> To be produced after all phases are complete. Will show the new feature-based module structure, reduced coupling, and updated metrics for before/after comparison.
+The current module graph, the state, the I/O points and the main flows are in [ARCHITECTURE.md](ARCHITECTURE.md). The graph of the received version stays in [section 1](#1-codebase-map) for comparison.
+
+---
+
+## 8. Final metrics
+
+### How to measure
+
+One command gives every number in the table below:
+
+```sh
+npm run metrics                       # today's tree, with tests and coverage (about 3 minutes)
+npm run metrics -- --ref a4f337f      # the received version (f12cd74 plus MenuDrawer_old.jsx)
+npm run metrics -- --json             # same numbers as JSON
+npm run metrics -- --skip-coverage    # skip the test run
+```
+
+The script is `tools/measure-metrics.mjs`. With `--ref`, it copies the commit with `git archive` into a temporary folder and measures the copy. It runs these tools:
+
+| Metric | Tool and options |
+|--------|------------------|
+| Files and lines | Node `fs`, counts newlines like `wc -l`. Scope: `.js` and `.jsx` under `src/`, without `__tests__/` and `*.test.*` |
+| Decision points per file | Regex counter on the raw text: `if (`, `for (`, `while (`, `case`, `catch`, `&&`, `\|\|`, `??`, ternary `?` |
+| Complexity per function | ESLint 9 `complexity` rule with a neutral config (`ecmaVersion: latest`, JSX on), so old and new code are parsed the same way |
+| Duplication | `npx jscpd@4.3.0 --min-lines 5 --min-tokens 50 --format javascript,jsx --ignore "**/__tests__/**,**/*.test.*"` on `src` |
+| Dead files | `npx madge@8.0.0 --orphans --extensions js,jsx` on `src`. `main.jsx` and files loaded by `import.meta.glob` are not counted |
+| Direct random and clock calls | Regex `Math.random()`, `Date.now()`, `new Date(` outside `src/utils/random.js` and `src/utils/clock.js` |
+| Tests and coverage | `vitest run --coverage` (v8), JSON summary |
+| Lint | ESLint with the project config, like `npm run lint` |
+| macOS metadata files | `git ls-files` (or `git ls-tree` for a commit), names starting with `._` |
+
+### What could not be reproduced exactly
+
+- **Source files and lines.** The recorded 6,938 lines include `MenuDrawer_old.jsx`, which is not in `f12cd74`. It was committed next, in `a4f337f`. Measured on `a4f337f`, the script gives exactly 24 files under `src/` plus `electron/main.cjs` (25 files) and 6,938 lines. So `a4f337f` is used as the "before" tree.
+- **Decision points.** The original regex was not saved. The closest counter, run on `a4f337f`, gives App.jsx 233 (recorded ~218), SkillCard.jsx 169 (recorded ~119) and 718 in total (recorded ~464). The before/after table uses the new counter on both trees, so the comparison is fair. The ESLint `complexity` rule is added as a second, standard measure.
+- **Duplication.** jscpd 4.3.0 and 3.5.10, with the recorded options, both find 9 clones (6.01% of lines) on `a4f337f`, not 6 clones (3.37%). The old jscpd version is unknown. The table uses jscpd 4.3.0 on both trees.
+- **macOS metadata files.** The 112 `._*` files were in the folder the team received, not in any commit. Git shows 0 on both trees.
+- **Dev dependencies.** `package.json` at `a4f337f` lists 14 dev dependencies, not 12.
+
+### Before and after
+
+"Recorded" is section 3. "Before" is `npm run metrics -- --ref a4f337f`. "After" is `npm run metrics` on `main` at merge `4e0388a`.
+
+| Metric | Recorded | Before (`a4f337f`) | After (`main`) |
+|--------|----------|--------------------|----------------|
+| Test coverage (lines / statements / functions / branches) | 0% | 0% (no tests) | 100% / 100% / 100% / 100% |
+| Tests | 0 | 0 | 736 tests in 57 files, 0 failed |
+| Largest file | App.jsx, 1,492 lines | App.jsx, 1,492 lines | App.jsx, 607 lines |
+| Second and third largest | GlobalStyles.jsx 1,302, SkillCard.jsx 778 | same | SkillCard.jsx 517, useBattle.js 436 |
+| Files over 300 lines | not recorded | 7 | 10 |
+| Source files (`src`, no tests) | 24 (+1 Electron) | 24 (+1 Electron) | 67 (+1 Electron) |
+| Source lines (`src`, no tests) | 6,938 | 6,938 | 8,624 |
+| Most decision points in one file | App.jsx ~218 | App.jsx 233 | useBattle.js 75 |
+| Second most decision points | SkillCard.jsx ~119 | SkillCard.jsx 169 | useGameState.js 74 |
+| Decision points, total | ~464 | 718 | 896 |
+| Most complex function (ESLint) | not recorded | 107 (SkillCard component) | 58 (SkillCard component) |
+| Functions with complexity over 10 / over 20 | not recorded | 14 / 5 of 396 functions | 22 / 6 of 644 functions |
+| Duplication (jscpd) | 6 clones, 3.37% | 9 clones, 324 lines, 6.01% | 7 clones, 111 lines, 1.03% |
+| Dead files | 2 | 2 (`MenuDrawer_old.jsx`, `assets.js`) | 1 (`assets.js`) |
+| Direct `Math.random()` / `Date.now()` / `new Date(` calls | 36 (DEBT-023) | 39 | 16 |
+| ESLint errors / warnings (project config) | 0 real, 28 false positives | not comparable (old config) | 0 / 0 |
+| macOS metadata files | 112 | 0 in git | 0 |
+| Dependencies / dev dependencies | 3 / 12 | 3 / 14 | 3 / 21 |
+
+### Reading the numbers
+
+- The code grew by 1,686 lines because the missions added features: French translation (the two locale files alone are 714 lines), bug reporting, error tracking, the loading screen and theme loading. Total decision points grew with it.
+- The complexity is spread out now. The worst file went from 233 to 75 decision points, and the worst function from 107 to 58. App.jsx went from 1,492 to 607 lines.
+- The 10 files over 300 lines include the two locale files and `achievements.js`, which are data. The worst code files are `App.jsx`, `SkillCard.jsx` and `useBattle.js`. They are the first candidates for the next team.
+- Duplication dropped from 6.01% to 1.03%. Three of the 7 clones left are the CosmeticsDrawer blocks of DEBT-008.
+- The SkillCard component (complexity 58) is the most complex function left. Its branches choose which mini-game to show and how to style the card.
+
+Clones left today:
+
+- `CosmeticsDrawer.jsx` 151 / 305, 161 / 290 and 191 / 307 (DEBT-008)
+- `MathGame.jsx` 4 / `WritingGame.jsx` 4 (12 lines)
+- `ResetModal.jsx` 69 / `ParentalVerificationModal.jsx` 87 (13 lines)
+- `SettingsDrawer.jsx` 83 / 98 (13 lines)
+- `useGameState.js` 192 / 207 (7 lines)
+
+---
+
+## 9. Residual debt handed over
+
+These items stay open for the next team. Each one has its reason in section 2.
+
+| Debt | What is left | Why it stays | Effort |
+|------|--------------|--------------|--------|
+| DEBT-002 | Global CSS class names in `src/styles/` | Touches every component and needs visual checks of all themes | M |
+| DEBT-004 | Dead file `src/constants/assets.js` | Harmless, not in the bundle. Also remove its entries in `vitest.config.js` and `assetPaths.test.js` | XS |
+| DEBT-008 | 7 clones, 3 of them in `CosmeticsDrawer.jsx` | Needs tests of every border and effect before merging the blocks | S |
+| DEBT-011 | `soundManager` singleton, a new `Audio` per sound | Low impact, no reported problem | M |
+| DEBT-020 | No `src/features/` layout | A big move would break open branches. Move one feature at a time | M |
+| DEBT-023 | 16 direct random and clock calls in hooks and components, and the `0 - 1 = -1` subtraction bug | Needs new hook arguments. The bug fix changes game rules | M |
+
+Not in the register yet, seen while writing [ARCHITECTURE.md](ARCHITECTURE.md):
+
+- Speech recognition always uses `en-US` (`useVoiceRecognition.js`), even when the game is in French.
+- Music and sound volumes are not saved. They go back to 30% and 50% at each start. This was already the case in the received version.
+- `useGameState`, `PhantomEvent` and `preloadStartupAssets` still call `localStorage` directly for plain strings, next to the `storage.js` helpers.
