@@ -69,10 +69,22 @@ describe('English dictionary covers the game data', () => {
         });
     });
 
-    it('has the skill names of every theme', () => {
-        Object.entries(THEME_CONFIG).forEach(([themeId, theme]) => {
-            Object.entries(theme.skills).forEach(([skillId, skill]) => {
-                expect(lookup(en, `themeSkills.${themeId}.${skillId}`)).toBe(skill.name);
+    it('has a translation of the name and skill texts of every theme', () => {
+        const others = LANGUAGE_CODES.filter((code) => code !== DEFAULT_LOCALE);
+        Object.values(THEME_CONFIG).forEach((theme) => {
+            others.forEach((code) => {
+                const text = theme.translations[code];
+                expect(text?.name, `${theme.id} ${code} name`).toBeTruthy();
+                SKILL_DATA.forEach((skill) => {
+                    ['name', 'fantasyName', 'actionName', 'taskDescription'].forEach((field) => {
+                        expect(text.skills[skill.id]?.[field], `${theme.id} ${code} ${skill.id}.${field}`).toBeTruthy();
+                    });
+                });
+                if (theme.ownPatternPieces) {
+                    Object.keys(theme.patternPieces).forEach((piece) => {
+                        expect(text.patternPieces[piece], `${theme.id} ${code} ${piece}`).toBeTruthy();
+                    });
+                }
             });
         });
     });

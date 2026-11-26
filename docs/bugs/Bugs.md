@@ -9,7 +9,7 @@ Bugs found in the code, with the proof, the cause, the fix and a before/after co
 | Hardcoded localStorage keys | [#32](https://github.com/0x11semprez/codewash/issues/32) (DEBT-009) | Fixed, PR pending | One file lists every key, and a migration moves old data |
 | Corrupted save crashes the game | [#41](https://github.com/0x11semprez/codewash/issues/41) (DEBT-018) | Fixed (PR [#58](https://github.com/0x11semprez/codewash/pull/58), [#66](https://github.com/0x11semprez/codewash/pull/66)) | Not detailed here yet |
 | `perfectMemoryGames` never incremented | [#37](https://github.com/0x11semprez/codewash/issues/37) (DEBT-014) | Open | Not started |
-| Missing theme images | [#53](https://github.com/0x11semprez/codewash/issues/53) (DEBT-021) | Open | Not started |
+| Missing theme images | [#53](https://github.com/0x11semprez/codewash/issues/53) (DEBT-021) | Fixed | Themes mission (#21), not merged yet |
 | Docker build fails on `npm ci` | [#54](https://github.com/0x11semprez/codewash/issues/54) (DEBT-022) | Open | Not started |
 
 Only the bugs with a section below are documented in detail. Every figure and screenshot says how it was produced.
@@ -97,5 +97,4 @@ In this run, the storage held only `heroSkills_v23` before the reload. After the
 | Item | Notes |
 | --- | --- |
 | [#37](https://github.com/0x11semprez/codewash/issues/37) `perfectMemoryGames` never incremented | The "Perfectionist" achievement cannot be unlocked |
-| [#53](https://github.com/0x11semprez/codewash/issues/53) Missing theme images | Four images do not exist in `public/assets/themes/` |
 | [#54](https://github.com/0x11semprez/codewash/issues/54) Docker build fails | The `Dockerfile` runs `npm ci` without `--legacy-peer-deps` |

@@ -20,7 +20,7 @@ export default {
             unlocked: 'Débloqué',
             badgeAlt: 'Badge',
             newRank: 'Nouveau rang !',
-            phantomBonus: 'Bonus Phantom !',
+            phantomBonus: 'Niveau bonus !',
         },
         death: {
             title: 'VOUS ÊTES MORT',
@@ -91,6 +91,7 @@ export default {
         cosmetics: {
             title: 'Thèmes et cosmétiques',
             themeSelect: 'Choix du thème',
+            themeList: 'Thèmes',
             borderEffects: 'Effets de bordure',
             active: 'ACTIF',
             color: 'Couleur',
@@ -108,7 +109,7 @@ export default {
             lifestream: { name: 'Flux de vie', description: 'Énergie éthérée qui coule' },
             frost: { name: 'Givre', description: 'Majesté de cristal glacé' },
             fire: { name: 'Lave', description: 'Fureur ardente infernale' },
-            shadow: { name: 'Portail du Nether', description: 'Murmures du vide abyssal' },
+            shadow: { name: 'Portail des ombres', description: 'Murmures du vide abyssal' },
             rainbow: { name: 'Légendaire !', description: 'Aura légendaire prismatique' },
             livewire: { name: 'Fil sous tension', description: 'Arcs électriques instables' },
             void: { name: 'Vide cosmique', description: 'Étendue étoilée infinie' },
@@ -123,7 +124,7 @@ export default {
             Iron: 'Fer',
             Emerald: 'Émeraude',
             Diamond: 'Diamant',
-            Netherite: 'Netherite',
+            Titanium: 'Titane',
             Obsidian: 'Obsidienne',
             Star: 'Étoile',
         },
@@ -144,7 +145,7 @@ export default {
         achievements: {
             phantom_hunter: {
                 name: 'Chasseur de fantômes',
-                description: 'Attrape des Phantoms',
+                description: 'Attrape la créature bonus volante',
                 tiers: {
                     0: 'Chasseur de fantômes de bronze',
                     1: "Chasseur de fantômes d'argent",
@@ -194,11 +195,17 @@ export default {
             ouch: { name: 'Aïe !', description: 'Meurs pour la première fois' },
             dragon_slayer: { name: 'Tueur de dragon', description: 'Bats ton premier boss' },
             mini_menace: { name: 'Petite menace', description: 'Bats ton premier mini-boss' },
-            mini_master: { name: 'Maître des minis', description: 'Bats tous les mini-boss au moins une fois' },
-            world_ender: { name: 'Destructeur de mondes', description: 'Bats tous les boss au moins une fois' },
+            mini_master: {
+                name: 'Maître des minis',
+                description: "Bats tous les mini-boss d'un thème au moins une fois",
+            },
+            world_ender: {
+                name: 'Destructeur de mondes',
+                description: "Bats tous les boss d'un thème au moins une fois",
+            },
             monster_manual: {
                 name: 'Bestiaire',
-                description: 'Bats tous les monstres normaux au moins une fois',
+                description: "Bats tous les ennemis normaux d'un thème au moins une fois",
             },
             perfectionist: { name: 'Perfectionniste', description: 'Finis un jeu de mémoire sans aucune erreur' },
             speed_demon: { name: 'Démon de vitesse', description: 'Termine 10 combats dans une même session' },
@@ -221,26 +228,25 @@ export default {
         skills: {
             reading: {
                 name: 'Lecture',
-                fantasyName: "Table d'enchantement",
-                actionName: 'Enchanter !',
-                taskDescription: 'Prononce les mots anciens pour lancer des enchantements et vaincre tes ennemis !',
+                fantasyName: 'Livre de sorts',
+                actionName: 'Lire !',
+                taskDescription: 'Lis les mots magiques à voix haute pour vaincre tes ennemis !',
             },
             math: {
                 name: 'Maths',
-                fantasyName: 'Redstone',
+                fantasyName: 'Circuits magiques',
                 actionName: 'Calculer !',
-                taskDescription:
-                    'Alimente tes circuits de redstone pour activer des pièges et déjouer les monstres hostiles !',
+                taskDescription: 'Résous les calculs pour activer tes pièges et déjouer les ennemis !',
             },
             writing: {
                 name: 'Écriture',
-                fantasyName: 'Établi',
+                fantasyName: 'Atelier',
                 actionName: 'Fabriquer !',
                 taskDescription: 'Épelle la recette pour forger des armes et armures légendaires !',
             },
             cleaning: {
                 name: 'Rangement',
-                fantasyName: 'Gestion des coffres',
+                fantasyName: 'Réserve',
                 actionName: 'Ranger !',
                 taskDescription: 'Trie ton butin et prépare ton inventaire pour les aventures à venir !',
             },
@@ -255,40 +261,6 @@ export default {
                 fantasyName: 'Construction logique',
                 actionName: 'Résoudre !',
                 taskDescription: 'Déchiffre la séquence pour activer des mécanismes anciens et trouver des trésors !',
-            },
-        },
-        themeSkills: {
-            minecraft: {
-                reading: 'Lecture',
-                math: 'Maths',
-                writing: 'Écriture',
-                cleaning: 'Rangement',
-                memory: 'Mémoire',
-                patterns: 'Reconnaissance de motifs',
-            },
-            kpop: {
-                reading: 'Décryptage',
-                math: 'Ingénierie',
-                writing: 'Piratage',
-                cleaning: 'Gestion des déchets',
-                memory: 'Réparation de droïdes',
-                patterns: 'Navigation',
-            },
-            pokemon: {
-                reading: 'Sortilèges',
-                math: 'Alchimie',
-                writing: 'Calligraphie',
-                cleaning: 'Pillage',
-                memory: 'Runes',
-                patterns: 'Rituels',
-            },
-            spy: {
-                reading: 'Analyse de renseignements',
-                math: 'Gadgets',
-                writing: 'Falsification',
-                cleaning: 'Preuves',
-                memory: 'Identités',
-                patterns: 'Décodage',
             },
         },
         skillCard: {
@@ -342,7 +314,7 @@ export default {
             skip: 'Passer / Réussite manuelle',
         },
         phantom: {
-            alt: 'Phantom',
+            alt: 'Créature bonus',
             bonus: '+1 niveau !',
         },
         errors: {

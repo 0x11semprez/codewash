@@ -1,0 +1,192 @@
+{
+    "name": "Monsters",
+    "order": 3,
+    "background": "background.webp",
+    "logo": "logo.webp",
+    "cardBack": "card-back.webp",
+    "skills": {
+        "reading": {
+            "name": "Spellcasting",
+            "title": "Monster Library",
+            "action": "Read!",
+            "description": "Read the words out loud to calm the wild monsters!"
+        },
+        "math": {
+            "name": "Alchemy",
+            "title": "Potion Lab",
+            "action": "Mix!",
+            "description": "Solve the sums to brew a potion that beats the monsters!"
+        },
+        "writing": {
+            "name": "Scribing",
+            "title": "Monster Guide",
+            "action": "Write!",
+            "description": "Spell the name to add it to your monster guide!"
+        },
+        "cleaning": {
+            "name": "Looting",
+            "title": "Treasure Room",
+            "action": "Organize!",
+            "description": "Tidy up the treasure blocks before the next trip!"
+        },
+        "memory": {
+            "name": "Runes",
+            "title": "Animal Friends",
+            "action": "Match!",
+            "description": "Find the matching pairs to make new animal friends!"
+        },
+        "patterns": {
+            "name": "Rituals",
+            "title": "Gem Puzzle",
+            "action": "Solve!",
+            "description": "Repeat the gem song to open the monster cave!"
+        }
+    },
+    "skillIcons": {
+        "reading": "sprites/icon-reading.webp",
+        "math": "sprites/icon-math.webp",
+        "writing": "sprites/icon-writing.webp",
+        "cleaning": "sprites/icon-cleaning.webp",
+        "memory": "sprites/icon-memory.webp",
+        "patterns": "sprites/icon-patterns.webp"
+    },
+    "enemies": {
+        "Slime": "sprites/slime.webp",
+        "Fire Slime": "sprites/fire-slime.webp",
+        "Spike Slime": "sprites/spike-slime.webp",
+        "Buzz Bee": "sprites/buzz-bee.webp",
+        "Fly": "sprites/fly.webp",
+        "Ladybug": "sprites/ladybug.webp",
+        "Mouse": "sprites/mouse.webp",
+        "Snail": "sprites/snail.webp",
+        "Barnacle": "sprites/barnacle.webp",
+        "Saw": "sprites/saw.webp"
+    },
+    "minibosses": {
+        "Block Golem": "sprites/block-golem.webp",
+        "Slime Block": "sprites/slime-block.webp",
+        "Ring Worm": "sprites/ring-worm.webp",
+        "Blue Worm": "sprites/blue-worm.webp"
+    },
+    "bosses": {
+        "Swamp King": "sprites/swamp-king.webp",
+        "Sky Titan": "sprites/sky-titan.webp",
+        "Ice Ogre": "sprites/ice-ogre.webp",
+        "Snow Giant": "sprites/snow-giant.webp"
+    },
+    "friends": {
+        "Bear": "sprites/bear.webp",
+        "Chick": "sprites/chick.webp",
+        "Duck": "sprites/duck.webp",
+        "Elephant": "sprites/elephant.webp",
+        "Giraffe": "sprites/giraffe.webp",
+        "Hippo": "sprites/hippo.webp",
+        "Monkey": "sprites/monkey.webp",
+        "Owl": "sprites/owl.webp",
+        "Panda": "sprites/panda.webp",
+        "Penguin": "sprites/penguin.webp",
+        "Rabbit": "sprites/rabbit.webp",
+        "Parrot": "sprites/parrot.webp"
+    },
+    "craftItems": {
+        "Key": "sprites/key.webp",
+        "Heart": "sprites/heart.webp",
+        "Star": "sprites/star.webp",
+        "Bomb": "sprites/bomb.webp",
+        "Mushroom": "sprites/mushroom.webp",
+        "Torch": "sprites/torch.webp",
+        "Flag": "sprites/flag.webp",
+        "Spring": "sprites/spring.webp",
+        "Gold Coin": "sprites/gold-coin.webp",
+        "Blue Gem": "sprites/blue-gem.webp"
+    },
+    "containers": {
+        "Coin Block": "sprites/coin-block.webp",
+        "Mystery Block": "sprites/mystery-block.webp",
+        "Plank Block": "sprites/plank-block.webp",
+        "Brick Block": "sprites/brick-block.webp",
+        "Steel Block": "sprites/steel-block.webp",
+        "Treasure Block": "sprites/treasure-block.webp"
+    },
+    "milestoneContainer": "Steel Block",
+    "bossContainer": "Treasure Block",
+    "patternPieces": {
+        "Blue": "sprites/blue-gem.webp",
+        "Green": "sprites/green-gem.webp",
+        "Red": "sprites/red-gem.webp",
+        "Yellow": "sprites/yellow-gem.webp",
+        "Gold": "sprites/gold-coin.webp",
+        "Silver": "sprites/silver-coin.webp",
+        "Bronze": "sprites/bronze-coin.webp",
+        "Heart": "sprites/heart.webp"
+    },
+    "bonusCreature": "sprites/buzz-bee.webp",
+    "music": ["music/happy-adventure.mp3", "music/green-hills.mp3"],
+    "sounds": {
+        "click": "sounds/click.ogg",
+        "cardLeft": "sounds/card-left.ogg",
+        "cardRight": "sounds/card-right.ogg",
+        "hit": "sounds/hit.ogg",
+        "fail": "sounds/fail.ogg",
+        "death": "sounds/death.ogg",
+        "levelUp": "sounds/level-up.ogg",
+        "notification": "sounds/notification.ogg",
+        "match": "sounds/match.ogg",
+        "mismatch": "sounds/mismatch.ogg",
+        "enemyHurt": "sounds/enemy-hurt.ogg",
+        "enemyDefeat": "sounds/enemy-defeat.ogg"
+    },
+    "translations": {
+        "fr": {
+            "name": "Monstres",
+            "skills": {
+                "reading": {
+                    "name": "Sortilèges",
+                    "title": "Bibliothèque des monstres",
+                    "action": "Lire !",
+                    "description": "Lis les mots à voix haute pour calmer les monstres sauvages !"
+                },
+                "math": {
+                    "name": "Alchimie",
+                    "title": "Labo de potions",
+                    "action": "Mélanger !",
+                    "description": "Résous les calculs pour préparer une potion qui bat les monstres !"
+                },
+                "writing": {
+                    "name": "Calligraphie",
+                    "title": "Guide des monstres",
+                    "action": "Écrire !",
+                    "description": "Épelle le nom pour l'ajouter à ton guide des monstres !"
+                },
+                "cleaning": {
+                    "name": "Pillage",
+                    "title": "Salle au trésor",
+                    "action": "Ranger !",
+                    "description": "Range les blocs du trésor avant la prochaine sortie !"
+                },
+                "memory": {
+                    "name": "Runes",
+                    "title": "Amis animaux",
+                    "action": "Associer !",
+                    "description": "Trouve les paires pour te faire de nouveaux amis animaux !"
+                },
+                "patterns": {
+                    "name": "Rituels",
+                    "title": "Énigme des gemmes",
+                    "action": "Résoudre !",
+                    "description": "Répète la chanson des gemmes pour ouvrir la grotte des monstres !"
+                }
+            },
+            "patternPieces": {
+                "Blue": "Bleu",
+                "Green": "Vert",
+                "Red": "Rouge",
+                "Yellow": "Jaune",
+                "Gold": "Or",
+                "Silver": "Argent",
+                "Bronze": "Bronze",
+                "Heart": "Cœur"
+            }
+        }
+    }
+}

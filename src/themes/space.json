@@ -1,0 +1,194 @@
+{
+    "name": "Space",
+    "order": 5,
+    "background": "background.webp",
+    "logo": "logo.webp",
+    "cardBack": "card-back.webp",
+    "skills": {
+        "reading": {
+            "name": "Signals",
+            "title": "Star Library",
+            "action": "Decode!",
+            "description": "Read the space words out loud to charge your lasers!"
+        },
+        "math": {
+            "name": "Navigation",
+            "title": "Control Room",
+            "action": "Compute!",
+            "description": "Solve the sums to steer your ship past the enemy fleet!"
+        },
+        "writing": {
+            "name": "Spelling",
+            "title": "Space Workshop",
+            "action": "Build!",
+            "description": "Spell the name of each part to build it for your ship!"
+        },
+        "cleaning": {
+            "name": "Cargo",
+            "title": "Cargo Bay",
+            "action": "Organize!",
+            "description": "Tidy up your cargo pods before the next mission!"
+        },
+        "memory": {
+            "name": "Memory",
+            "title": "Hangar",
+            "action": "Match!",
+            "description": "Find the matching pairs to fill your hangar with ships!"
+        },
+        "patterns": {
+            "name": "Patterns",
+            "title": "Signal Lab",
+            "action": "Solve!",
+            "description": "Repeat the light pattern to unlock the space station!"
+        }
+    },
+    "skillIcons": {
+        "reading": "sprites/icon-reading.webp",
+        "math": "sprites/icon-math.webp",
+        "writing": "sprites/icon-writing.webp",
+        "cleaning": "sprites/icon-cleaning.webp",
+        "memory": "sprites/icon-memory.webp",
+        "patterns": "sprites/icon-patterns.webp"
+    },
+    "enemies": {
+        "Drone": "sprites/drone.webp",
+        "Raider": "sprites/raider.webp",
+        "Stinger": "sprites/stinger.webp",
+        "Hornet": "sprites/hornet.webp",
+        "Wasp": "sprites/wasp.webp",
+        "Scout": "sprites/scout.webp",
+        "Shadow": "sprites/shadow.webp",
+        "Blaster": "sprites/blaster.webp",
+        "Comet": "sprites/comet.webp",
+        "Asteroid": "sprites/asteroid.webp"
+    },
+    "minibosses": {
+        "Destroyer": "sprites/destroyer.webp",
+        "Cruiser": "sprites/cruiser.webp",
+        "Warship": "sprites/warship.webp",
+        "Dreadnought": "sprites/dreadnought.webp"
+    },
+    "bosses": {
+        "Mothership": "sprites/mothership.webp",
+        "Ice Fortress": "sprites/ice-fortress.webp",
+        "Sun Fortress": "sprites/sun-fortress.webp",
+        "Star Base": "sprites/star-base.webp"
+    },
+    "friends": {
+        "Blue Jet": "sprites/blue-jet.webp",
+        "Green Jet": "sprites/green-jet.webp",
+        "Red Jet": "sprites/red-jet.webp",
+        "Orange Jet": "sprites/orange-jet.webp",
+        "Blue Rocket": "sprites/blue-rocket.webp",
+        "Green Rocket": "sprites/green-rocket.webp",
+        "Red Rocket": "sprites/red-rocket.webp",
+        "Orange Rocket": "sprites/orange-rocket.webp",
+        "Blue Glider": "sprites/blue-glider.webp",
+        "Green Glider": "sprites/green-glider.webp",
+        "Red Glider": "sprites/red-glider.webp",
+        "Orange Glider": "sprites/orange-glider.webp"
+    },
+    "craftItems": {
+        "Star": "sprites/star.webp",
+        "Shield": "sprites/shield.webp",
+        "Bolt": "sprites/bolt.webp",
+        "Pill": "sprites/pill.webp",
+        "Laser": "sprites/laser.webp",
+        "Engine": "sprites/engine.webp",
+        "Cockpit": "sprites/cockpit.webp",
+        "Wing": "sprites/wing.webp",
+        "Turret": "sprites/turret.webp",
+        "Cannon": "sprites/cannon.webp",
+        "Gold Bars": "sprites/gold-bars.webp",
+        "Power Cell": "sprites/power-cell.webp"
+    },
+    "containers": {
+        "Blue Pod": "sprites/blue-pod.webp",
+        "Green Pod": "sprites/green-pod.webp",
+        "Red Pod": "sprites/red-pod.webp",
+        "Yellow Pod": "sprites/yellow-pod.webp",
+        "Shield Pod": "sprites/shield-pod.webp",
+        "Star Pod": "sprites/star-pod.webp"
+    },
+    "milestoneContainer": "Shield Pod",
+    "bossContainer": "Star Pod",
+    "patternPieces": {
+        "Bronze": "sprites/piece-bronze.webp",
+        "Silver": "sprites/piece-silver.webp",
+        "Gold": "sprites/piece-gold.webp",
+        "Blue": "sprites/piece-blue.webp",
+        "Green": "sprites/piece-green.webp",
+        "Red": "sprites/piece-red.webp",
+        "Yellow": "sprites/piece-yellow.webp",
+        "Orange": "sprites/piece-orange.webp"
+    },
+    "bonusCreature": "sprites/star.webp",
+    "music": ["music/magic-space.mp3", "music/drifting.mp3"],
+    "sounds": {
+        "click": "sounds/click.ogg",
+        "cardLeft": "sounds/card-left.ogg",
+        "cardRight": "sounds/card-right.ogg",
+        "hit": "sounds/hit.ogg",
+        "fail": "sounds/fail.ogg",
+        "death": "sounds/death.ogg",
+        "levelUp": "sounds/level-up.ogg",
+        "notification": "sounds/notification.ogg",
+        "match": "sounds/match.ogg",
+        "mismatch": "sounds/mismatch.ogg",
+        "enemyHurt": "sounds/enemy-hurt.ogg",
+        "enemyDefeat": "sounds/enemy-defeat.ogg"
+    },
+    "translations": {
+        "fr": {
+            "name": "Espace",
+            "skills": {
+                "reading": {
+                    "name": "Signaux",
+                    "title": "Bibliothèque stellaire",
+                    "action": "Décoder !",
+                    "description": "Lis les mots de l'espace à voix haute pour charger tes lasers !"
+                },
+                "math": {
+                    "name": "Navigation",
+                    "title": "Salle de contrôle",
+                    "action": "Calculer !",
+                    "description": "Résous les calculs pour guider ton vaisseau à travers la flotte ennemie !"
+                },
+                "writing": {
+                    "name": "Orthographe",
+                    "title": "Atelier spatial",
+                    "action": "Construire !",
+                    "description": "Épelle le nom de chaque pièce pour l'ajouter à ton vaisseau !"
+                },
+                "cleaning": {
+                    "name": "Cargaison",
+                    "title": "Soute",
+                    "action": "Ranger !",
+                    "description": "Range tes capsules avant la prochaine mission !"
+                },
+                "memory": {
+                    "name": "Mémoire",
+                    "title": "Hangar",
+                    "action": "Associer !",
+                    "description": "Trouve les paires pour remplir ton hangar de vaisseaux !"
+                },
+                "patterns": {
+                    "name": "Motifs",
+                    "title": "Labo des signaux",
+                    "action": "Résoudre !",
+                    "description": "Répète la séquence lumineuse pour ouvrir la station spatiale !"
+                }
+            },
+            "patternPieces": {
+                "Bronze": "Bronze",
+                "Silver": "Argent",
+                "Gold": "Or",
+                "Blue": "Bleu",
+                "Green": "Vert",
+                "Red": "Rouge",
+                "Yellow": "Jaune",
+                "Orange": "Orange"
+            }
+        }
+    }
+}

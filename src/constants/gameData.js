@@ -6,3 +6,4 @@ export * from './game/difficulty';
 export * from './game/themes';
 export * from './game/words';
 export * from './game/skills';
+export * from './game/audio';

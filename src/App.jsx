@@ -8,8 +8,8 @@ import PhantomEvent from './components/PhantomEvent';
 import AchievementToast from './components/ui/AchievementToast';
 
 import { getMobForSkill, getEncounterType } from './utils/gameUtils';
-import { THEME_CONFIG, SKILL_DATA } from './constants/gameData';
-import { playClick, playAchievement } from './services/soundManager';
+import { getTheme, SKILL_DATA } from './constants/gameData';
+import { playClick, playAchievement, setSoundTheme } from './services/soundManager';
 
 import { useGameState } from './hooks/useGameState';
 import { useAudio } from './hooks/useAudio';
@@ -19,7 +19,7 @@ import { useBattle } from './hooks/useBattle';
 import { useVoiceRecognition } from './hooks/useVoiceRecognition';
 import { usePauseWhenPageHidden } from './hooks/useAnimationPause';
 import { useTranslation } from './i18n/useTranslation';
-import { skillText } from './i18n/gameText';
+import { themeSkillText } from './i18n/gameText';
 
 const ResetModal = lazy(() => import('./components/modals/ResetModal'));
 const BugReportModal = lazy(() => import('./components/modals/BugReportModal'));
@@ -28,7 +28,7 @@ const CosmeticsDrawer = lazy(() => import('./components/drawers/CosmeticsDrawer'
 const MenuDrawer = lazy(() => import('./components/drawers/MenuDrawer'));
 
 const App = ({ startupLoadSeconds = null }) => {
-    const { t } = useTranslation();
+    const { t, language } = useTranslation();
     const gameState = useGameState();
     usePauseWhenPageHidden();
     const {
@@ -58,7 +58,11 @@ const App = ({ startupLoadSeconds = null }) => {
     const { bgmVol, setBgmVol, sfxVol, setSfxVol, startBGM } = useAudio();
     const { isFullscreen, toggleFullscreen } = useFullscreen();
 
-    const battle = useBattle(skills, setSkills, stats, setStats);
+    // The active theme drives every picture, text, sound and the music.
+    const currentThemeData = getTheme(activeTheme);
+    React.useEffect(() => setSoundTheme(currentThemeData), [currentThemeData]);
+
+    const battle = useBattle(skills, setSkills, stats, setStats, currentThemeData);
     const {
         battlingSkillId,
         challengeData,
@@ -176,7 +180,6 @@ const App = ({ startupLoadSeconds = null }) => {
         return items;
     }, [selectedIndex]);
 
-    const currentThemeData = THEME_CONFIG[activeTheme] || THEME_CONFIG.minecraft;
     const containerStyle = { ...currentThemeData.style, fontFamily: '"VT323", monospace' };
 
     return (
@@ -329,7 +332,9 @@ const App = ({ startupLoadSeconds = null }) => {
                 />
             )}
             <Suspense fallback={null}>
-                {(hasOpenedMenu || isMenuOpen) && <MenuDrawer isOpen={isMenuOpen} skills={skills} stats={stats} />}
+                {(hasOpenedMenu || isMenuOpen) && (
+                    <MenuDrawer isOpen={isMenuOpen} skills={skills} stats={stats} themeData={currentThemeData} />
+                )}
             </Suspense>
 
             <button
@@ -364,11 +369,12 @@ const App = ({ startupLoadSeconds = null }) => {
             )}
 
             <main className="flex-1 relative flex flex-col items-center justify-center w-full">
-                <div className="z-10 relative mb-[-30px] md:mb-[-50px] pointer-events-none opacity-90">
+                {/* Fixed 4:1 box: logos of any size fit inside without moving the cards below. */}
+                <div className="z-10 relative mb-[-30px] md:mb-[-50px] pointer-events-none opacity-90 w-[480px] h-[120px] md:w-[720px] md:h-[180px] lg:w-[960px] lg:h-[240px]">
                     <SafeImage
                         src={currentThemeData.assets.logo}
                         alt={t('app.logoAlt')}
-                        className="w-[480px] md:w-[720px] lg:w-[960px] object-contain drop-shadow-2xl"
+                        className="w-full h-full object-contain drop-shadow-2xl"
                     />
                 </div>
                 <h1
@@ -492,7 +498,7 @@ const App = ({ startupLoadSeconds = null }) => {
                                     themeData={currentThemeData}
                                     isCenter={item.offset === 0}
                                     isBattling={item.offset === 0 && battlingSkillId === item.id}
-                                    mobName={getMobForSkill(item, skills[item.id])}
+                                    mobName={getMobForSkill(item, skills[item.id], Math.random, currentThemeData)}
                                     mobAura={getAuraForSkill(item, skills[item.id])}
                                     challenge={challengeData}
                                     isListening={isListening}
@@ -526,7 +532,9 @@ const App = ({ startupLoadSeconds = null }) => {
                                 <h2 className="text-2xl text-yellow-400 font-bold leading-none mb-1">
                                     {t('loot.levelReached', { level: lootBox.level })}
                                 </h2>
-                                <p className="text-stone-300 text-sm">{skillText(t, lootBox.skillId, 'fantasyName')}</p>
+                                <p className="text-stone-300 text-sm">
+                                    {themeSkillText(t, language, currentThemeData, lootBox.skillId, 'fantasyName')}
+                                </p>
                             </div>
                         </div>
                         <div className="text-right pl-8 border-l-2 border-stone-600 flex items-center gap-4">
@@ -583,6 +591,7 @@ const App = ({ startupLoadSeconds = null }) => {
 
             <PhantomEvent
                 battlingSkillId={battlingSkillId}
+                imageSrc={currentThemeData.bonusCreature}
                 onAwardLevel={handlePhantomLevelAward}
                 onPhantomCaught={() => {
                     setStats((prevStats) => ({

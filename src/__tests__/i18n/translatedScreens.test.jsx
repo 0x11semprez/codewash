@@ -3,7 +3,7 @@ import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { createMemoryStorage } from '../helpers/memoryStorage';
 import I18nProvider from '../../i18n/I18nProvider';
-import { SKILL_DATA, THEME_CONFIG } from '../../constants/gameData';
+import { SKILL_DATA, THEME_CONFIG, buildTheme } from '../../constants/gameData';
 import { getDefaultStats } from '../../utils/achievementUtils';
 import SkillCard from '../../components/skills/SkillCard';
 import MenuDrawer from '../../components/drawers/MenuDrawer';
@@ -56,23 +56,43 @@ describe('screens in French', () => {
         const reading = SKILL_DATA.find((s) => s.id === 'reading');
         inFrench(<SkillCard {...cardProps} config={reading} themeData={THEME_CONFIG.spy} isBattling={false} />);
         expect(screen.getByText('Analyse de renseignements')).toBeInTheDocument();
-        expect(screen.getByText("Table d'enchantement")).toBeInTheDocument();
-        expect(screen.getByRole('button', { name: 'Enchanter !' })).toBeInTheDocument();
+        expect(screen.getByText('Dossiers secrets')).toBeInTheDocument();
+        expect(screen.getByRole('button', { name: 'Décoder !' })).toBeInTheDocument();
         expect(screen.getByText('Niv. 3')).toBeInTheDocument();
         expect(screen.getByRole('button', { name: 'Augmenter la difficulté' })).toBeInTheDocument();
     });
 
-    it('falls back to the skill name for a custom theme object', () => {
+    it('uses the dictionary for a theme without its own text or translation', () => {
         const math = SKILL_DATA.find((s) => s.id === 'math');
-        inFrench(<SkillCard {...cardProps} config={math} themeData={{ skills: {} }} isBattling={false} />);
+        const custom = buildTheme('custom', {
+            name: 'Custom',
+            background: 'b.webp',
+            logo: 'l.webp',
+            cardBack: 'c.webp',
+        });
+        inFrench(<SkillCard {...cardProps} config={math} themeData={custom} isBattling={false} />);
         expect(screen.getByText('Maths')).toBeInTheDocument();
+        expect(screen.getByText('Circuits magiques')).toBeInTheDocument();
+    });
+
+    it('uses the theme text when the theme has no translation for the language', () => {
+        const math = SKILL_DATA.find((s) => s.id === 'math');
+        const custom = buildTheme('custom', {
+            name: 'Custom',
+            background: 'b.webp',
+            logo: 'l.webp',
+            cardBack: 'c.webp',
+            skills: { math: { name: 'Counting', title: 'Abacus' } },
+        });
+        inFrench(<SkillCard {...cardProps} config={math} themeData={custom} isBattling={false} />);
+        expect(screen.getByText('Counting')).toBeInTheDocument();
+        expect(screen.getByText('Abacus')).toBeInTheDocument();
+        expect(screen.getByRole('button', { name: 'Calculer !' })).toBeInTheDocument();
     });
 
     it('puts the aura adjective after the mob name in French', () => {
         const math = SKILL_DATA.find((s) => s.id === 'math');
-        inFrench(
-            <SkillCard {...cardProps} config={math} themeData={THEME_CONFIG.minecraft} isBattling mobAura="frost" />,
-        );
+        inFrench(<SkillCard {...cardProps} config={math} themeData={THEME_CONFIG.blocks} isBattling mobAura="frost" />);
         expect(screen.getByText('Zombie gelé')).toBeInTheDocument();
         expect(screen.getByText('Quête')).toBeInTheDocument();
     });
@@ -92,7 +112,7 @@ describe('screens in French', () => {
         inFrench(
             <CosmeticsDrawer
                 isOpen
-                activeTheme="minecraft"
+                activeTheme="blocks"
                 setActiveTheme={() => {}}
                 selectedBorder="solid"
                 setSelectedBorder={() => {}}
@@ -107,8 +127,10 @@ describe('screens in French', () => {
         expect(screen.getByText('Fil sous tension')).toBeInTheDocument();
         expect(screen.getByText('Démon de vitesse')).toBeInTheDocument();
         expect(screen.getByText('ACTIF')).toBeInTheDocument();
-        // Theme names are brands and are not translated.
-        expect(screen.getByText('Minecraft')).toBeInTheDocument();
+        // Theme names come from the "translations" block of each theme.
+        expect(screen.getByText('Blocs')).toBeInTheDocument();
+        expect(screen.getByText('Espace')).toBeInTheDocument();
+        expect(screen.getByText('Portail des ombres')).toBeInTheDocument();
     });
 
     it('translates the achievement toast with its tier', () => {
@@ -139,9 +161,19 @@ describe('screens in French', () => {
     });
 
     it('translates the pattern game round and axolotl colours', () => {
-        inFrench(<PatternGame isBattling={false} difficulty={1} onMathSubmit={() => {}} />);
+        inFrench(
+            <PatternGame isBattling={false} difficulty={1} onMathSubmit={() => {}} themeData={THEME_CONFIG.blocks} />,
+        );
         expect(screen.getByText(/Manche : 0/)).toBeInTheDocument();
         expect(screen.getByText('Rose')).toBeInTheDocument();
+    });
+
+    it('translates the pattern pieces of a theme', () => {
+        inFrench(
+            <PatternGame isBattling={false} difficulty={7} onMathSubmit={() => {}} themeData={THEME_CONFIG.space} />,
+        );
+        expect(screen.getByText('Argent')).toBeInTheDocument();
+        expect(screen.getByAltText('Jaune')).toBeInTheDocument();
     });
 
     it('translates the phantom bonus', () => {
@@ -149,7 +181,7 @@ describe('screens in French', () => {
         vi.spyOn(Math, 'random').mockReturnValue(0);
         inFrench(<PhantomEvent battlingSkillId={null} onAwardLevel={() => {}} />);
         React.act(() => vi.advanceTimersByTime(10 * 60 * 1000));
-        fireEvent.click(screen.getByAltText('Phantom'));
+        fireEvent.click(screen.getByAltText('Créature bonus'));
         expect(screen.getByText('+1 niveau !')).toBeInTheDocument();
         vi.useRealTimers();
     });

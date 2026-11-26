@@ -9,7 +9,19 @@ import {
     borderColorKey,
     migrateKey,
     migrateStorage,
+    migrateSaveData,
+    PROFILE_IDS,
+    THEME_ID_RENAMES,
 } from '../services/storageKeys';
+import {
+    MOB_NAME_RENAMES,
+    THEME_CONFIG,
+    HOSTILE_MOBS,
+    BOSS_MOBS,
+    MINIBOSS_MOBS,
+    FRIENDLY_MOBS,
+    CHEST_BLOCKS,
+} from '../constants/gameData';
 
 describe('storage key names', () => {
     it('keep the exact names saved on players computers', () => {
@@ -76,6 +88,102 @@ describe('migrateStorage', () => {
         migrateStorage();
         expect(localStorage.getItem(skillsKey(1))).toBe('{"skills":{}}');
         expect(localStorage.getItem(STORAGE_KEYS.legacySkills)).toBeNull();
+    });
+});
+
+describe('migrateSaveData', () => {
+    it('moves the old theme ids to the renamed themes', () => {
+        expect(migrateSaveData({ theme: 'minecraft', skills: {} }).theme).toBe('blocks');
+        expect(migrateSaveData({ theme: 'pokemon', skills: {} }).theme).toBe('monsters');
+        expect(migrateSaveData({ theme: 'kpop', skills: {} }).theme).toBe('idols');
+        Object.values(THEME_ID_RENAMES).forEach((id) => expect(THEME_CONFIG).toHaveProperty(id));
+    });
+
+    it('renames the saved creatures and the defeated lists, so achievement progress is kept', () => {
+        const save = {
+            theme: 'space',
+            skills: {
+                reading: { level: 4, readingMob: 'Creeper', currentBoss: 'Wither', currentMiniboss: 'Creaking' },
+                memory: { level: 2, memoryMob: 'Allay' },
+                cleaning: { level: 1 },
+            },
+            stats: {
+                uniqueMobsDefeated: ['Zombie', 'Creeper', 'Boomer'],
+                uniqueBossesDefeated: ['Ender Dragon', 'Warden'],
+                uniqueMinibossesDefeated: ['Wither Skeleton'],
+                totalDeaths: 3,
+            },
+        };
+        const migrated = migrateSaveData(save);
+        expect(migrated.theme).toBe('space');
+        expect(migrated.skills.reading).toEqual({
+            level: 4,
+            readingMob: 'Boomer',
+            currentBoss: 'Skull King',
+            currentMiniboss: 'Tree Spirit',
+        });
+        expect(migrated.skills.memory.memoryMob).toBe('Sky Sprite');
+        expect(migrated.stats.uniqueMobsDefeated).toEqual(['Zombie', 'Boomer']);
+        expect(migrated.stats.uniqueBossesDefeated).toEqual(['Void Dragon', 'Warden']);
+        expect(migrated.stats.uniqueMinibossesDefeated).toEqual(['Dark Skeleton']);
+        expect(migrated.stats.totalDeaths).toBe(3);
+    });
+
+    it('updates an old save that keeps the skills at the top level', () => {
+        const migrated = migrateSaveData({ math: { level: 3, mathMob: 'Ghast' }, theme: 'kpop' });
+        expect(migrated).toEqual({ math: { level: 3, mathMob: 'Sky Ghost' }, theme: 'idols' });
+    });
+
+    it('returns the same object when nothing changes', () => {
+        const save = { theme: 'ocean', skills: { math: { mathMob: 'Eel' } }, stats: { uniqueMobsDefeated: ['Eel'] } };
+        expect(migrateSaveData(save)).toBe(save);
+        expect(migrateSaveData(null)).toBeNull();
+        expect(migrateSaveData([1])).toEqual([1]);
+    });
+
+    it('maps every old name to a creature of the default theme', () => {
+        const names = Object.keys({
+            ...HOSTILE_MOBS,
+            ...BOSS_MOBS,
+            ...MINIBOSS_MOBS,
+            ...FRIENDLY_MOBS,
+            ...CHEST_BLOCKS,
+        });
+        Object.entries(MOB_NAME_RENAMES).forEach(([oldName, newName]) => {
+            expect(names).toContain(newName);
+            expect(names).not.toContain(oldName);
+        });
+    });
+});
+
+describe('migrateStorage on theme and creature names', () => {
+    beforeEach(() => vi.stubGlobal('localStorage', createMemoryStorage()));
+    afterEach(() => vi.unstubAllGlobals());
+
+    it('rewrites the save of every profile', () => {
+        localStorage.setItem(skillsKey(1), JSON.stringify({ theme: 'pokemon', skills: {} }));
+        localStorage.setItem(
+            skillsKey(3),
+            JSON.stringify({ theme: 'minecraft', skills: { math: { mathMob: 'Piglin' } } }),
+        );
+        migrateStorage();
+        expect(JSON.parse(localStorage.getItem(skillsKey(1))).theme).toBe('monsters');
+        const third = JSON.parse(localStorage.getItem(skillsKey(3)));
+        expect(third.theme).toBe('blocks');
+        expect(third.skills.math.mathMob).toBe('Pig Warrior');
+        expect(localStorage.getItem(skillsKey(2))).toBeNull();
+        expect(PROFILE_IDS).toEqual([1, 2, 3]);
+    });
+
+    it('leaves an unchanged or unreadable save alone', () => {
+        const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+        localStorage.setItem(skillsKey(1), '{bad json');
+        localStorage.setItem(skillsKey(2), '{"theme":"space","skills":{}}');
+        migrateStorage();
+        expect(localStorage.getItem(skillsKey(1))).toBe('{bad json');
+        expect(localStorage.getItem(skillsKey(2))).toBe('{"theme":"space","skills":{}}');
+        expect(warn).toHaveBeenCalled();
+        warn.mockRestore();
     });
 });
 

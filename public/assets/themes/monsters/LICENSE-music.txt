@@ -1,0 +1,16 @@
+Music files in this folder. Both tracks are public domain (CC0 1.0).
+License text: https://creativecommons.org/publicdomain/zero/1.0/
+
+music/happy-adventure.mp3
+  Title: Happy Adventure (Loop)
+  Author: TinyWorlds
+  Source: https://opengameart.org/content/happy-adventure-loop
+  License: CC0 1.0
+  Change: re-encoded to MP3 at 96 kbps.
+
+music/green-hills.mp3
+  Title: Green Hills
+  Author: Igor Gundarev
+  Source: https://opengameart.org/content/green-hills
+  License: CC0 1.0
+  Change: re-encoded to MP3 at 96 kbps.

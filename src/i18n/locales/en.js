@@ -22,7 +22,7 @@ export default {
             unlocked: 'Unlocked',
             badgeAlt: 'Badge',
             newRank: 'New Rank!',
-            phantomBonus: 'Phantom Bonus!',
+            phantomBonus: 'Bonus Level!',
         },
         death: {
             title: 'YOU DIED',
@@ -93,6 +93,7 @@ export default {
         cosmetics: {
             title: 'Themes & Cosmetics',
             themeSelect: 'Theme Select',
+            themeList: 'Themes',
             borderEffects: 'Border Effects',
             active: 'ACTIVE',
             color: 'Color',
@@ -110,7 +111,7 @@ export default {
             lifestream: { name: 'Lifestream', description: 'Flowing ethereal energy' },
             frost: { name: 'Frost', description: 'Glacial crystal majesty' },
             fire: { name: 'Lava', description: 'Infernal blazing fury' },
-            shadow: { name: 'Nether Portal', description: 'Abyssal void whispers' },
+            shadow: { name: 'Shadow Portal', description: 'Abyssal void whispers' },
             rainbow: { name: 'Legendary!', description: 'Prismatic legendary aura' },
             livewire: { name: 'Live Wire', description: 'Volatile electric arcs' },
             void: { name: 'Cosmic Void', description: 'Infinite starlit expanse' },
@@ -125,7 +126,7 @@ export default {
             Iron: 'Iron',
             Emerald: 'Emerald',
             Diamond: 'Diamond',
-            Netherite: 'Netherite',
+            Titanium: 'Titanium',
             Obsidian: 'Obsidian',
             Star: 'Star',
         },
@@ -146,7 +147,7 @@ export default {
         achievements: {
             phantom_hunter: {
                 name: 'Ghost Buster',
-                description: 'Catch Phantoms',
+                description: 'Catch the flying bonus creature',
                 tiers: {
                     0: 'Bronze Ghost Buster',
                     1: 'Silver Ghost Buster',
@@ -193,9 +194,12 @@ export default {
             ouch: { name: 'Ouch!', description: 'Die for the first time' },
             dragon_slayer: { name: 'Dragon Slayer', description: 'Defeat your first boss' },
             mini_menace: { name: 'Mini Menace', description: 'Defeat your first mini-boss' },
-            mini_master: { name: 'Mini Master', description: 'Defeat all mini-bosses at least once' },
-            world_ender: { name: 'World Ender', description: 'Defeat all bosses at least once' },
-            monster_manual: { name: 'Monster Manual', description: 'Defeat all regular mobs at least once' },
+            mini_master: { name: 'Mini Master', description: 'Defeat all mini-bosses of one theme at least once' },
+            world_ender: { name: 'World Ender', description: 'Defeat all bosses of one theme at least once' },
+            monster_manual: {
+                name: 'Monster Manual',
+                description: 'Defeat all regular enemies of one theme at least once',
+            },
             perfectionist: { name: 'Perfectionist', description: 'Complete a memory game without any mismatches' },
             speed_demon: { name: 'Speed Demon', description: 'Complete 10 battles in a single session' },
             game_loaded: {
@@ -211,25 +215,25 @@ export default {
         skills: {
             reading: {
                 name: 'Reading',
-                fantasyName: 'Enchanting Table',
-                actionName: 'Enchant!',
-                taskDescription: 'Speak the ancient words to channel enchantments and vanquish your foes!',
+                fantasyName: 'Spell Book',
+                actionName: 'Read!',
+                taskDescription: 'Read the magic words out loud to defeat your foes!',
             },
             math: {
                 name: 'Math',
-                fantasyName: 'Redstone',
+                fantasyName: 'Power Circuits',
                 actionName: 'Calculate!',
-                taskDescription: 'Power up your redstone circuits to activate traps and outsmart hostile mobs!',
+                taskDescription: 'Solve the sums to power up your traps and outsmart the enemies!',
             },
             writing: {
                 name: 'Writing',
-                fantasyName: 'Crafting Table',
+                fantasyName: 'Workshop',
                 actionName: 'Craft!',
                 taskDescription: 'Spell out the recipe to forge legendary weapons and armor!',
             },
             cleaning: {
                 name: 'Cleaning',
-                fantasyName: 'Chest Management',
+                fantasyName: 'Storage Room',
                 actionName: 'Organize!',
                 taskDescription: 'Sort your loot and prepare your inventory for the adventures ahead!',
             },
@@ -244,41 +248,6 @@ export default {
                 fantasyName: 'Logic Building',
                 actionName: 'Solve!',
                 taskDescription: 'Decipher the sequence to unlock ancient mechanisms and hidden treasures!',
-            },
-        },
-        // Skill names shown on the cards for each theme. Theme names are brands and stay as they are.
-        themeSkills: {
-            minecraft: {
-                reading: 'Reading',
-                math: 'Math',
-                writing: 'Writing',
-                cleaning: 'Cleaning',
-                memory: 'Memory',
-                patterns: 'Pattern Recognition',
-            },
-            kpop: {
-                reading: 'Decryption',
-                math: 'Engineering',
-                writing: 'Hacking',
-                cleaning: 'Waste Mgmt',
-                memory: 'Droid Repair',
-                patterns: 'Navigation',
-            },
-            pokemon: {
-                reading: 'Spellcasting',
-                math: 'Alchemy',
-                writing: 'Scribing',
-                cleaning: 'Looting',
-                memory: 'Runes',
-                patterns: 'Rituals',
-            },
-            spy: {
-                reading: 'Intel Analysis',
-                math: 'Gadgetry',
-                writing: 'Forgery',
-                cleaning: 'Evidence',
-                memory: 'Identities',
-                patterns: 'Code Breaking',
             },
         },
         skillCard: {
@@ -332,7 +301,7 @@ export default {
             skip: 'Skip / Manual Success',
         },
         phantom: {
-            alt: 'Phantom',
+            alt: 'Bonus creature',
             bonus: '+1 Level!',
         },
         errors: {

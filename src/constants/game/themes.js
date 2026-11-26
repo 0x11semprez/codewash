@@ -1,110 +1,171 @@
-// Visual themes: backgrounds, logos, card backs and colors.
-export const THEME_CONFIG = {
-    minecraft: {
-        name: 'Minecraft',
-        style: {
-            backgroundImage: `url('assets/themes/minecraft.png')`,
-            backgroundSize: 'cover',
-            backgroundPosition: 'center',
-        },
-        assets: {
-            logo: 'assets/themes/minecraft_logo.png',
-            cardBack: 'assets/themes/memorycard.jpg',
-            mobs: {
-                Zombie: 'assets/mobs/hostile/zombie.png',
-                Creeper: 'assets/mobs/hostile/creeper.png',
-                Skeleton: 'assets/mobs/hostile/skeleton.png',
-                'Ender Dragon': 'assets/mobs/boss/enderdragon.webp',
-                Axolotl: 'assets/mobs/axolotl/axolotl_pink.webp',
-                Spider: 'assets/mobs/hostile/spider.png',
-                Phantom: 'assets/mobs/hostile/phantom.webp',
-                Enderman: 'assets/mobs/hostile/enderman.png',
-                Blaze: 'assets/mobs/hostile/blaze.webp',
-                Ghast: 'assets/mobs/hostile/ghast.webp',
-                Slime: 'assets/mobs/hostile/slime.png',
-                Witch: 'assets/mobs/hostile/witch.png',
-                Pillager: 'assets/mobs/hostile/pillager.png',
-                Wither: 'assets/mobs/boss/wither.png',
-                Warden: 'assets/mobs/boss/warden.webp',
-            },
-        },
-        skills: {
-            reading: { name: 'Reading', boss: 'Ender Dragon', mobType: 'Standard' },
-            math: { name: 'Math', boss: 'Wither', mobType: 'Creeper' },
-            writing: { name: 'Writing', boss: 'Warden', mobType: 'Skeleton' },
-            cleaning: { name: 'Cleaning', boss: 'Ender Chest', mobType: 'Chest' },
-            memory: { name: 'Memory', boss: 'Axolotl', mobType: 'Mascot' },
-            patterns: { name: 'Pattern Recognition', boss: 'Iron Golem', mobType: 'Standard' },
-        },
-    },
-    kpop: {
-        name: 'K-Pop Demon Hunters',
-        style: {
-            backgroundImage: `url('assets/themes/kpop.jpg')`,
-            backgroundSize: 'cover',
-            backgroundPosition: 'center',
-        },
-        assets: {
-            logo: 'assets/themes/kpop_logo.png',
-            cardBack: 'assets/themes/kpop_memorycard.jpg',
-            mobs: {},
-        },
-        skills: {
-            reading: { name: 'Decryption', boss: 'Cyborg King' },
-            math: { name: 'Engineering', boss: 'Mecha-Brain' },
-            writing: { name: 'Hacking', boss: 'Mainframe' },
-            cleaning: { name: 'Waste Mgmt', boss: 'Trash Bot' },
-            memory: { name: 'Droid Repair', boss: 'Droid' },
-            patterns: { name: 'Navigation', boss: 'Star Map' },
-        },
-    },
-    pokemon: {
-        name: 'Pokemon',
-        style: {
-            backgroundImage: `url('assets/themes/pokemon.jpg')`,
-            backgroundSize: 'cover',
-            backgroundPosition: 'center',
-        },
-        assets: {
-            logo: 'assets/themes/pokemon_logo.png',
-            cardBack: 'assets/themes/pokemon_memorycard.jpg',
-            mobs: {},
-        },
-        skills: {
-            reading: { name: 'Spellcasting', boss: 'Lich King' },
-            math: { name: 'Alchemy', boss: 'Golem' },
-            writing: { name: 'Scribing', boss: 'Dragon' },
-            cleaning: { name: 'Looting', boss: 'Mimic' },
-            memory: { name: 'Runes', boss: 'Wisp' },
-            patterns: { name: 'Rituals', boss: 'Cultist' },
-        },
-    },
-    spy: {
-        name: 'Spy',
-        style: {
-            backgroundImage: `url('assets/themes/minecraft.png')`,
-            backgroundSize: 'cover',
-            backgroundPosition: 'center',
-        },
-        assets: {
-            logo: 'assets/themes/spy_logo.png',
-            cardBack: 'assets/themes/spy_memorycard.jpg',
-            mobs: {},
-        },
-        skills: {
-            reading: { name: 'Intel Analysis', boss: 'Double Agent' },
-            math: { name: 'Gadgetry', boss: 'Mad Scientist' },
-            writing: { name: 'Forgery', boss: 'Bureaucrat' },
-            cleaning: { name: 'Evidence', boss: 'Safe' },
-            memory: { name: 'Identities', boss: 'Mole' },
-            patterns: { name: 'Code Breaking', boss: 'Hacker' },
-        },
-    },
+// Visual themes. Each theme is one JSON file in src/themes/ and one folder in public/assets/themes/.
+// This module reads every JSON file and fills the parts a theme leaves out with the default content.
+// The guide for adding a theme is docs/features/themes.md.
+import { BASE_ASSETS } from './items';
+import { BOSS_MOBS, CHEST_BLOCKS, FRIENDLY_MOBS, HOSTILE_MOBS, MINIBOSS_MOBS } from './mobs';
+import { SKILL_DATA } from './skills';
+import { WRITING_DIFFICULTY_POOLS, buildWritingPools } from './words';
+import { DEFAULT_MUSIC, DEFAULT_SOUNDS } from './audio';
+import { THEME_ID_RENAMES } from '../../services/storageKeys';
+
+export const DEFAULT_THEME_ID = 'blocks';
+
+// Content used when a theme does not list its own. The groups are swapped as a whole,
+// so a theme never mixes its own enemies with default enemies.
+const DEFAULT_CONTENT = {
+    enemies: HOSTILE_MOBS,
+    minibosses: MINIBOSS_MOBS,
+    bosses: BOSS_MOBS,
+    friends: FRIENDLY_MOBS,
+    craftItems: {},
+    containers: CHEST_BLOCKS,
+    milestoneContainer: 'Shell Box',
+    bossContainer: 'Magic Chest',
+    patternPieces: BASE_ASSETS.axolotls,
+    bonusCreature: HOSTILE_MOBS.Phantom,
 };
 
-export const THEMES_LIST = [
-    { id: 'minecraft', name: 'Minecraft', img: 'assets/themes/minecraft.png' },
-    { id: 'kpop', name: 'K-Pop Demon Hunters', img: 'assets/themes/kpop.jpg' },
-    { id: 'pokemon', name: 'Pokemon', img: 'assets/themes/pokemon.jpg' },
-    { id: 'spy', name: 'Spy', img: 'assets/themes/spy.png' },
-];
+// Groups of named pictures. Their names are shown in battle and used as spelling words.
+export const THEME_SPRITE_GROUPS = ['enemies', 'minibosses', 'bosses', 'friends', 'craftItems', 'containers'];
+
+const DEFAULT_SKILL_ICONS = Object.fromEntries(SKILL_DATA.map((skill) => [skill.id, skill.img]));
+
+// A file name in a theme JSON is relative to the theme folder. A path that starts with
+// "assets/" points to a shared file instead.
+export const resolveThemePath = (themeId, file) =>
+    file.startsWith('assets/') ? file : `assets/themes/${themeId}/${file}`;
+
+const resolveMap = (themeId, map) =>
+    Object.fromEntries(Object.entries(map).map(([name, file]) => [name, resolveThemePath(themeId, file)]));
+
+const buildSkills = (rawSkills = {}) =>
+    Object.fromEntries(
+        SKILL_DATA.map((skill) => {
+            const raw = rawSkills[skill.id] || {};
+            return [
+                skill.id,
+                {
+                    name: raw.name || skill.name,
+                    fantasyName: raw.title || skill.fantasyName,
+                    actionName: raw.action || skill.actionName,
+                    taskDescription: raw.description || skill.taskDescription,
+                },
+            ];
+        }),
+    );
+
+// JSON field names of a skill text, and the names the code uses.
+export const SKILL_TEXT_FIELDS = {
+    name: 'name',
+    title: 'fantasyName',
+    action: 'actionName',
+    description: 'taskDescription',
+};
+
+// Keeps only the skill texts the theme writes itself, with the code names.
+const pickSkillTexts = (rawSkills = {}) =>
+    Object.fromEntries(
+        Object.entries(rawSkills).map(([skillId, raw]) => [
+            skillId,
+            Object.fromEntries(
+                Object.entries(SKILL_TEXT_FIELDS)
+                    .filter(([jsonField]) => raw?.[jsonField])
+                    .map(([jsonField, field]) => [field, raw[jsonField]]),
+            ),
+        ]),
+    );
+
+// "translations": { "fr": { "name": ..., "skills": { ... }, "patternPieces": { ... } } }
+const buildTranslations = (raw = {}) =>
+    Object.fromEntries(
+        Object.entries(raw).map(([language, text]) => [
+            language,
+            { name: text.name, skills: pickSkillTexts(text.skills), patternPieces: text.patternPieces || {} },
+        ]),
+    );
+
+const toWordIndex = (groups) => {
+    const seen = new Set();
+    return groups
+        .flatMap((group) => Object.entries(group))
+        .filter(([name]) => !seen.has(name) && seen.add(name))
+        .map(([name, imagePath]) => ({
+            word: name.toLowerCase().replace(/\s/g, ''),
+            displayName: name,
+            length: name.replace(/\s/g, '').length,
+            imagePath,
+        }));
+};
+
+export const buildTheme = (id, raw) => {
+    const own = (key) => (raw[key] ? resolveMap(id, raw[key]) : null);
+    const groups = Object.fromEntries(THEME_SPRITE_GROUPS.map((key) => [key, own(key) || DEFAULT_CONTENT[key]]));
+    const hasOwnSprites = THEME_SPRITE_GROUPS.some((key) => raw[key]);
+    const usesOwnContainers = Boolean(raw.containers);
+    const background = resolveThemePath(id, raw.background);
+    const ownSounds = raw.sounds ? resolveMap(id, raw.sounds) : {};
+
+    return {
+        id,
+        name: raw.name,
+        order: raw.order ?? 99,
+        style: {
+            backgroundImage: `url('${background}')`,
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+        },
+        assets: {
+            background,
+            logo: resolveThemePath(id, raw.logo),
+            cardBack: resolveThemePath(id, raw.cardBack),
+            mobs: Object.assign({}, ...THEME_SPRITE_GROUPS.map((key) => groups[key])),
+        },
+        // English text with the skill defaults filled in. The screens use themeSkillText (src/i18n/gameText.js),
+        // which reads ownSkills and translations so the text follows the language.
+        skills: buildSkills(raw.skills),
+        ownSkills: pickSkillTexts(raw.skills),
+        translations: buildTranslations(raw.translations),
+        skillIcons: { ...DEFAULT_SKILL_ICONS, ...(own('skillIcons') || {}) },
+        ...groups,
+        milestoneContainer: usesOwnContainers ? raw.milestoneContainer : DEFAULT_CONTENT.milestoneContainer,
+        bossContainer: usesOwnContainers ? raw.bossContainer : DEFAULT_CONTENT.bossContainer,
+        patternPieces: own('patternPieces') || DEFAULT_CONTENT.patternPieces,
+        ownPatternPieces: Boolean(raw.patternPieces),
+        bonusCreature: raw.bonusCreature ? resolveThemePath(id, raw.bonusCreature) : DEFAULT_CONTENT.bonusCreature,
+        music: raw.music?.length ? raw.music.map((file) => resolveThemePath(id, file)) : DEFAULT_MUSIC,
+        sounds: { ...DEFAULT_SOUNDS, ...ownSounds },
+        writingPools: hasOwnSprites
+            ? buildWritingPools(toWordIndex(THEME_SPRITE_GROUPS.map((key) => groups[key])))
+            : WRITING_DIFFICULTY_POOLS,
+    };
+};
+
+// Every src/themes/<id>.json file becomes a theme. The file name is the theme id.
+const themeFiles = import.meta.glob('../../themes/*.json', { eager: true, import: 'default' });
+
+export const THEME_SOURCES = Object.fromEntries(
+    Object.entries(themeFiles).map(([path, raw]) => [path.match(/([\w-]+)\.json$/)[1], raw]),
+);
+
+export const THEME_CONFIG = Object.fromEntries(
+    Object.entries(THEME_SOURCES)
+        .map(([id, raw]) => buildTheme(id, raw))
+        .sort((a, b) => a.order - b.order || a.id.localeCompare(b.id))
+        .map((theme) => [theme.id, theme]),
+);
+
+// The theme menu, in menu order. img is the picture shown on the menu button.
+export const THEMES_LIST = Object.values(THEME_CONFIG).map((theme) => ({
+    id: theme.id,
+    name: theme.name,
+    img: theme.assets.background,
+}));
+
+// A saved theme can use an old id (see THEME_ID_RENAMES) or point to a theme that no longer exists.
+// Old ids give the renamed theme. Unknown ids give the default theme.
+export const resolveThemeId = (id) => {
+    const current = THEME_ID_RENAMES[id] || id;
+    return current && THEME_CONFIG[current] ? current : DEFAULT_THEME_ID;
+};
+
+export const getTheme = (id) => THEME_CONFIG[resolveThemeId(id)];

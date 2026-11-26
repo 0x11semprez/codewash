@@ -93,15 +93,15 @@ Achievements, skills, badges, border effects and auras keep their ids in the con
 
 - `achievements.<id>.name`, `achievements.<id>.description`, `achievements.<id>.tiers.<index>`
 - `skills.<id>.name`, `fantasyName`, `actionName`, `taskDescription`
-- `themeSkills.<themeId>.<skillId>`
 - `badges.<title>`, `borders.<id>.name`, `borders.<id>.description`, `auras.<aura>`
 
 When you add an achievement, a skill, a badge or an aura, add its text to the dictionaries too. A test checks this.
 
 ## What is not translated
 
-- Theme names (Minecraft, Pokemon, K-Pop Demon Hunters, Spy). They are brands.
-- Mob names. They are Minecraft names and are also used as ids.
+- Creature names. Saves and achievements use them as ids, and the spelling game uses them as words.
+
+Theme names, skill texts per theme and pattern piece labels are translated in each theme's JSON file, in a `"translations"` block. See [the themes guide](themes.md#7-translate-the-theme-optional). When a theme has no translation for a language, the game shows the theme's own text, then the dictionary text.
 - The loading screen wordmark.
 - Network error details in the bug report form. They come from the browser and stay in its language.
 - The reading words, writing words and math problems. They are game data. See ADR-012 for the reasons.

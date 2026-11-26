@@ -59,23 +59,15 @@ Quick check:
 
 1. Open the Network tab, filter on "Img" and look for 404 errors.
 2. Open the Console. A failed sound shows `Optional startup sounds failed to preload:`. A failed style file shows `Global game styles failed to load:`. A crash of the preload step shows `Startup asset preload failed:`.
-3. Look at the saved theme. Four theme images do not exist in `public/assets/themes/` ([DEBT-021](../DEBT.md#debt-021-missing-theme-assets-p2-open), issue [#53](https://github.com/0x11semprez/codewash/issues/53)):
-
-   | Theme | Missing files |
-   | --- | --- |
-   | Spy | `spy_logo.png`, `spy_memorycard.jpg` |
-   | K-Pop Demon Hunters | `kpop_memorycard.jpg` |
-   | Pokemon | `pokemon_memorycard.jpg` |
-
-   With one of these themes, the loading screen always reports 1 or 2 failed images. This is known and expected until DEBT-021 is fixed.
+3. Look at the saved theme. Every theme lists its files in `src/themes/<id>.json` and keeps them in `public/assets/themes/<id>/`. Run `npx vitest run src/__tests__/themeFiles.test.js`: it names any missing file. See [the themes guide](../features/themes.md).
 
 Fix:
 
 1. Press "CONTINUE". The game works, with a missing logo or a missing memory card back.
-2. To stop the message, open the Cosmetics panel and pick the Minecraft theme. The next start will not report failed images.
+2. To stop the message, open the Cosmetics panel and pick the Blocks theme (the default). The next start will not report failed images.
 3. If the percentage is stuck on a slow network, wait. There is no timeout on images, so the screen waits until the browser gives up on each one. If it never ends, reload.
 
-Escalate when a theme other than the three above reports failed images, or when the screen stays stuck after a reload on a normal network. Include the list of 404 files from the Network tab and the theme name.
+Escalate when a theme reports failed images, or when the screen stays stuck after a reload on a normal network. Include the list of 404 files from the Network tab and the theme name.
 
 ### Saved data is broken or lost
 
@@ -167,7 +159,7 @@ Escalate when the mic fails in Chrome with permission granted, or works in Chrom
 How sound works (`src/services/soundManager.js` and `src/hooks/useAudio.js`):
 
 - Music starts the first time a battle starts. There is no music on the menu before that.
-- Music is a random track from six MP3 files in `public/assets/sounds/bgm/` (they were WAV files of about 190 MB before [#64](https://github.com/0x11semprez/codewash/pull/64)). They are not preloaded, so the first track can take time to start on a slow network.
+- Music is a random track from the playlist of the current theme, in `public/assets/themes/<id>/music/`. Tracks are not preloaded, so the first track can take time to start on a slow network.
 - Every sound call ends with `.catch(() => {})`. When the browser refuses to play a sound, for example because of its autoplay rules, nothing appears in the Console.
 - After the first attempt to start the music, the game counts the music as playing, even if the browser refused. It does not try again until the page is reloaded.
 

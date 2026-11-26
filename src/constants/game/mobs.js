@@ -1,6 +1,6 @@
 // Mobs, chests, bosses and minibosses, with their sprite paths.
 export const FRIENDLY_MOBS = {
-    Allay: 'assets/mobs/friendly/allay.webp',
+    'Sky Sprite': 'assets/mobs/friendly/allay.webp',
     Armadillo: 'assets/mobs/friendly/armadillo.png',
     Bunny: 'assets/mobs/friendly/bunny.png',
     Camel: 'assets/mobs/friendly/camel.webp',
@@ -14,7 +14,7 @@ export const FRIENDLY_MOBS = {
     Goat: 'assets/mobs/friendly/goat.png',
     Horse: 'assets/mobs/friendly/horse.png',
     'Iron Golem': 'assets/mobs/friendly/irongolem.png',
-    Mooshroom: 'assets/mobs/friendly/mooshroom.png',
+    'Mushroom Cow': 'assets/mobs/friendly/mooshroom.png',
     Nautilus: 'assets/mobs/friendly/nautilus.webp',
     Panda: 'assets/mobs/friendly/panda.png',
     Pig: 'assets/mobs/friendly/pig.png',
@@ -30,19 +30,19 @@ export const FRIENDLY_MOBS = {
 
 export const HOSTILE_MOBS = {
     Blaze: 'assets/mobs/hostile/blaze.webp',
-    Bogged: 'assets/mobs/hostile/bogged.png',
+    'Swamp Archer': 'assets/mobs/hostile/bogged.png',
     Breeze: 'assets/mobs/hostile/breeze.webp',
-    Creeper: 'assets/mobs/hostile/creeper.png',
+    Boomer: 'assets/mobs/hostile/creeper.png',
     Drowned: 'assets/mobs/hostile/drowned.png',
-    Enderman: 'assets/mobs/hostile/enderman.png',
-    Evoker: 'assets/mobs/hostile/evoker.png',
-    Ghast: 'assets/mobs/hostile/ghast.webp',
+    'Shadow Walker': 'assets/mobs/hostile/enderman.png',
+    Sorcerer: 'assets/mobs/hostile/evoker.png',
+    'Sky Ghost': 'assets/mobs/hostile/ghast.webp',
     Guardian: 'assets/mobs/hostile/guardian.webp',
-    Hoglin: 'assets/mobs/hostile/hoglin.png',
-    'Magma Cube': 'assets/mobs/hostile/magmacube.png',
+    'Tusk Beast': 'assets/mobs/hostile/hoglin.png',
+    'Lava Cube': 'assets/mobs/hostile/magmacube.png',
     Parched: 'assets/mobs/hostile/parched.png',
     Phantom: 'assets/mobs/hostile/phantom.webp',
-    Piglin: 'assets/mobs/hostile/piglin.png',
+    'Pig Warrior': 'assets/mobs/hostile/piglin.png',
     Pillager: 'assets/mobs/hostile/pillager.png',
     Skeleton: 'assets/mobs/hostile/skeleton.png',
     Slime: 'assets/mobs/hostile/slime.png',
@@ -56,29 +56,51 @@ export const CHEST_BLOCKS = {
     'Trapped Chest': 'assets/items/chests/trapped_chest.webp',
     Barrel: 'assets/items/chests/barrel.png',
     Bundle: 'assets/items/bundle.png',
-    'Shulker Box': 'assets/items/chests/shulker_box.png',
-    'Ender Chest': 'assets/items/chests/ender_chest.webp',
+    'Shell Box': 'assets/items/chests/shulker_box.png',
+    'Magic Chest': 'assets/items/chests/ender_chest.webp',
 };
 
 // Special chests that appear at milestone levels (used for cleaning skill)
 
-export const SPECIAL_CHESTS = ['Ender Chest', 'Shulker Box'];
+export const SPECIAL_CHESTS = ['Magic Chest', 'Shell Box'];
 
 export const BOSS_MOBS = {
-    'Ender Dragon': 'assets/mobs/boss/enderdragon.webp',
-    Herobrine: 'assets/mobs/boss/Herobrine.png',
+    'Void Dragon': 'assets/mobs/boss/enderdragon.webp',
+    'Dark Hero': 'assets/mobs/boss/darkhero.png',
     Warden: 'assets/mobs/boss/warden.webp',
-    Wither: 'assets/mobs/boss/wither.png',
+    'Skull King': 'assets/mobs/boss/wither.png',
 };
 
 export const MINIBOSS_MOBS = {
-    Creaking: 'assets/mobs/miniboss/creaking.png',
+    'Tree Spirit': 'assets/mobs/miniboss/creaking.png',
     'Elder Guardian': 'assets/mobs/miniboss/elderguardian.webp',
     Ravager: 'assets/mobs/miniboss/ravager.png',
-    'Wither Skeleton': 'assets/mobs/miniboss/witherskeleton.png',
+    'Dark Skeleton': 'assets/mobs/miniboss/witherskeleton.png',
 };
 
 // Difficulty content framework - 7 tiers of content per skill
 // This structure holds different configurations for each difficulty level
 
 export const MOB_KEYS = Object.keys(HOSTILE_MOBS);
+
+// Old names of the default creatures, renamed to neutral names (see docs/adr/013).
+// migrateStorage() uses this list to update saved games, so progress is kept.
+export const MOB_NAME_RENAMES = {
+    Creeper: 'Boomer',
+    Enderman: 'Shadow Walker',
+    Ghast: 'Sky Ghost',
+    Hoglin: 'Tusk Beast',
+    'Magma Cube': 'Lava Cube',
+    Piglin: 'Pig Warrior',
+    Bogged: 'Swamp Archer',
+    Evoker: 'Sorcerer',
+    'Ender Dragon': 'Void Dragon',
+    Herobrine: 'Dark Hero',
+    'Wither Skeleton': 'Dark Skeleton',
+    Wither: 'Skull King',
+    Creaking: 'Tree Spirit',
+    Allay: 'Sky Sprite',
+    Mooshroom: 'Mushroom Cow',
+    'Ender Chest': 'Magic Chest',
+    'Shulker Box': 'Shell Box',
+};

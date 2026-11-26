@@ -38,13 +38,13 @@ export const DIFFICULTY_CONTENT = {
         7: { targetLength: 9 },
     },
     patterns: {
-        1: { axolotlCount: 2 },
-        2: { axolotlCount: 3 },
-        3: { axolotlCount: 4 },
-        4: { axolotlCount: 5 },
-        5: { axolotlCount: 6 },
-        6: { axolotlCount: 7 },
-        7: { axolotlCount: 8, resetSequence: true },
+        1: { pieceCount: 2 },
+        2: { pieceCount: 3 },
+        3: { pieceCount: 4 },
+        4: { pieceCount: 5 },
+        5: { pieceCount: 6 },
+        6: { pieceCount: 7 },
+        7: { pieceCount: 8, resetSequence: true },
     },
     memory: {
         1: { pairs: 3, gridCols: 3 }, // 6 cards: 3x2
@@ -86,7 +86,7 @@ export const BADGE_TIERS = [
     { level: 80, title: 'Iron' },
     { level: 100, title: 'Emerald' },
     { level: 120, title: 'Diamond' },
-    { level: 140, title: 'Netherite' },
+    { level: 140, title: 'Titanium' },
     { level: 160, title: 'Obsidian' },
 ];
 

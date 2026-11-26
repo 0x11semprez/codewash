@@ -7,19 +7,11 @@ import ParentalVerificationModal from '../ui/ParentalVerificationModal';
 import GameErrorBoundary from '../ui/GameErrorBoundary';
 import cubesTexture from '../../assets/textures/cubes.png';
 import { pauseWhenOffscreen } from '../../hooks/useAnimationPause';
-import {
-    BASE_ASSETS,
-    HOSTILE_MOBS,
-    CHEST_BLOCKS,
-    BOSS_MOBS,
-    MINIBOSS_MOBS,
-    DIFFICULTY_IMAGES,
-    THEME_CONFIG,
-} from '../../constants/gameData';
+import { DIFFICULTY_IMAGES } from '../../constants/gameData';
 import { calculateXPToLevel } from '../../utils/gameUtils';
 import { AURA_ADJECTIVES } from '../../utils/mobDisplayUtils';
 import { useTranslation } from '../../i18n/useTranslation';
-import { mobNameWithAura, skillText } from '../../i18n/gameText';
+import { mobNameWithAura, themeSkillText } from '../../i18n/gameText';
 const MemoryGame = lazy(() => import('./games/MemoryGame'));
 const PatternGame = lazy(() => import('./games/PatternGame'));
 const MathGame = lazy(() => import('./games/MathGame'));
@@ -54,7 +46,7 @@ const SkillCard = ({
 }) => {
     const [isHit, setIsHit] = useState(false);
     const prevDamageCount = useRef(0);
-    const { t } = useTranslation();
+    const { t, language } = useTranslation();
 
     let borderClass = 'border-stone-500';
     let levelTextColor = 'text-white';
@@ -84,11 +76,11 @@ const SkillCard = ({
     }
     if (data.level >= 140) {
         levelTextColor = 'text-gray-500';
-        borderClass = 'border-netherite';
+        borderClass = 'border-titanium';
     }
     if (data.level >= 160) {
         levelTextColor = 'text-rainbow';
-        borderClass = 'border-netherite';
+        borderClass = 'border-titanium';
     }
 
     let appliedBorderEffect = '';
@@ -109,36 +101,23 @@ const SkillCard = ({
         }
     }
 
-    const skillThemeConfig = themeData.skills[config.id] || {};
-    const themeId = Object.keys(THEME_CONFIG).find((id) => THEME_CONFIG[id] === themeData);
-    const skillName =
-        themeId && skillThemeConfig.name
-            ? t(`themeSkills.${themeId}.${config.id}`)
-            : skillThemeConfig.name || skillText(t, config.id, 'name');
-    const fantasyName = skillText(t, config.id, 'fantasyName');
-    const taskDescription = skillText(t, config.id, 'taskDescription');
+    // Names and texts of the skill come from the theme (in the current language when the theme
+    // has a translation), then from the dictionary defaults.
+    const skillName = themeSkillText(t, language, themeData, config.id, 'name');
+    const fantasyName = themeSkillText(t, language, themeData, config.id, 'fantasyName');
+    const actionName = themeSkillText(t, language, themeData, config.id, 'actionName');
+    const taskDescription = themeSkillText(t, language, themeData, config.id, 'taskDescription');
 
+    // Every picture comes from the theme. A name the theme does not know shows its first enemy.
     let mobSrc;
     let displayMobName = mobName;
-
     if (config.id === 'memory') {
-        mobSrc = 'assets/skills/farm_icon.png';
-    } else if (config.id === 'cleaning') {
-        mobSrc = CHEST_BLOCKS[mobName] || themeData.assets.mobs[mobName] || BASE_ASSETS.axolotls.Pink;
-    } else if (config.id === 'patterns') {
-        mobSrc =
-            HOSTILE_MOBS[mobName] || BOSS_MOBS[mobName] || MINIBOSS_MOBS[mobName] || themeData.assets.mobs[mobName];
-        if (!mobSrc) {
-            displayMobName = 'Zombie';
-            mobSrc = HOSTILE_MOBS[displayMobName] || BASE_ASSETS.axolotls.Pink;
-        }
+        mobSrc = themeData.skillIcons?.memory || config.img;
+    } else if (themeData.assets.mobs[mobName]) {
+        mobSrc = themeData.assets.mobs[mobName];
     } else {
-        mobSrc =
-            HOSTILE_MOBS[mobName] || BOSS_MOBS[mobName] || MINIBOSS_MOBS[mobName] || themeData.assets.mobs[mobName];
-        if (!mobSrc) {
-            displayMobName = 'Zombie';
-            mobSrc = HOSTILE_MOBS[displayMobName] || BASE_ASSETS.axolotls.Pink;
-        }
+        displayMobName = Object.keys(themeData.enemies)[0];
+        mobSrc = themeData.enemies[displayMobName];
     }
 
     const displayMobNameWithAura =
@@ -214,7 +193,12 @@ const SkillCard = ({
             case 'patterns':
                 return (
                     <div className="flex-1 flex flex-col items-center justify-center">
-                        <PatternGame isBattling={isBattling} difficulty={difficulty} onMathSubmit={onMathSubmit} />
+                        <PatternGame
+                            isBattling={isBattling}
+                            difficulty={difficulty}
+                            onMathSubmit={onMathSubmit}
+                            themeData={themeData}
+                        />
                     </div>
                 );
             default: {
@@ -304,7 +288,7 @@ const SkillCard = ({
                     </div>
                 )}
                 {showMob && (
-                    <div className="relative z-10 flex items-center justify-center h-full max-h-[200px] w-full">
+                    <div className="relative z-10 flex items-center justify-center w-[200px] h-[200px] shrink-0">
                         {mobAura ? (
                             <MobWithAura
                                 mobSrc={mobSrc}
@@ -319,7 +303,7 @@ const SkillCard = ({
                                 key={displayMobName}
                                 src={mobSrc}
                                 alt={displayMobName}
-                                className={`relative z-10 max-w-full max-h-full object-contain drop-shadow-[4px_4px_0_rgba(0,0,0,0.5)] transition-transform duration-100 ${isHit ? 'animate-knockback' : bossHealing ? 'animate-shake' : 'animate-bob'} ${bossHealing ? 'brightness-150 hue-rotate-90' : ''}`}
+                                className={`relative z-10 w-full h-full object-contain drop-shadow-[4px_4px_0_rgba(0,0,0,0.5)] transition-transform duration-100 ${isHit ? 'animate-knockback' : bossHealing ? 'animate-shake' : 'animate-bob'} ${bossHealing ? 'brightness-150 hue-rotate-90' : ''}`}
                             />
                         )}
                         {damageNumbers.map((dmg) => (
@@ -392,7 +376,7 @@ const SkillCard = ({
                             style={buttonStyle}
                             className="w-full text-white text-3xl font-bold py-6 rounded-lg active:shadow-none active:translate-y-[6px] transition-all border-2 uppercase tracking-wider"
                         >
-                            {skillText(t, config.id, 'actionName')}
+                            {actionName}
                         </button>
                     </div>
                 )}

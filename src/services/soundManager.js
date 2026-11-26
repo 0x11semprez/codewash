@@ -1,59 +1,42 @@
 /**
  * Sound Manager Utility
- * Centralized sound management for the game including BGM shuffle, UI sounds, and mob sounds.
+ * Centralized sound management for the game: theme music, UI sounds, enemy sounds and notes.
+ * The active theme decides which files play (see setSoundTheme).
  */
+import { DEFAULT_MUSIC, DEFAULT_SOUNDS, NOTE_SOUNDS } from '../constants/game/audio';
 
-// BGM tracks discovered from public/assets/sounds/bgm/
-const BGM_TRACKS = [
-    'assets/sounds/bgm/calm1.mp3',
-    'assets/sounds/bgm/calm2.mp3',
-    'assets/sounds/bgm/calm3.mp3',
-    'assets/sounds/bgm/piano1.mp3',
-    'assets/sounds/bgm/piano2.mp3',
-    'assets/sounds/bgm/piano3.mp3',
-];
-
-// UI sound paths
-const UI_SOUNDS = {
-    actioncard_left: 'assets/sounds/ui/ui/actioncard_left.wav',
-    actioncard_right: 'assets/sounds/ui/ui/actioncard_right.wav',
-    click: 'assets/sounds/ui/ui/click.wav',
-    death: 'assets/sounds/ui/ui/death.wav',
-    fail: 'assets/sounds/ui/ui/fail.wav',
-    levelup: 'assets/sounds/ui/ui/levelup.wav',
-    notification: 'assets/sounds/ui/ui/notification.wav',
-    successful_hit: 'assets/sounds/ui/ui/successful_hit.wav',
-};
+// Sounds of the active theme. setSoundTheme replaces them when the player picks a theme.
+let themeSounds = { ...DEFAULT_SOUNDS };
 
 // Mob name to folder name mapping (handles differences between display names and folder names)
 const MOB_FOLDER_MAP = {
     // Hostile mobs
     Zombie: 'zombie',
-    Creeper: 'creeper',
+    Boomer: 'creeper',
     Skeleton: 'skeleton',
     Spider: 'spider',
-    Enderman: 'endermen',
+    'Shadow Walker': 'endermen',
     Blaze: 'blaze',
-    Ghast: 'ghast',
+    'Sky Ghost': 'ghast',
     Slime: 'slime',
     Phantom: 'phantom',
-    Piglin: 'piglin',
-    Hoglin: 'hoglin',
+    'Pig Warrior': 'piglin',
+    'Tusk Beast': 'hoglin',
     Drowned: 'drowned',
     Pillager: 'pillager',
-    Evoker: 'evoker',
+    Sorcerer: 'evoker',
     Guardian: 'guardian',
-    'Magma Cube': 'magmacube',
+    'Lava Cube': 'magmacube',
     Witch: 'witch',
     // Boss mobs
-    'Ender Dragon': 'enderdragon',
-    Wither: 'wither',
+    'Void Dragon': 'enderdragon',
+    'Skull King': 'wither',
     Warden: 'warden',
     // Miniboss mobs
     'Elder Guardian': 'elderguardian',
     Ravager: 'ravager',
-    'Wither Skeleton': 'wither_skeleton',
-    Creaking: 'creaking',
+    'Dark Skeleton': 'wither_skeleton',
+    'Tree Spirit': 'creaking',
     // Friendly mobs
     Cat: 'cat',
     Chicken: 'chicken',
@@ -69,7 +52,7 @@ const MOB_FOLDER_MAP = {
     Turtle: 'turtle',
     Rabbit: 'rabbit',
     Bunny: 'rabbit',
-    Mooshroom: 'mooshroom',
+    'Mushroom Cow': 'mooshroom',
     'Polar Bear': 'polarbear',
     Llama: 'llama',
     Bat: 'bat',
@@ -87,7 +70,23 @@ class BGMManager {
         this.volume = 0.3;
         this.isPlaying = false;
         this.currentTrackIndex = -1;
-        this.tracks = [...BGM_TRACKS];
+        this.tracks = [...DEFAULT_MUSIC];
+    }
+
+    // Switches to the playlist of another theme. Music that is playing moves to the new
+    // playlist at once. Paused music starts from the new playlist next time.
+    setTracks(tracks) {
+        const next = tracks && tracks.length > 0 ? [...tracks] : [...DEFAULT_MUSIC];
+        if (next.join('|') === this.tracks.join('|')) return;
+        this.tracks = next;
+        this.currentTrackIndex = -1;
+        if (!this.audio) return;
+        if (this.isPlaying) {
+            this.playNextTrack();
+        } else {
+            this.audio.pause();
+            this.audio = null;
+        }
     }
 
     setVolume(vol) {
@@ -170,64 +169,68 @@ export const setSfxVolume = (vol) => {
 
 export const getSfxVolume = () => sfxVolume;
 
-/**
- * Play a UI sound
- * @param {string} soundName - Name of the UI sound (click, death, fail, levelup, etc.)
- */
-export const playUISound = (soundName) => {
-    const path = UI_SOUNDS[soundName];
-    if (!path) return;
+// Starts a sound. Some environments return nothing from play() or throw, so both cases call onFail.
+const startAudio = (audio, onFail = () => {}) => {
+    try {
+        const result = audio.play();
+        if (result && typeof result.catch === 'function') result.catch(onFail);
+    } catch {
+        onFail();
+    }
+};
 
+const playFile = (path) => {
+    if (!path) return;
     const audio = new Audio(path);
     audio.volume = sfxVolume;
-    audio.play().catch(() => {});
+    startAudio(audio);
 };
 
 /**
- * Play actioncard left sound
+ * Use the music and sounds of a theme. Keys the theme does not set keep the default file.
+ * @param {{ music?: string[], sounds?: Object<string, string> }} theme
  */
-export const playActionCardLeft = () => playUISound('actioncard_left');
+export const setSoundTheme = (theme) => {
+    themeSounds = { ...DEFAULT_SOUNDS, ...(theme?.sounds || {}) };
+    getBGMManager().setTracks(theme?.music);
+};
 
 /**
- * Play actioncard right sound
+ * Play a UI sound of the active theme
+ * @param {string} soundName - Key of the sound (click, death, fail, levelUp, ...)
  */
-export const playActionCardRight = () => playUISound('actioncard_right');
+export const playUISound = (soundName) => playFile(themeSounds[soundName]);
 
-/**
- * Play click sound
- */
+export const playActionCardLeft = () => playUISound('cardLeft');
+export const playActionCardRight = () => playUISound('cardRight');
 export const playClick = () => playUISound('click');
-
-/**
- * Play death sound (player death)
- */
+// Player death
 export const playDeath = () => playUISound('death');
-
-/**
- * Play fail sound (player takes damage but doesn't die)
- */
+// Player takes damage but does not die
 export const playFail = () => playUISound('fail');
-
-/**
- * Play level up sound
- */
-export const playLevelUp = () => playUISound('levelup');
-
-/**
- * Play notification sound
- */
+export const playLevelUp = () => playUISound('levelUp');
 export const playNotification = () => playUISound('notification');
-
-/**
- * Play successful hit sound
- */
-export const playSuccessfulHit = () => playUISound('successful_hit');
-
-/**
- * Play achievement unlock sound
- * Uses the notification sound for achievement unlocks
- */
+export const playSuccessfulHit = () => playUISound('hit');
+// Achievement unlocks use the notification sound
 export const playAchievement = () => playUISound('notification');
+// Memory and pattern games: a found pair or a wrong answer
+export const playMatch = () => playUISound('match');
+export const playMismatch = () => playUISound('mismatch');
+
+/**
+ * Play the note of a pattern piece. Falls back to a click when the piece has no note.
+ * @param {number} index - Position of the piece in the theme's pattern pieces
+ */
+export const playNote = (index) => {
+    const path = NOTE_SOUNDS[index];
+    if (!path) {
+        playClick();
+        return;
+    }
+    const audio = new Audio(path);
+    audio.volume = sfxVolume;
+    startAudio(audio, playClick);
+};
 
 /**
  * Get the folder name for a mob
@@ -240,31 +243,31 @@ const getMobFolder = (mobName) => {
 };
 
 /**
- * Play mob hurt sound
- * @param {string} mobName - Display name of the mob
+ * Play an enemy hurt sound. A theme with its own enemyHurt sound uses it for every enemy.
+ * Otherwise the default enemies play their own file.
+ * @param {string} mobName - Display name of the enemy
  */
 export const playMobHurt = (mobName) => {
+    if (themeSounds.enemyHurt) {
+        playFile(themeSounds.enemyHurt);
+        return;
+    }
     const folder = getMobFolder(mobName);
-    if (!folder) return;
-
-    // Use standardized naming (all files renamed to hurt.wav)
-    const audio = new Audio(`assets/sounds/mob/mob/${folder}/hurt.wav`);
-    audio.volume = sfxVolume;
-    audio.play().catch(() => {});
+    if (folder) playFile(`assets/sounds/mob/mob/${folder}/hurt.wav`);
 };
 
 /**
- * Play mob death sound
- * @param {string} mobName - Display name of the mob
+ * Play an enemy defeat sound, with the same rules as playMobHurt.
+ * @param {string} mobName - Display name of the enemy
  */
 export const playMobDeath = (mobName) => {
+    if (themeSounds.enemyDefeat) {
+        playFile(themeSounds.enemyDefeat);
+        return;
+    }
     const folder = getMobFolder(mobName);
-    if (!folder) return;
-
-    // Use standardized naming (all files renamed to death.wav)
-    const audio = new Audio(`assets/sounds/mob/mob/${folder}/death.wav`);
-    audio.volume = sfxVolume;
-    audio.play().catch(() => {});
+    if (folder) playFile(`assets/sounds/mob/mob/${folder}/death.wav`);
 };
-// Export UI sound names for reference
-export const UI_SOUND_NAMES = Object.keys(UI_SOUNDS);
+
+// Keys accepted by playUISound
+export const UI_SOUND_NAMES = Object.keys(DEFAULT_SOUNDS);

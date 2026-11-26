@@ -1,22 +1,12 @@
 import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import SafeImage from '../../ui/SafeImage';
-import { BASE_ASSETS, DIFFICULTY_CONTENT } from '../../../constants/gameData';
-import { playClick, getSfxVolume } from '../../../services/soundManager';
+import { DIFFICULTY_CONTENT } from '../../../constants/gameData';
+import { playMatch, playMismatch, playNote } from '../../../services/soundManager';
 import { useTranslation } from '../../../i18n/useTranslation';
+import { pieceLabel } from '../../../i18n/gameText';
 
 const MAX_TEMPO_DELAY = 800;
 const MIN_TEMPO_DELAY = 200;
-
-const AXOLOTL_NOTE_MAP = {
-    Pink: 'c4',
-    Cyan: 'd4',
-    Gold: 'e4',
-    Brown: 'f4',
-    Blue: 'g4',
-    Red: 'a4',
-    Green: 'b4',
-    Black: 'g5',
-};
 
 const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
 const lerp = (start, end, t) => start + (end - start) * clamp(t, 0, 1);
@@ -32,35 +22,29 @@ const getTempoDelays = (completedRounds, currentDifficulty) => {
     return { onDelay, offDelay };
 };
 
-const PatternGame = ({ isBattling, difficulty, onMathSubmit }) => {
-    const { t } = useTranslation();
+// Simon Says with the pattern pieces of the active theme. Each piece plays its own note.
+const PatternGame = ({ isBattling, difficulty, onMathSubmit, themeData }) => {
+    const { t, language } = useTranslation();
     const [simonSequence, setSimonSequence] = useState([]);
     const [playerIndex, setPlayerIndex] = useState(0);
     const [isShowingSequence, setIsShowingSequence] = useState(false);
     const [completedRounds, setCompletedRounds] = useState(0);
-    const [litAxolotl, setLitAxolotl] = useState(null);
+    const [litPiece, setLitPiece] = useState(null);
     const [simonGameActive, setSimonGameActive] = useState(false);
     const simonSessionStartedRef = useRef(false);
 
     const patternConfig = DIFFICULTY_CONTENT.patterns[difficulty] || DIFFICULTY_CONTENT.patterns[1];
-    const axolotlCount = patternConfig.axolotlCount || 2;
+    const pieceCount = patternConfig.pieceCount || 2;
+    const pieces = themeData.patternPieces;
     const shouldResetSequence = patternConfig.resetSequence || false;
 
-    const axolotlColors = useMemo(() => {
-        const allAxolotlColors = Object.keys(BASE_ASSETS.axolotls);
-        return allAxolotlColors.slice(0, Math.min(axolotlCount, allAxolotlColors.length));
-    }, [axolotlCount]);
+    const allPieceNames = useMemo(() => Object.keys(pieces), [pieces]);
+    const pieceColors = useMemo(
+        () => allPieceNames.slice(0, Math.min(pieceCount, allPieceNames.length)),
+        [allPieceNames, pieceCount],
+    );
 
-    const playAxolotlNote = useCallback((color) => {
-        const noteName = AXOLOTL_NOTE_MAP[color];
-        if (noteName) {
-            const audio = new Audio(`assets/sounds/axolotl/${noteName}.wav`);
-            audio.volume = getSfxVolume();
-            audio.play().catch(() => playClick());
-        } else {
-            playClick();
-        }
-    }, []);
+    const playPieceNote = useCallback((color) => playNote(allPieceNames.indexOf(color)), [allPieceNames]);
 
     const playSequence = useCallback(
         (sequence) => {
@@ -71,10 +55,10 @@ const PatternGame = ({ isBattling, difficulty, onMathSubmit }) => {
 
             const playNext = () => {
                 if (i < sequence.length) {
-                    setLitAxolotl(sequence[i]);
-                    playAxolotlNote(sequence[i]);
+                    setLitPiece(sequence[i]);
+                    playPieceNote(sequence[i]);
                     setTimeout(() => {
-                        setLitAxolotl(null);
+                        setLitPiece(null);
                         i++;
                         setTimeout(playNext, offDelay);
                     }, onDelay);
@@ -84,29 +68,27 @@ const PatternGame = ({ isBattling, difficulty, onMathSubmit }) => {
             };
             setTimeout(playNext, 500);
         },
-        [completedRounds, difficulty, playAxolotlNote],
+        [completedRounds, difficulty, playPieceNote],
     );
 
     const startSimonGame = useCallback(() => {
-        const firstColor = axolotlColors[Math.floor(Math.random() * axolotlColors.length)];
+        const firstColor = pieceColors[Math.floor(Math.random() * pieceColors.length)];
         const newSequence = [firstColor];
         setSimonSequence(newSequence);
         setPlayerIndex(0);
         setCompletedRounds(0);
         setSimonGameActive(true);
         playSequence(newSequence);
-    }, [axolotlColors, playSequence]);
+    }, [pieceColors, playSequence]);
 
-    const handleAxolotlClick = (color) => {
+    const handlePieceClick = (color) => {
         if (isShowingSequence || !simonGameActive) return;
 
-        playAxolotlNote(color);
+        playPieceNote(color);
 
         if (color === simonSequence[playerIndex]) {
             if (playerIndex === simonSequence.length - 1) {
-                const matchAudio = new Audio(BASE_ASSETS.audio.match);
-                matchAudio.volume = getSfxVolume();
-                matchAudio.play().catch(() => {});
+                playMatch();
                 const newRounds = completedRounds + 1;
                 setCompletedRounds(newRounds);
 
@@ -117,10 +99,10 @@ const PatternGame = ({ isBattling, difficulty, onMathSubmit }) => {
                 if (shouldResetSequence) {
                     newSequence = [];
                     for (let i = 0; i < simonSequence.length + 1; i++) {
-                        newSequence.push(axolotlColors[Math.floor(Math.random() * axolotlColors.length)]);
+                        newSequence.push(pieceColors[Math.floor(Math.random() * pieceColors.length)]);
                     }
                 } else {
-                    const nextColor = axolotlColors[Math.floor(Math.random() * axolotlColors.length)];
+                    const nextColor = pieceColors[Math.floor(Math.random() * pieceColors.length)];
                     newSequence = [...simonSequence, nextColor];
                 }
 
@@ -131,9 +113,7 @@ const PatternGame = ({ isBattling, difficulty, onMathSubmit }) => {
                 setPlayerIndex(playerIndex + 1);
             }
         } else {
-            const mismatchAudio = new Audio(BASE_ASSETS.audio.mismatch);
-            mismatchAudio.volume = getSfxVolume();
-            mismatchAudio.play().catch(() => {});
+            playMismatch();
             setSimonGameActive(false);
         }
     };
@@ -148,7 +128,7 @@ const PatternGame = ({ isBattling, difficulty, onMathSubmit }) => {
             setPlayerIndex(0);
             setIsShowingSequence(false);
             setCompletedRounds(0);
-            setLitAxolotl(null);
+            setLitPiece(null);
             setSimonGameActive(false);
         }
     }, [isBattling, startSimonGame]);
@@ -161,27 +141,27 @@ const PatternGame = ({ isBattling, difficulty, onMathSubmit }) => {
                 {!isShowingSequence && simonGameActive && <span className="text-green-400">{t('games.yourTurn')}</span>}
             </div>
             <div className="relative w-[240px] h-[240px]">
-                {axolotlColors.map((color, index) => {
-                    const anglePerAxolotl = 360 / axolotlColors.length;
-                    const angle = (index * anglePerAxolotl - 90) * (Math.PI / 180);
+                {pieceColors.map((color, index) => {
+                    const anglePerPiece = 360 / pieceColors.length;
+                    const angle = (index * anglePerPiece - 90) * (Math.PI / 180);
                     const radius = 85;
                     const x = 120 + radius * Math.cos(angle) - 40;
                     const y = 120 + radius * Math.sin(angle) - 40;
-                    const isLit = litAxolotl === color;
+                    const isLit = litPiece === color;
                     return (
                         <div
                             key={color}
-                            onClick={() => handleAxolotlClick(color)}
+                            onClick={() => handlePieceClick(color)}
                             className={`absolute w-[80px] h-[80px] cursor-pointer transition-all duration-200 rounded-full p-1 ${isLit ? 'scale-125 ring-4 ring-yellow-400 brightness-150 z-10' : 'hover:scale-110'} ${isShowingSequence ? 'pointer-events-none' : ''}`}
                             style={{ left: x, top: y }}
                         >
                             <SafeImage
-                                src={BASE_ASSETS.axolotls[color]}
-                                alt={t(`axolotls.${color}`)}
+                                src={pieces[color]}
+                                alt={pieceLabel(t, language, themeData, color)}
                                 className="w-full h-full object-contain drop-shadow-lg"
                             />
                             <span className="absolute -bottom-1 left-1/2 -translate-x-1/2 text-[10px] text-white bg-black/60 px-1 rounded">
-                                {t(`axolotls.${color}`)}
+                                {pieceLabel(t, language, themeData, color)}
                             </span>
                         </div>
                     );

@@ -412,7 +412,7 @@ Each item links to its GitHub issue for full context and to the PR that addresse
 - **Remaining:** the full `src/features/` layout from ADR-006 is not started.
 - **Effort:** M
 
-### DEBT-021: Missing theme assets [P2] [Open]
+### DEBT-021: Missing theme assets [P2] [Done ✓]
 
 - **Issue:** [#53](https://github.com/0x11semprez/codewash/issues/53) — **PR:** none yet
 - **Location:** `src/constants/game/themes.js` (`THEME_CONFIG`), `public/assets/themes/`
@@ -420,6 +420,7 @@ Each item links to its GitHub issue for full context and to the PR that addresse
 - **Impact:** With the spy, kpop or pokemon theme, the loading screen reports failed critical images and the player has to press Continue. In game, the logo or the memory card back is missing.
 - **Risk:** Medium impact, high likelihood: every player who picks one of these themes sees it.
 - **Fix:** Add the images or point to existing files. Add a test that checks every `THEMES` path exists under `public/`. Fits with the Themes mission (#21).
+- **Done:** Done with the Themes mission (#21). Each theme now has its own folder with a logo and a card back, and the Spy theme has its own background. `src/__tests__/themeFiles.test.js` fails when a theme points to a missing file. See [ADR-013](adr/013-themes-as-data-folders.md).
 - **Effort:** S
 
 ### DEBT-022: Docker build fails on `npm ci` [P1] [Open]
@@ -486,7 +487,7 @@ Med Impact    │ DEBT-011       │ DEBT-008        │ DEBT-009        │
               │                │ DEBT-016 ✓      │ DEBT-014        │
               │                │ DEBT-017 ✓      │ DEBT-015 ✓      │
               │                │                 │ DEBT-020        │
-              │                │                 │ DEBT-021        │
+              │                │                 │ DEBT-021 ✓      │
               │                │                 │ DEBT-022        │
 ──────────────┼────────────────┼─────────────────┼─────────────────┤
 Low Impact    │ DEBT-018 ✓, 019│                 │ DEBT-004 ✓      │
@@ -539,7 +540,7 @@ Low Impact    │ DEBT-018 ✓, 019│                 │ DEBT-004 ✓      │
 | 18 | DEBT-008 | Remove internal duplication | Open |
 | 19 | DEBT-011 | Refactor sound manager + audio pooling | Open |
 | 20 | DEBT-013 | Add error tracking | Open |
-| 21 | DEBT-021 | Add missing theme images + path test | Open |
+| 21 | DEBT-021 | Add missing theme images + path test | Done ✓ |
 | 22 | DEBT-022 | Fix Docker build + add it to CI | Open |
 
 ---
@@ -568,7 +569,7 @@ Low Impact    │ DEBT-018 ✓, 019│                 │ DEBT-004 ✓      │
 | DEBT-018 | [#41](https://github.com/0x11semprez/codewash/issues/41) | [#58](https://github.com/0x11semprez/codewash/pull/58), [#66](https://github.com/0x11semprez/codewash/pull/66) (merged) | Done ✓ |
 | DEBT-019 | [#42](https://github.com/0x11semprez/codewash/issues/42) | — | Open |
 | DEBT-020 | [#11](https://github.com/0x11semprez/codewash/issues/11) | Epitech PR #48 (merge `f69df57`) | In Progress |
-| DEBT-021 | [#53](https://github.com/0x11semprez/codewash/issues/53) | — | Open |
+| DEBT-021 | [#53](https://github.com/0x11semprez/codewash/issues/53) | Themes mission (#21), not merged yet | Done ✓ |
 | DEBT-022 | [#54](https://github.com/0x11semprez/codewash/issues/54) | — | Open |
 | DEBT-023 | [#59](https://github.com/0x11semprez/codewash/issues/59) | [#60](https://github.com/0x11semprez/codewash/pull/60), [#66](https://github.com/0x11semprez/codewash/pull/66) (merged) | Done ✓ |
 

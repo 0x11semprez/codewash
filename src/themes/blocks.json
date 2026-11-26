@@ -1,0 +1,103 @@
+{
+    "name": "Blocks",
+    "order": 1,
+    "background": "background.webp",
+    "logo": "logo.webp",
+    "cardBack": "card-back.webp",
+    "skills": {
+        "reading": {
+            "name": "Reading",
+            "title": "Magic Table",
+            "action": "Enchant!",
+            "description": "Speak the ancient words to cast spells and vanquish your foes!"
+        },
+        "math": {
+            "name": "Math",
+            "title": "Power Lab",
+            "action": "Calculate!",
+            "description": "Power up your circuits to activate traps and outsmart the enemies!"
+        },
+        "writing": {
+            "name": "Writing",
+            "title": "Workbench",
+            "action": "Craft!",
+            "description": "Spell out the recipe to forge legendary weapons and armor!"
+        },
+        "cleaning": {
+            "name": "Cleaning",
+            "title": "Chest Management",
+            "action": "Organize!",
+            "description": "Sort your loot and prepare your inventory for the adventures ahead!"
+        },
+        "memory": {
+            "name": "Memory",
+            "title": "Match n' Hatch",
+            "action": "Match!",
+            "description": "Find the matching pairs to hatch rare creatures for your farm!"
+        },
+        "patterns": {
+            "name": "Pattern Recognition",
+            "title": "Logic Building",
+            "action": "Solve!",
+            "description": "Decipher the sequence to unlock ancient mechanisms and hidden treasures!"
+        }
+    },
+    "music": ["music/flowerbed-fields.mp3", "music/town-theme.mp3"],
+    "sounds": {
+        "click": "sounds/click.ogg",
+        "cardLeft": "sounds/card-left.ogg",
+        "cardRight": "sounds/card-right.ogg",
+        "hit": "sounds/hit.ogg",
+        "fail": "sounds/fail.ogg",
+        "death": "sounds/death.ogg",
+        "levelUp": "sounds/level-up.ogg",
+        "notification": "sounds/notification.ogg",
+        "match": "sounds/match.ogg",
+        "mismatch": "sounds/mismatch.ogg",
+        "enemyHurt": "sounds/enemy-hurt.ogg",
+        "enemyDefeat": "sounds/enemy-defeat.ogg"
+    },
+    "translations": {
+        "fr": {
+            "name": "Blocs",
+            "skills": {
+                "reading": {
+                    "name": "Lecture",
+                    "title": "Table magique",
+                    "action": "Enchanter !",
+                    "description": "Prononce les mots anciens pour lancer des sorts et vaincre tes ennemis !"
+                },
+                "math": {
+                    "name": "Maths",
+                    "title": "Labo d'énergie",
+                    "action": "Calculer !",
+                    "description": "Alimente tes circuits pour activer des pièges et déjouer les ennemis !"
+                },
+                "writing": {
+                    "name": "Écriture",
+                    "title": "Établi",
+                    "action": "Fabriquer !",
+                    "description": "Épelle la recette pour forger des armes et armures légendaires !"
+                },
+                "cleaning": {
+                    "name": "Rangement",
+                    "title": "Gestion des coffres",
+                    "action": "Ranger !",
+                    "description": "Trie ton butin et prépare ton inventaire pour les aventures à venir !"
+                },
+                "memory": {
+                    "name": "Mémoire",
+                    "title": "Paires et éclosions",
+                    "action": "Associer !",
+                    "description": "Trouve les paires pour faire éclore des créatures rares dans ta ferme !"
+                },
+                "patterns": {
+                    "name": "Reconnaissance de motifs",
+                    "title": "Construction logique",
+                    "action": "Résoudre !",
+                    "description": "Déchiffre la séquence pour activer des mécanismes anciens et trouver des trésors !"
+                }
+            }
+        }
+    }
+}

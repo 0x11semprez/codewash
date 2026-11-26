@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { HOSTILE_MOBS } from '../constants/gameData';
+import { getTheme } from '../constants/gameData';
 import { playSuccessfulHit } from '../services/soundManager';
 import { STORAGE_KEYS } from '../services/storageKeys';
 import { useTranslation } from '../i18n/useTranslation';
@@ -10,7 +10,8 @@ const MAX_COOLDOWN_MS = 10 * 60 * 1000; // 10 minutes
 const FLIGHT_DURATION_MS = 8000; // 8 seconds to cross the screen (slow enough for a child to click)
 const PHANTOM_OFFSCREEN_LEFT = '-120px'; // Start position offscreen on the left
 
-const PhantomEvent = ({ battlingSkillId, onAwardLevel, onPhantomCaught }) => {
+// A bonus creature flies across the screen now and then. Its picture comes from the theme.
+const PhantomEvent = ({ battlingSkillId, onAwardLevel, onPhantomCaught, imageSrc = getTheme().bonusCreature }) => {
     const { t } = useTranslation();
     const [isActive, setIsActive] = useState(false);
     const [fromLeft, setFromLeft] = useState(true);
@@ -117,8 +118,6 @@ const PhantomEvent = ({ battlingSkillId, onAwardLevel, onPhantomCaught }) => {
 
     if (!isActive) return null;
 
-    const phantomSrc = HOSTILE_MOBS['Phantom'];
-
     return (
         <div
             className="fixed top-4 z-[9999] cursor-pointer select-none"
@@ -133,7 +132,7 @@ const PhantomEvent = ({ battlingSkillId, onAwardLevel, onPhantomCaught }) => {
             <div style={{ transform: fromLeft ? 'scaleX(-1)' : 'scaleX(1)' }}>
                 <img
                     key={`phantom-${fromLeft}`}
-                    src={phantomSrc}
+                    src={imageSrc}
                     alt={t('phantom.alt')}
                     loading="lazy"
                     className="w-24 h-24 object-contain drop-shadow-[0_0_10px_rgba(100,200,255,0.8)]"

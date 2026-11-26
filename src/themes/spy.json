@@ -1,0 +1,188 @@
+{
+    "name": "Spy",
+    "order": 4,
+    "background": "background.webp",
+    "logo": "logo.webp",
+    "cardBack": "card-back.webp",
+    "skills": {
+        "reading": {
+            "name": "Intel Analysis",
+            "title": "Secret Files",
+            "action": "Decode!",
+            "description": "Read the secret words out loud to stop the robot guards!"
+        },
+        "math": {
+            "name": "Gadgetry",
+            "title": "Code Lock",
+            "action": "Crack!",
+            "description": "Solve the sums to crack the code and open the vault!"
+        },
+        "writing": {
+            "name": "Forgery",
+            "title": "Gadget Lab",
+            "action": "Build!",
+            "description": "Spell the name of each gadget to build it!"
+        },
+        "cleaning": {
+            "name": "Evidence",
+            "title": "Evidence Room",
+            "action": "Organize!",
+            "description": "Pack the evidence before the next mission!"
+        },
+        "memory": {
+            "name": "Identities",
+            "title": "Gadget Check",
+            "action": "Match!",
+            "description": "Find the matching pairs to check your spy gadgets!"
+        },
+        "patterns": {
+            "name": "Code Breaking",
+            "title": "Cipher Room",
+            "action": "Solve!",
+            "description": "Repeat the secret signal to unlock the hideout!"
+        }
+    },
+    "skillIcons": {
+        "reading": "sprites/icon-reading.webp",
+        "math": "sprites/icon-math.webp",
+        "writing": "sprites/icon-writing.webp",
+        "cleaning": "sprites/icon-cleaning.webp",
+        "memory": "sprites/icon-memory.webp",
+        "patterns": "sprites/icon-patterns.webp"
+    },
+    "enemies": {
+        "Robot Guard": "sprites/robot-guard.webp",
+        "Robot Scout": "sprites/robot-scout.webp",
+        "Robot Sentry": "sprites/robot-sentry.webp",
+        "Robot Spy": "sprites/robot-spy.webp",
+        "Henchman": "sprites/henchman.webp",
+        "Thief": "sprites/thief.webp",
+        "Smuggler": "sprites/smuggler.webp",
+        "Burglar": "sprites/burglar.webp"
+    },
+    "minibosses": {
+        "Red Robot": "sprites/red-robot.webp",
+        "Gold Robot": "sprites/gold-robot.webp",
+        "Dark Robot": "sprites/dark-robot.webp",
+        "Mega Robot": "sprites/mega-robot.webp"
+    },
+    "bosses": {
+        "Mastermind": "sprites/mastermind.webp",
+        "Shadow Queen": "sprites/shadow-queen.webp",
+        "Doctor Gizmo": "sprites/doctor-gizmo.webp",
+        "Iron Boss": "sprites/iron-boss.webp"
+    },
+    "friends": {
+        "Camera": "sprites/camera.webp",
+        "Phone": "sprites/phone.webp",
+        "Laptop": "sprites/laptop.webp",
+        "Radio": "sprites/radio.webp",
+        "Flashlight": "sprites/flashlight.webp",
+        "Headphones": "sprites/headphones.webp",
+        "Microphone": "sprites/microphone.webp",
+        "Memory Stick": "sprites/memory-stick.webp",
+        "Calculator": "sprites/calculator.webp",
+        "Passport": "sprites/passport.webp",
+        "Badge": "sprites/badge.webp",
+        "Compass": "sprites/compass.webp"
+    },
+    "craftItems": {
+        "Key": "sprites/key.webp",
+        "Wallet": "sprites/wallet.webp",
+        "Money": "sprites/money.webp",
+        "Newspaper": "sprites/newspaper.webp",
+        "Ticket": "sprites/ticket.webp",
+        "Pencil": "sprites/pencil.webp",
+        "Notepad": "sprites/notepad.webp",
+        "Hourglass": "sprites/hourglass.webp"
+    },
+    "containers": {
+        "Backpack": "sprites/backpack.webp",
+        "Handbag": "sprites/handbag.webp",
+        "Shopping Bag": "sprites/shopping-bag.webp",
+        "Duffel Bag": "sprites/duffel-bag.webp",
+        "Suitcase": "sprites/suitcase.webp",
+        "Briefcase": "sprites/briefcase.webp"
+    },
+    "milestoneContainer": "Suitcase",
+    "bossContainer": "Briefcase",
+    "patternPieces": {
+        "Hearts": "sprites/piece-hearts.webp",
+        "Diamonds": "sprites/piece-diamonds.webp",
+        "Clubs": "sprites/piece-clubs.webp",
+        "Spades": "sprites/piece-spades.webp",
+        "King": "sprites/piece-king.webp",
+        "Queen": "sprites/piece-queen.webp",
+        "Knight": "sprites/piece-knight.webp",
+        "Rook": "sprites/piece-rook.webp"
+    },
+    "bonusCreature": "sprites/bonus-robot.webp",
+    "music": ["music/spy-loop.mp3", "music/covert-action.mp3"],
+    "sounds": {
+        "click": "sounds/click.ogg",
+        "cardLeft": "sounds/card-left.ogg",
+        "cardRight": "sounds/card-right.ogg",
+        "hit": "sounds/hit.ogg",
+        "fail": "sounds/fail.ogg",
+        "death": "sounds/death.ogg",
+        "levelUp": "sounds/level-up.ogg",
+        "notification": "sounds/notification.ogg",
+        "match": "sounds/match.ogg",
+        "mismatch": "sounds/mismatch.ogg",
+        "enemyHurt": "sounds/enemy-hurt.ogg",
+        "enemyDefeat": "sounds/enemy-defeat.ogg"
+    },
+    "translations": {
+        "fr": {
+            "name": "Espion",
+            "skills": {
+                "reading": {
+                    "name": "Analyse de renseignements",
+                    "title": "Dossiers secrets",
+                    "action": "Décoder !",
+                    "description": "Lis les mots secrets à voix haute pour arrêter les gardes robots !"
+                },
+                "math": {
+                    "name": "Gadgets",
+                    "title": "Serrure à code",
+                    "action": "Craquer !",
+                    "description": "Résous les calculs pour craquer le code et ouvrir le coffre-fort !"
+                },
+                "writing": {
+                    "name": "Falsification",
+                    "title": "Labo des gadgets",
+                    "action": "Fabriquer !",
+                    "description": "Épelle le nom de chaque gadget pour le fabriquer !"
+                },
+                "cleaning": {
+                    "name": "Preuves",
+                    "title": "Salle des preuves",
+                    "action": "Ranger !",
+                    "description": "Range les preuves avant la prochaine mission !"
+                },
+                "memory": {
+                    "name": "Identités",
+                    "title": "Contrôle des gadgets",
+                    "action": "Associer !",
+                    "description": "Trouve les paires pour vérifier tes gadgets d'espion !"
+                },
+                "patterns": {
+                    "name": "Décodage",
+                    "title": "Salle des codes",
+                    "action": "Résoudre !",
+                    "description": "Répète le signal secret pour ouvrir la cachette !"
+                }
+            },
+            "patternPieces": {
+                "Hearts": "Cœurs",
+                "Diamonds": "Carreaux",
+                "Clubs": "Trèfles",
+                "Spades": "Piques",
+                "King": "Roi",
+                "Queen": "Reine",
+                "Knight": "Cavalier",
+                "Rook": "Tour"
+            }
+        }
+    }
+}

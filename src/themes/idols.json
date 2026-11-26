@@ -1,0 +1,190 @@
+{
+    "name": "Idols",
+    "order": 2,
+    "background": "background.webp",
+    "logo": "logo.webp",
+    "cardBack": "card-back.webp",
+    "skills": {
+        "reading": {
+            "name": "Singing",
+            "title": "Song Book",
+            "action": "Sing!",
+            "description": "Read the lyrics out loud to chase the noise demons away!"
+        },
+        "math": {
+            "name": "Rhythm",
+            "title": "Beat Counter",
+            "action": "Count!",
+            "description": "Solve the sums to keep the beat and power up the show!"
+        },
+        "writing": {
+            "name": "Songwriting",
+            "title": "Studio",
+            "action": "Write!",
+            "description": "Spell the name to add it to your next song!"
+        },
+        "cleaning": {
+            "name": "Backstage",
+            "title": "Dressing Room",
+            "action": "Organize!",
+            "description": "Tidy up the dressing room before the concert!"
+        },
+        "memory": {
+            "name": "Fans",
+            "title": "Fan Club",
+            "action": "Match!",
+            "description": "Find the matching pairs to welcome new fans!"
+        },
+        "patterns": {
+            "name": "Dance",
+            "title": "Dance Floor",
+            "action": "Dance!",
+            "description": "Repeat the dance steps to light up the stage!"
+        }
+    },
+    "skillIcons": {
+        "reading": "sprites/icon-reading.webp",
+        "math": "sprites/icon-math.webp",
+        "writing": "sprites/icon-writing.webp",
+        "cleaning": "sprites/icon-cleaning.webp",
+        "memory": "sprites/icon-memory.webp",
+        "patterns": "sprites/icon-patterns.webp"
+    },
+    "enemies": {
+        "Imp": "sprites/imp.webp",
+        "Gremlin": "sprites/gremlin.webp",
+        "Grumble": "sprites/grumble.webp",
+        "Snarl": "sprites/snarl.webp",
+        "Howler": "sprites/howler.webp",
+        "Screecher": "sprites/screecher.webp",
+        "Grinner": "sprites/grinner.webp",
+        "Sulker": "sprites/sulker.webp",
+        "Noise": "sprites/noise.webp",
+        "Static": "sprites/static.webp"
+    },
+    "minibosses": {
+        "Shadow Imp": "sprites/shadow-imp.webp",
+        "Fire Demon": "sprites/fire-demon.webp",
+        "Ice Demon": "sprites/ice-demon.webp",
+        "Storm Demon": "sprites/storm-demon.webp"
+    },
+    "bosses": {
+        "Demon King": "sprites/demon-king.webp",
+        "Demon Queen": "sprites/demon-queen.webp",
+        "Night Lord": "sprites/night-lord.webp",
+        "Chaos Beast": "sprites/chaos-beast.webp"
+    },
+    "friends": {
+        "Blue Circle": "sprites/blue-circle.webp",
+        "Green Square": "sprites/green-square.webp",
+        "Pink Circle": "sprites/pink-circle.webp",
+        "Purple Squircle": "sprites/purple-squircle.webp",
+        "Red Rhombus": "sprites/red-rhombus.webp",
+        "Yellow Square": "sprites/yellow-square.webp",
+        "Blue Rhombus": "sprites/blue-rhombus.webp",
+        "Green Circle": "sprites/green-circle.webp",
+        "Pink Square": "sprites/pink-square.webp",
+        "Purple Rhombus": "sprites/purple-rhombus.webp",
+        "Red Squircle": "sprites/red-squircle.webp",
+        "Yellow Circle": "sprites/yellow-circle.webp"
+    },
+    "craftItems": {
+        "Microphone": "sprites/microphone.webp",
+        "Headphones": "sprites/headphones.webp",
+        "Disc": "sprites/disc.webp",
+        "Crown": "sprites/crown.webp",
+        "Medal": "sprites/medal.webp",
+        "Star": "sprites/star.webp",
+        "Heart": "sprites/heart.webp",
+        "Music Player": "sprites/music-player.webp"
+    },
+    "containers": {
+        "Gift Bag": "sprites/gift-bag.webp",
+        "Handbag": "sprites/handbag.webp",
+        "Backpack": "sprites/backpack.webp",
+        "Duffel Bag": "sprites/duffel-bag.webp",
+        "Suitcase": "sprites/suitcase.webp",
+        "Gold Suitcase": "sprites/gold-suitcase.webp"
+    },
+    "milestoneContainer": "Suitcase",
+    "bossContainer": "Gold Suitcase",
+    "patternPieces": {
+        "Blue": "sprites/piece-blue.webp",
+        "Green": "sprites/piece-green.webp",
+        "Pink": "sprites/piece-pink.webp",
+        "Purple": "sprites/piece-purple.webp",
+        "Red": "sprites/piece-red.webp",
+        "Yellow": "sprites/piece-yellow.webp",
+        "Star": "sprites/piece-star.webp",
+        "Heart": "sprites/piece-heart.webp"
+    },
+    "bonusCreature": "sprites/star.webp",
+    "music": ["music/funky-house.mp3", "music/party-sector.mp3"],
+    "sounds": {
+        "click": "sounds/click.ogg",
+        "cardLeft": "sounds/card-left.ogg",
+        "cardRight": "sounds/card-right.ogg",
+        "hit": "sounds/hit.ogg",
+        "fail": "sounds/fail.ogg",
+        "death": "sounds/death.ogg",
+        "levelUp": "sounds/level-up.ogg",
+        "notification": "sounds/notification.ogg",
+        "match": "sounds/match.ogg",
+        "mismatch": "sounds/mismatch.ogg",
+        "enemyHurt": "sounds/enemy-hurt.ogg",
+        "enemyDefeat": "sounds/enemy-defeat.ogg"
+    },
+    "translations": {
+        "fr": {
+            "name": "Idoles",
+            "skills": {
+                "reading": {
+                    "name": "Chant",
+                    "title": "Carnet de chansons",
+                    "action": "Chanter !",
+                    "description": "Lis les paroles à voix haute pour chasser les démons du bruit !"
+                },
+                "math": {
+                    "name": "Rythme",
+                    "title": "Compteur de temps",
+                    "action": "Compter !",
+                    "description": "Résous les calculs pour garder le rythme et lancer le spectacle !"
+                },
+                "writing": {
+                    "name": "Composition",
+                    "title": "Studio",
+                    "action": "Écrire !",
+                    "description": "Épelle le nom pour l'ajouter à ta prochaine chanson !"
+                },
+                "cleaning": {
+                    "name": "Coulisses",
+                    "title": "Loge",
+                    "action": "Ranger !",
+                    "description": "Range la loge avant le concert !"
+                },
+                "memory": {
+                    "name": "Fans",
+                    "title": "Fan-club",
+                    "action": "Associer !",
+                    "description": "Trouve les paires pour accueillir de nouveaux fans !"
+                },
+                "patterns": {
+                    "name": "Danse",
+                    "title": "Piste de danse",
+                    "action": "Danser !",
+                    "description": "Répète les pas de danse pour illuminer la scène !"
+                }
+            },
+            "patternPieces": {
+                "Blue": "Bleu",
+                "Green": "Vert",
+                "Pink": "Rose",
+                "Purple": "Violet",
+                "Red": "Rouge",
+                "Yellow": "Jaune",
+                "Star": "Étoile",
+                "Heart": "Cœur"
+            }
+        }
+    }
+}

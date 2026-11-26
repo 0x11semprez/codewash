@@ -14,7 +14,8 @@ import {
     Info,
 } from 'lucide-react';
 import SafeImage from '../ui/SafeImage';
-import { THEMES_LIST } from '../../constants/gameData';
+import { THEMES_LIST, getTheme } from '../../constants/gameData';
+import { themeName } from '../../i18n/gameText';
 import { ACHIEVEMENTS } from '../../constants/achievements';
 import { pauseWhenOffscreen } from '../../hooks/useAnimationPause';
 import { useTranslation } from '../../i18n/useTranslation';
@@ -28,7 +29,7 @@ const BORDER_EFFECTS = [
     { id: 'electric', badge: 'Iron', icon: Zap },
     { id: 'lifestream', badge: 'Emerald', icon: Activity },
     { id: 'frost', badge: 'Diamond', icon: Snowflake },
-    { id: 'fire', badge: 'Netherite', icon: Flame },
+    { id: 'fire', badge: 'Titanium', icon: Flame },
     { id: 'shadow', badge: 'Obsidian', icon: Skull },
     { id: 'rainbow', badge: 'Star', icon: Gem },
 ];
@@ -54,7 +55,7 @@ const CosmeticsDrawer = ({
     unlockedAchievements = [], // New prop for unlocked achievements
 }) => {
     const [showColorPicker, setShowColorPicker] = useState(false);
-    const { t } = useTranslation();
+    const { t, language } = useTranslation();
 
     const isBorderUnlocked = (badge) => {
         // Default (locked on yellow) is always unlocked
@@ -88,13 +89,20 @@ const CosmeticsDrawer = ({
                     <h3 className="text-xl text-blue-300 mb-5 font-bold flex items-center gap-3 uppercase tracking-wider">
                         <Sparkles size={20} /> {t('cosmetics.themeSelect')}
                     </h3>
-                    <div className="grid grid-cols-2 gap-4">
+                    {/* Two rows are visible. The bar on the right scrolls to the other themes. */}
+                    <div
+                        data-testid="theme-list"
+                        role="group"
+                        aria-label={t('cosmetics.themeList')}
+                        className="theme-scroll grid grid-cols-2 gap-4 max-h-[14.5rem] overflow-y-auto p-2 pr-3"
+                    >
                         {THEMES_LIST.map((theme) => (
                             <button
                                 key={theme.id}
                                 onClick={() => setActiveTheme(theme.id)}
                                 disabled={activeTheme === theme.id}
-                                className={`h-24 rounded-lg border-2 overflow-hidden relative transition-all duration-300 shadow-lg group ${
+                                aria-pressed={activeTheme === theme.id}
+                                className={`h-24 shrink-0 rounded-lg border-2 overflow-hidden relative transition-all duration-300 shadow-lg group ${
                                     activeTheme === theme.id
                                         ? 'border-yellow-400 ring-2 ring-yellow-400/20 opacity-100 cursor-default'
                                         : 'border-slate-600 hover:scale-105 hover:border-white opacity-60 hover:opacity-100'
@@ -102,7 +110,7 @@ const CosmeticsDrawer = ({
                             >
                                 <SafeImage
                                     src={theme.img}
-                                    alt={theme.name}
+                                    alt={themeName(getTheme(theme.id), language)}
                                     className={`w-full h-full object-cover ${activeTheme === theme.id ? 'grayscale-0' : 'grayscale'}`}
                                 />
                                 <div
@@ -115,7 +123,7 @@ const CosmeticsDrawer = ({
                                             activeTheme === theme.id ? 'text-yellow-400' : 'text-white'
                                         }`}
                                     >
-                                        {theme.name}
+                                        {themeName(getTheme(theme.id), language)}
                                     </span>
                                 </div>
                             </button>

@@ -18,7 +18,7 @@ const renderCard = (config, isBattling, selectedBorder = null) =>
         <SkillCard
             config={config}
             data={{ level: 1, xp: 0, mobHealth: 100, mobMaxHealth: 100 }}
-            themeData={THEME_CONFIG.minecraft}
+            themeData={THEME_CONFIG.blocks}
             isCenter
             isBattling={isBattling}
             mobName="Zombie"
@@ -76,7 +76,7 @@ describe('SkillCard animation pause', () => {
             <SkillCard
                 config={SKILL_DATA[1]}
                 data={{ level: 1, xp: 0, mobHealth: 100, mobMaxHealth: 100 }}
-                themeData={THEME_CONFIG.minecraft}
+                themeData={THEME_CONFIG.blocks}
                 isCenter
                 isBattling
                 mobName="Zombie"

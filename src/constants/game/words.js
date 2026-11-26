@@ -134,7 +134,7 @@ export const SPELLING_ITEMS = [
 
 export const WRITING_WORD_INDEX = [
     // Mobs from friendly
-    { word: 'allay', displayName: 'Allay', length: 5, imagePath: 'assets/mobs/friendly/allay.webp' },
+    { word: 'skysprite', displayName: 'Sky Sprite', length: 10, imagePath: 'assets/mobs/friendly/allay.webp' },
     { word: 'armadillo', displayName: 'Armadillo', length: 9, imagePath: 'assets/mobs/friendly/armadillo.png' },
     { word: 'bunny', displayName: 'Bunny', length: 5, imagePath: 'assets/mobs/friendly/bunny.png' },
     { word: 'camel', displayName: 'Camel', length: 5, imagePath: 'assets/mobs/friendly/camel.webp' },
@@ -148,7 +148,7 @@ export const WRITING_WORD_INDEX = [
     { word: 'goat', displayName: 'Goat', length: 4, imagePath: 'assets/mobs/friendly/goat.png' },
     { word: 'horse', displayName: 'Horse', length: 5, imagePath: 'assets/mobs/friendly/horse.png' },
     { word: 'irongolem', displayName: 'Iron Golem', length: 10, imagePath: 'assets/mobs/friendly/irongolem.png' },
-    { word: 'mooshroom', displayName: 'Mooshroom', length: 9, imagePath: 'assets/mobs/friendly/mooshroom.png' },
+    { word: 'mushroomcow', displayName: 'Mushroom Cow', length: 12, imagePath: 'assets/mobs/friendly/mooshroom.png' },
     { word: 'nautilus', displayName: 'Nautilus', length: 8, imagePath: 'assets/mobs/friendly/nautilus.webp' },
     { word: 'panda', displayName: 'Panda', length: 5, imagePath: 'assets/mobs/friendly/panda.png' },
     { word: 'pig', displayName: 'Pig', length: 3, imagePath: 'assets/mobs/friendly/pig.png' },
@@ -163,19 +163,19 @@ export const WRITING_WORD_INDEX = [
 
     // Mobs from hostile
     { word: 'blaze', displayName: 'Blaze', length: 5, imagePath: 'assets/mobs/hostile/blaze.webp' },
-    { word: 'bogged', displayName: 'Bogged', length: 6, imagePath: 'assets/mobs/hostile/bogged.png' },
+    { word: 'swamparcher', displayName: 'Swamp Archer', length: 12, imagePath: 'assets/mobs/hostile/bogged.png' },
     { word: 'breeze', displayName: 'Breeze', length: 6, imagePath: 'assets/mobs/hostile/breeze.webp' },
-    { word: 'creeper', displayName: 'Creeper', length: 7, imagePath: 'assets/mobs/hostile/creeper.png' },
+    { word: 'boomer', displayName: 'Boomer', length: 6, imagePath: 'assets/mobs/hostile/creeper.png' },
     { word: 'drowned', displayName: 'Drowned', length: 7, imagePath: 'assets/mobs/hostile/drowned.png' },
-    { word: 'enderman', displayName: 'Enderman', length: 8, imagePath: 'assets/mobs/hostile/enderman.png' },
-    { word: 'evoker', displayName: 'Evoker', length: 6, imagePath: 'assets/mobs/hostile/evoker.png' },
-    { word: 'ghast', displayName: 'Ghast', length: 5, imagePath: 'assets/mobs/hostile/ghast.webp' },
+    { word: 'shadowwalker', displayName: 'Shadow Walker', length: 13, imagePath: 'assets/mobs/hostile/enderman.png' },
+    { word: 'sorcerer', displayName: 'Sorcerer', length: 8, imagePath: 'assets/mobs/hostile/evoker.png' },
+    { word: 'skyghost', displayName: 'Sky Ghost', length: 9, imagePath: 'assets/mobs/hostile/ghast.webp' },
     { word: 'guardian', displayName: 'Guardian', length: 8, imagePath: 'assets/mobs/hostile/guardian.webp' },
-    { word: 'hoglin', displayName: 'Hoglin', length: 6, imagePath: 'assets/mobs/hostile/hoglin.png' },
-    { word: 'magmacube', displayName: 'Magma Cube', length: 10, imagePath: 'assets/mobs/hostile/magmacube.png' },
+    { word: 'tuskbeast', displayName: 'Tusk Beast', length: 10, imagePath: 'assets/mobs/hostile/hoglin.png' },
+    { word: 'lavacube', displayName: 'Lava Cube', length: 9, imagePath: 'assets/mobs/hostile/magmacube.png' },
     { word: 'parched', displayName: 'Parched', length: 7, imagePath: 'assets/mobs/hostile/parched.png' },
     { word: 'phantom', displayName: 'Phantom', length: 7, imagePath: 'assets/mobs/hostile/phantom.webp' },
-    { word: 'piglin', displayName: 'Piglin', length: 6, imagePath: 'assets/mobs/hostile/piglin.png' },
+    { word: 'pigwarrior', displayName: 'Pig Warrior', length: 11, imagePath: 'assets/mobs/hostile/piglin.png' },
     { word: 'pillager', displayName: 'Pillager', length: 8, imagePath: 'assets/mobs/hostile/pillager.png' },
     { word: 'skeleton', displayName: 'Skeleton', length: 8, imagePath: 'assets/mobs/hostile/skeleton.png' },
     { word: 'slime', displayName: 'Slime', length: 5, imagePath: 'assets/mobs/hostile/slime.png' },
@@ -184,7 +184,7 @@ export const WRITING_WORD_INDEX = [
     { word: 'zombie', displayName: 'Zombie', length: 6, imagePath: 'assets/mobs/hostile/zombie.png' },
 
     // Mobs from miniboss
-    { word: 'creaking', displayName: 'Creaking', length: 8, imagePath: 'assets/mobs/miniboss/creaking.png' },
+    { word: 'treespirit', displayName: 'Tree Spirit', length: 11, imagePath: 'assets/mobs/miniboss/creaking.png' },
     {
         word: 'elderguardian',
         displayName: 'Elder Guardian',
@@ -193,17 +193,17 @@ export const WRITING_WORD_INDEX = [
     },
     { word: 'ravager', displayName: 'Ravager', length: 7, imagePath: 'assets/mobs/miniboss/ravager.png' },
     {
-        word: 'witherskeleton',
-        displayName: 'Wither Skeleton',
-        length: 15,
+        word: 'darkskeleton',
+        displayName: 'Dark Skeleton',
+        length: 13,
         imagePath: 'assets/mobs/miniboss/witherskeleton.png',
     },
 
     // Mobs from boss
-    { word: 'enderdragon', displayName: 'Ender Dragon', length: 12, imagePath: 'assets/mobs/boss/enderdragon.webp' },
-    { word: 'herobrine', displayName: 'Herobrine', length: 9, imagePath: 'assets/mobs/boss/Herobrine.png' },
+    { word: 'voiddragon', displayName: 'Void Dragon', length: 11, imagePath: 'assets/mobs/boss/enderdragon.webp' },
+    { word: 'darkhero', displayName: 'Dark Hero', length: 9, imagePath: 'assets/mobs/boss/darkhero.png' },
     { word: 'warden', displayName: 'Warden', length: 6, imagePath: 'assets/mobs/boss/warden.webp' },
-    { word: 'wither', displayName: 'Wither', length: 6, imagePath: 'assets/mobs/boss/wither.png' },
+    { word: 'skullking', displayName: 'Skull King', length: 10, imagePath: 'assets/mobs/boss/wither.png' },
 
     // Items (including former blocks)
     { word: 'axe', displayName: 'Axe', length: 3, imagePath: 'assets/items/axe.webp' },
@@ -220,8 +220,8 @@ export const WRITING_WORD_INDEX = [
     { word: 'tnt', displayName: 'TNT', length: 3, imagePath: 'assets/items/tnt.png' },
     { word: 'barrel', displayName: 'Barrel', length: 6, imagePath: 'assets/items/chests/barrel.png' },
     { word: 'chest', displayName: 'Chest', length: 5, imagePath: 'assets/items/chests/chest.webp' },
-    { word: 'ender_chest', displayName: 'Ender Chest', length: 11, imagePath: 'assets/items/chests/ender_chest.webp' },
-    { word: 'shulker_box', displayName: 'Shulker Box', length: 11, imagePath: 'assets/items/chests/shulker_box.png' },
+    { word: 'magicchest', displayName: 'Magic Chest', length: 11, imagePath: 'assets/items/chests/ender_chest.webp' },
+    { word: 'shellbox', displayName: 'Shell Box', length: 9, imagePath: 'assets/items/chests/shulker_box.png' },
     {
         word: 'trapped_chest',
         displayName: 'Trapped Chest',
@@ -235,15 +235,27 @@ export const WRITING_WORD_INDEX = [
     { word: 'wool', displayName: 'Wool', length: 4, imagePath: 'assets/items/wool.png' },
 ];
 
-// Difficulty pools with overlapping character ranges
-
-export const WRITING_DIFFICULTY_POOLS = {
-    1: WRITING_WORD_INDEX.filter((w) => w.length >= 3 && w.length <= 5), // Easy: 3-5 chars
-    2: WRITING_WORD_INDEX.filter((w) => w.length >= 5 && w.length <= 7), // Normal: 5-7 chars
-    3: WRITING_WORD_INDEX.filter((w) => w.length >= 6 && w.length <= 8), // Medium: 6-8 chars
-    4: WRITING_WORD_INDEX.filter((w) => w.length >= 7 && w.length <= 10), // Hard: 7-10 chars
-    5: WRITING_WORD_INDEX.filter((w) => w.length >= 9 && w.length <= 15), // Expert: 9-15 chars
+// Difficulty pools with overlapping character ranges.
+// Pools 6 and 7 do not exist: getWordForDifficulty uses pool 5 for them.
+export const WRITING_POOL_RANGES = {
+    1: [3, 5], // Easy
+    2: [5, 7], // Normal
+    3: [6, 8], // Medium
+    4: [7, 10], // Hard
+    5: [9, 15], // Expert
 };
+
+// Splits a word index into the five difficulty pools. An empty pool gets the whole index,
+// so a small theme still has a word for every difficulty.
+export const buildWritingPools = (wordIndex) =>
+    Object.fromEntries(
+        Object.entries(WRITING_POOL_RANGES).map(([pool, [min, max]]) => {
+            const words = wordIndex.filter((w) => w.length >= min && w.length <= max);
+            return [pool, words.length > 0 ? words : [...wordIndex]];
+        }),
+    );
+
+export const WRITING_DIFFICULTY_POOLS = buildWritingPools(WRITING_WORD_INDEX);
 
 // Writing items organized by length for quick lookup
 

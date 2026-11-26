@@ -8,7 +8,7 @@ import {
     calculateMobHealth,
 } from '../utils/gameUtils';
 import { getRandomAura } from '../utils/mobDisplayUtils';
-import { SKILL_DATA } from '../constants/gameData';
+import { SKILL_DATA, resolveThemeId } from '../constants/gameData';
 import { getDefaultStats, isAchievementUnlocked } from '../utils/achievementUtils';
 import { now as systemNow, today as getToday } from '../utils/clock';
 import { parseJSON, readJSON, backupCorrupted } from '../services/storage';
@@ -100,7 +100,7 @@ const loadSkills = (profileId) => {
 };
 
 const loadTheme = (profileId) => {
-    return readSkillsSave(profileId)?.theme || 'minecraft';
+    return resolveThemeId(readSkillsSave(profileId)?.theme);
 };
 
 const loadStats = (profileId) => {
@@ -165,7 +165,7 @@ export const useGameState = ({ now = systemNow } = {}) => {
 
     const unlockedBorders = React.useMemo(() => {
         const unlockedBadges = new Set();
-        const tierToBadge = ['Wood', 'Stone', 'Gold', 'Iron', 'Emerald', 'Diamond', 'Netherite', 'Obsidian'];
+        const tierToBadge = ['Wood', 'Stone', 'Gold', 'Iron', 'Emerald', 'Diamond', 'Titanium', 'Obsidian'];
         Object.values(skills).forEach((skill) => {
             if (skill.earnedBadges && Array.isArray(skill.earnedBadges)) {
                 skill.earnedBadges.forEach((tier) => {
@@ -201,7 +201,7 @@ export const useGameState = ({ now = systemNow } = {}) => {
         if (!data) return null;
         try {
             const skillsData = data.skills || data;
-            const theme = data.theme || 'minecraft';
+            const theme = resolveThemeId(data.theme);
             let totalLevel = 0,
                 highestLevel = 0;
             Object.values(skillsData).forEach((s) => {
