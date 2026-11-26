@@ -1,0 +1,20 @@
+/*
+ * Pause animations nobody can see. See docs/adr/010-pause-offscreen-animations.md.
+ * data-offscreen is set by pauseWhenOffscreen (src/hooks/useAnimationPause.js).
+ * data-page-hidden is set on <html> by usePauseWhenPageHidden.
+ * The keyframes are untouched: a paused animation resumes from the same frame.
+ * !important is needed because the `animation` shorthand in the other parts
+ * resets animation-play-state, often with a more specific selector.
+ * Pseudo-elements are listed because most auras live in ::before and ::after.
+ */
+[data-offscreen],
+[data-offscreen]::before,
+[data-offscreen]::after,
+[data-offscreen] *,
+[data-offscreen] *::before,
+[data-offscreen] *::after,
+html[data-page-hidden] *,
+html[data-page-hidden] *::before,
+html[data-page-hidden] *::after {
+    animation-play-state: paused !important;
+}
