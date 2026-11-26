@@ -1,6 +1,7 @@
-import { describe, it, expect } from 'vitest';
-import { render } from '@testing-library/react';
+import { describe, it, expect, vi } from 'vitest';
+import { render, act } from '@testing-library/react';
 import MobWithAura from '../../components/ui/MobWithAura';
+import { installFakeIntersectionObserver } from '../helpers/fakeIntersectionObserver';
 
 describe('MobWithAura', () => {
     it('renders container with aura data attribute', () => {
@@ -26,5 +27,18 @@ describe('MobWithAura', () => {
         const { container } = render(<MobWithAura mobSrc="test.png" aura="rainbow" displayName="Test" isHit={true} />);
         const img = container.querySelector('.mob-image');
         expect(img.className).toContain('animate-knockback');
+    });
+
+    it('pauses its aura while it is outside the viewport', () => {
+        const io = installFakeIntersectionObserver();
+        const { container, unmount } = render(<MobWithAura mobSrc="test.png" aura="plasma" displayName="Test" />);
+        const el = container.firstChild;
+        expect(io.instances[0].observed.has(el)).toBe(true);
+        act(() => io.trigger(el, false));
+        expect(el).toHaveAttribute('data-offscreen');
+        act(() => io.trigger(el, true));
+        expect(el).not.toHaveAttribute('data-offscreen');
+        unmount();
+        vi.unstubAllGlobals();
     });
 });

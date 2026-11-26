@@ -17,6 +17,7 @@ import { useFullscreen } from './hooks/useFullscreen';
 import { useCarousel } from './hooks/useCarousel';
 import { useBattle } from './hooks/useBattle';
 import { useVoiceRecognition } from './hooks/useVoiceRecognition';
+import { usePauseWhenPageHidden } from './hooks/useAnimationPause';
 
 const ResetModal = lazy(() => import('./components/modals/ResetModal'));
 const BugReportModal = lazy(() => import('./components/modals/BugReportModal'));
@@ -26,6 +27,7 @@ const MenuDrawer = lazy(() => import('./components/drawers/MenuDrawer'));
 
 const App = ({ startupLoadSeconds = null }) => {
     const gameState = useGameState();
+    usePauseWhenPageHidden();
     const {
         currentProfile,
         profileNames,
@@ -457,6 +459,7 @@ const App = ({ startupLoadSeconds = null }) => {
                             <div
                                 key={item.key}
                                 className="absolute transition-all duration-500 ease-out"
+                                data-offscreen={Math.abs(item.offset) === 3 ? '' : undefined}
                                 style={{
                                     transform: `translateX(${item.offset * 320}px) translateY(${translateY}px) rotateX(${rotateX}deg) scale(${item.offset === 0 ? 1.1 : 0.85})`,
                                     opacity:
