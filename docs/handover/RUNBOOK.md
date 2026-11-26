@@ -207,7 +207,7 @@ Quick check:
    ```bash
    npm ci
    npm run lint -- --max-warnings 0
-   npx eslint src/ --no-warn-ignored --max-warnings 0
+   npm run format:check
    npm run build
    npm run test
    npm run test:coverage
@@ -219,8 +219,8 @@ Fix, by failing step:
 | Step | Common cause | What to do |
 | --- | --- | --- |
 | Install dependencies | `package-lock.json` does not match `package.json` | Run `npm install` and commit the updated lock file |
-| Lint (zero warnings) | Any ESLint warning fails the job | Fix the warning shown in the log |
-| Static analysis | Same ESLint rules, second run | Same as lint |
+| Lint and complexity ceilings (zero warnings) | Any ESLint warning fails the job. A message such as `has a complexity of 59. Maximum allowed is 58` means a function got more complex than the worst one in the code today | Fix the warning shown in the log. For a complexity message, split the function (move a branch into a helper or a child component). Do not raise the limit in `eslint.config.js` |
+| Format check | A file is not formatted with Prettier | Run `npm run format` and commit the result |
 | Build | Import error or syntax error | Run `npm run build` locally and read the first error |
 | Test | A test fails | Run `npm test` locally. Check whether the change broke the behavior or the test needs an update |
 | Docker build | A file the build needs is listed in `.dockerignore`, or `npm ci` fails inside the image | Run `docker build -t codewash:ci .` locally and read the first error |
@@ -229,6 +229,38 @@ Fix, by failing step:
 The coverage report is attached to each run as the `coverage-report` artifact for 14 days.
 
 Escalate when CI fails but every command passes locally with Node 20, or when `main` itself is red. Include the pull request link and the failing step log.
+
+### CodeQL is red on a pull request
+
+CodeQL is the static analysis in `.github/workflows/codeql.yml` ([ADR-014](../adr/014-codeql-static-analysis.md)). It reads the code in `src/` and `electron/` and looks for security problems and quality problems, such as user text that reaches `innerHTML`, code that can never run, or a comparison that is always true. It runs on every pull request to `main`, on every push to `main`, and every Monday.
+
+A pull request shows two CodeQL checks:
+
+- `Analyze (javascript-typescript)` is the job. When it is red, CodeQL could not run. The cause is in the job log, not in your code.
+- `CodeQL` is the result. When it is red, the pull request adds at least one new alert of severity "error", or a security alert of severity "high" or "critical".
+
+Quick check:
+
+1. Open the pull request, then the "Checks" tab, and see which of the two checks is red.
+2. For `CodeQL`, open the "Files changed" tab. Each new alert is shown on its line, with the rule name and a short explanation.
+3. To see every alert, open the repository on GitHub, then Security > Code scanning. From a terminal: `gh api repos/0x11semprez/codewash/code-scanning/alerts --jq '.[] | [.number, .rule.id, .rule.severity, .most_recent_instance.location.path, .most_recent_instance.location.start_line] | @tsv'`.
+
+How to read an alert:
+
+- The title is the rule, for example "Client-side cross-site scripting" or "Unused variable".
+- The severity says how bad it is: "error", "warning" or "note" for quality rules, and "critical", "high", "medium" or "low" for security rules.
+- The file and line show where the problem ends. For a data flow alert, "Show paths" lists each step, from where the data comes in (the source) to where it is used (the sink). The fix is usually on the path, before the sink.
+- "Show more" opens the rule help, with a bad example and a good example.
+
+Fix:
+
+| Check | Common cause | What to do |
+| --- | --- | --- |
+| `Analyze (javascript-typescript)` | A GitHub outage, a CodeQL action error, or the default setup was turned on | Re-run the job once. If it fails again, read the log. If it says that default setup is enabled, turn it off in Settings > Code security > Code scanning: this repository uses the workflow file instead |
+| `CodeQL` | The change adds an alert | Fix the code on the line shown and push again. The check runs again and the alert closes by itself when the problem is gone |
+| `CodeQL` | The alert is a false alarm, or it is in code that only tests use | Ask a second person to look. If both agree, open the alert and choose "Dismiss alert" with the reason "False positive" or "Used in tests", and write one sentence on why. Never dismiss an alert only to get a green check |
+
+Escalate when a security alert of severity "high" or "critical" appears on `main`, or when the `Analyze` job fails twice in a row. Include the alert link and the job log.
 
 ### npm install fails with ERESOLVE
 

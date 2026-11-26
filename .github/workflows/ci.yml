@@ -21,14 +21,13 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Lint (zero warnings)
+      # ESLint rules and complexity ceilings (eslint.config.js).
+      # Security and quality analysis runs in codeql.yml.
+      - name: Lint and complexity ceilings (zero warnings)
         run: npm run lint -- --max-warnings 0
 
       - name: Format check
         run: npm run format:check
-
-      - name: Static analysis
-        run: npx eslint src/ --no-warn-ignored --max-warnings 0
 
       - name: Build
         run: npm run build

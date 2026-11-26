@@ -471,6 +471,8 @@ All measurements taken at commit `f12cd74` (original codebase, before any refact
 | Production dependencies | 3 (react, react-dom, lucide-react) | `package.json` |
 | Dev dependencies | 12 | `package.json` |
 
+Complexity today, measured with ESLint on `src/` (2026-11-26): the highest cyclomatic complexity is 58 (`SkillCard.jsx`), the deepest nesting is 6 (`useBattle.js`), the most parameters is 5 and the longest function is 543 lines (`App.jsx`). ESLint fails CI if any of these grows ([ADR-014](adr/014-codeql-static-analysis.md)). The numbers are not comparable with the regex count above, which counted decision points per file.
+
 Runtime performance (Lighthouse, Web Vitals, bundle size) is not a code metric. It is measured in the [performance report](missions/performance.md).
 
 ---
