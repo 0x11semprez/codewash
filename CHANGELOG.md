@@ -24,6 +24,7 @@ Links to pull requests point to this repository. Work done before the move from 
 - Web Vitals reporting: FCP, LCP and CLS are printed in the browser console as `[web-vitals] ...`. [#51](https://github.com/0x11semprez/codewash/pull/51)
 - Performance regression test that keeps drawers, modals and mini-games out of the startup bundle. [#51](https://github.com/0x11semprez/codewash/pull/51)
 - Performance report. [#51](https://github.com/0x11semprez/codewash/pull/51)
+- Same-theme comparison of the received version and the current `main` in the performance report, and `tools/lighthouse-compare.mjs` to rerun it (Lighthouse and time until the game is usable). Issue [#18](https://github.com/0x11semprez/codewash/issues/18)
 - Technical debt register (`docs/DEBT.md`) and development plan. Commit `a1cc9aa` (no pull request), then [#2](https://github.com/0x11semprez/codewash/pull/2).
 - Baseline dependency graph in `docs/DEBT.md`. Epitech PR #48 (merge `f69df57`).
 - README, `.gitignore` and six architecture decision records in `docs/adr/`. [#7](https://github.com/0x11semprez/codewash/pull/7)
