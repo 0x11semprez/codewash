@@ -9,7 +9,7 @@ import {
     borderColorKey,
     migrateKey,
     migrateStorage,
-} from '../utils/storageKeys';
+} from '../services/storageKeys';
 
 describe('storage key names', () => {
     it('keep the exact names saved on players computers', () => {
@@ -110,7 +110,7 @@ describe('storage keys in the source code', () => {
         expect(found).toEqual([]);
     });
 
-    it('live in src/utils/storageKeys.js', () => {
-        expect(existsSync(join(src, 'utils/storageKeys.js'))).toBe(true);
+    it('live in src/services/storageKeys.js', () => {
+        expect(existsSync(join(src, 'services/storageKeys.js'))).toBe(true);
     });
 });

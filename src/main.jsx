@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom/client';
 import LoadingGate from './components/LoadingGate.jsx';
 import ErrorBoundary from './components/ui/ErrorBoundary.jsx';
 import { reportWebVitals } from './utils/webVitals.js';
-import { migrateStorage } from './utils/storageKeys.js';
+import { migrateStorage } from './services/storageKeys.js';
 import './index.css';
 
 migrateStorage();

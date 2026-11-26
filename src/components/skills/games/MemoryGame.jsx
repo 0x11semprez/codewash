@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import SafeImage from '../../ui/SafeImage';
 import { BASE_ASSETS, FRIENDLY_MOBS, DIFFICULTY_CONTENT } from '../../../constants/gameData';
-import { playClick, getSfxVolume } from '../../../utils/soundManager';
+import { playClick, getSfxVolume } from '../../../services/soundManager';
 
 const MemoryGame = ({ isBattling, difficulty, onMathSubmit, themeData }) => {
     const [memoryCards, setMemoryCards] = useState([]);

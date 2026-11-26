@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import SafeImage from '../../ui/SafeImage';
 import { BASE_ASSETS, DIFFICULTY_CONTENT } from '../../../constants/gameData';
-import { playClick, getSfxVolume } from '../../../utils/soundManager';
+import { playClick, getSfxVolume } from '../../../services/soundManager';
 
 const MAX_TEMPO_DELAY = 800;
 const MIN_TEMPO_DELAY = 200;

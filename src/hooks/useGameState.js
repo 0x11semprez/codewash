@@ -11,8 +11,8 @@ import { getRandomAura } from '../utils/mobDisplayUtils';
 import { SKILL_DATA } from '../constants/gameData';
 import { getDefaultStats, isAchievementUnlocked } from '../utils/achievementUtils';
 import { now as systemNow, today as getToday } from '../utils/clock';
-import { parseJSON, readJSON, backupCorrupted } from '../utils/storage';
-import { STORAGE_KEYS, skillsKey, borderEffectKey, borderColorKey } from '../utils/storageKeys';
+import { parseJSON, readJSON, backupCorrupted } from '../services/storage';
+import { STORAGE_KEYS, skillsKey, borderEffectKey, borderColorKey } from '../services/storageKeys';
 
 const DEFAULT_PROFILE_NAMES = { 1: 'Player 1', 2: 'Player 2', 3: 'Player 3' };
 const DEFAULT_PARENT_STATUS = { 1: false, 2: false, 3: false };

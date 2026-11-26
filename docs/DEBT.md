@@ -304,7 +304,7 @@ Each item links to its GitHub issue for full context and to the PR that addresse
 - **Location (before):** `useGameState.js`, `preloadStartupAssets.js` and `PhantomEvent.jsx` (21 occurrences of key names typed by hand)
 - **Smell:** Scattered magic strings. No central registry. No migration path.
 - **Impact:** Renaming a key silently loses all saved player data.
-- **Fix:** All keys live in `src/utils/storageKeys.js`. `migrateKey` and `migrateStorage` move old data to a new key at startup. The save of the original game is moved to profile 1 by the migration. A test fails if a key name is typed anywhere else.
+- **Fix:** All keys live in `src/services/storageKeys.js`. `migrateKey` and `migrateStorage` move old data to a new key at startup. The save of the original game is moved to profile 1 by the migration. A test fails if a key name is typed anywhere else.
 - **Evidence:** [bug report](bugs/Bugs.md#debt-009-hardcoded-localstorage-keys), with screenshots of the bug and of the fix.
 - **Effort:** S
 
@@ -321,7 +321,7 @@ Each item links to its GitHub issue for full context and to the PR that addresse
 ### DEBT-011: Sound manager — singleton + no audio pooling [P3] [Open]
 
 - **Issue:** [#34](https://github.com/0x11semprez/codewash/issues/34) — **PR:** none yet
-- **Location:** `src/utils/soundManager.js` (287 lines)
+- **Location:** `src/services/soundManager.js` (287 lines)
 - **Smell:** Module-level mutable state (`sfxVolume`, `bgmManager`). Creates a new `Audio()` object on every play call. No pooling.
 - **Impact:** Not testable in isolation. Dozens of `Audio` objects during rapid battles increase memory pressure.
 - **Risk:** Low impact, low likelihood.
@@ -405,12 +405,14 @@ Each item links to its GitHub issue for full context and to the PR that addresse
 - **Smell:** All components in flat `src/components/` folders by UI type (drawers, modals, ui). Constants and utils mixed across unrelated domains. No feature boundaries.
 - **Impact:** Cannot reason about which files belong to which feature. Imports cross every boundary.
 - **Fix:** Reorganize into `src/features/{battle,skills,achievements,cosmetics,profile,settings,menu,events}/` with co-located components, constants, and utils. Shared code in `src/shared/`.
+- **Done:** `src/constants/gameData.js` (702 lines) is split into six topic files under `src/constants/game/` (items, mobs, difficulty, themes, words, skills). `gameData.js` re-exports them, so no import had to change. Code that talks to the browser (`soundManager`, `storage`, `storageKeys`) moved from `src/utils/` to `src/services/`. `src/utils/` now holds pure game logic only.
+- **Remaining:** the full `src/features/` layout from ADR-006 is not started.
 - **Effort:** M
 
 ### DEBT-021: Missing theme assets [P2] [Open]
 
 - **Issue:** [#53](https://github.com/0x11semprez/codewash/issues/53) — **PR:** none yet
-- **Location:** `src/constants/gameData.jsx` (`THEMES`), `public/assets/themes/`
+- **Location:** `src/constants/game/themes.js` (`THEME_CONFIG`), `public/assets/themes/`
 - **Smell:** Broken references. Four images used by themes do not exist: `spy_logo.png`, `spy_memorycard.jpg`, `kpop_memorycard.jpg`, `pokemon_memorycard.jpg`.
 - **Impact:** With the spy, kpop or pokemon theme, the loading screen reports failed critical images and the player has to press Continue. In game, the logo or the memory card back is missing.
 - **Risk:** Medium impact, high likelihood: every player who picks one of these themes sees it.
