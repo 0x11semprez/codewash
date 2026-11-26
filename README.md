@@ -24,6 +24,7 @@ npm test                         # run all tests
 | `npm run electron:build` | Package the desktop app with electron-builder |
 | `npm run test:coverage` | Run the tests and write a coverage report to `coverage/` |
 | `npm run lint` | Run ESLint on `src/` |
+| `npm run metrics` | Measure size, complexity, duplication, dead files and coverage (see [docs/DEBT.md section 8](docs/DEBT.md#8-final-metrics)) |
 
 To run the game in Docker (nginx on port 80 inside the container):
 
@@ -47,12 +48,15 @@ src/
     modals/          Reset and bug report dialogs
     profile/         Player profile card
     ui/              Shared pieces: loading screen, error boundaries, images, toasts
-  utils/             Pure game logic, sound manager, asset preloading
+  services/          Browser I/O: storage, storage keys, sound manager, error tracking
+  utils/             Pure game logic, asset preloading, bug report helpers
+  i18n/              Translation provider and one file per language in locales/
   constants/         Game data: mobs, themes, skills, achievements
   themes/            One JSON file per theme (see docs/features/themes.md)
   __tests__/         Vitest test suites
 docs/                Project documentation (see below)
 electron/            Electron main process
+tools/               Measurement scripts (metrics, animations)
 public/assets/       Images, sounds and music
 ```
 
@@ -62,7 +66,8 @@ Start with [docs/SUBJECT_MAP.md](docs/SUBJECT_MAP.md). It lists every requiremen
 
 | Topic | Where |
 | --- | --- |
-| Technical debt register: codebase map, debt items, metrics, risk matrix, plan | [docs/DEBT.md](docs/DEBT.md) |
+| How the system works today: module graph, state, I/O, main flows | [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) |
+| Technical debt register: received version, debt items, before and after metrics, risk matrix, plan, residual debt | [docs/DEBT.md](docs/DEBT.md) |
 | Why the architecture is the way it is | [docs/adr/](docs/adr/) |
 | Branches, CI and team workflow | [docs/handover/development-plan.md](docs/handover/development-plan.md) |
 | Performance mission: loading screen, profiling, measurements | [docs/missions/performance.md](docs/missions/performance.md) |
