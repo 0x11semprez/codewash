@@ -204,23 +204,25 @@ Quick check:
 2. Reproduce locally. Run the same commands as CI, in the same order:
 
    ```bash
-   npm ci --legacy-peer-deps
+   npm ci
    npm run lint -- --max-warnings 0
    npx eslint src/ --no-warn-ignored --max-warnings 0
    npm run build
    npm run test
    npm run test:coverage
+   docker build -t codewash:ci .
    ```
 
 Fix, by failing step:
 
 | Step | Common cause | What to do |
 | --- | --- | --- |
-| Install dependencies | `package-lock.json` does not match `package.json` | Run `npm install --legacy-peer-deps` and commit the updated lock file |
+| Install dependencies | `package-lock.json` does not match `package.json` | Run `npm install` and commit the updated lock file |
 | Lint (zero warnings) | Any ESLint warning fails the job | Fix the warning shown in the log |
 | Static analysis | Same ESLint rules, second run | Same as lint |
 | Build | Import error or syntax error | Run `npm run build` locally and read the first error |
 | Test | A test fails | Run `npm test` locally. Check whether the change broke the behavior or the test needs an update |
+| Docker build | A file the build needs is listed in `.dockerignore`, or `npm ci` fails inside the image | Run `docker build -t codewash:ci .` locally and read the first error |
 | Test with coverage | Coverage below 100% (lines, statements, branches or functions), the thresholds in `vitest.config.js` | Open `coverage/index.html` or read the "Uncovered Line #s" column, then add tests for those lines |
 
 The coverage report is attached to each run as the `coverage-report` artifact for 14 days.
@@ -231,39 +233,32 @@ Escalate when CI fails but every command passes locally with Node 20, or when `m
 
 Symptoms: `npm install` or `npm ci` stops with `npm error code ERESOLVE` and `ERESOLVE could not resolve`.
 
-Cause: the test packages have peer dependency ranges that do not match each other. npm refuses to install them unless you pass `--legacy-peer-deps`. The README and CI both use the flag.
+Cause: a package was added or upgraded, and its peer dependency range does not match another package. For example, `@testing-library/jest-dom` 8 wants Vitest 5, and the project uses Vitest 3.
 
-Fix:
-
-```bash
-npm install --legacy-peer-deps
-# or, for a clean install from the lock file:
-npm ci --legacy-peer-deps
-```
+Fix: read the npm error. It names the package and the version it wants. Pick a version of that package that accepts what the project already has (`npm view <package>@<version> peerDependencies`), then run `npm install` and commit `package.json` and `package-lock.json`. Do not add `--legacy-peer-deps`: it hides the conflict, and the Docker build does not use it.
 
 Also check `node -v` (20 or later) and `npm -v` (10 or later).
 
-Escalate when the install still fails with the flag. Include the full npm error and your Node and npm versions.
+Escalate when no version fits. Include the full npm error and your Node and npm versions.
 
 ### Docker build fails
 
-Symptoms: `docker build -t codewash .` stops at `RUN npm ci` with `exit code: 1` and an npm `ERESOLVE` error.
+Symptoms: `docker build -t codewash .` stops with an error. CI shows a red "Docker build" step.
 
-Cause: line 4 of the `Dockerfile` runs `npm ci` without `--legacy-peer-deps`. This is a known open bug: [DEBT-022](../DEBT.md#debt-022-docker-build-fails-on-npm-ci-p1-open), issue [#54](https://github.com/0x11semprez/codewash/issues/54). CI does not build the Docker image, so CI stays green.
+Cause: most often `npm ci` fails inside the image (see the ERESOLVE section above), or a file the build needs is listed in `.dockerignore`.
 
 Fix:
 
-- To serve the game today without Docker:
+- Run `docker build -t codewash .` locally and read the first error.
+- To serve the game while you fix it:
 
   ```bash
-  npm ci --legacy-peer-deps
+  npm ci
   npm run build
   npm run preview   # http://localhost:4173
   ```
 
-- To get a working image locally, change line 4 of the `Dockerfile` to `RUN npm ci --legacy-peer-deps`, then build again. Open a pull request that names issue #54 if you want to keep the change.
-
-Escalate by adding a comment to [#54](https://github.com/0x11semprez/codewash/issues/54) if the build fails for another reason. Include the full `docker build` output.
+Escalate if the build fails for another reason. Include the full `docker build` output.
 
 ### Electron app does not start or does not build
 
@@ -287,8 +282,8 @@ Escalate when `npm run electron:dev` shows a white window after a successful bui
 
 | Command | Use it to |
 | --- | --- |
-| `npm install --legacy-peer-deps` | Install dependencies |
-| `npm ci --legacy-peer-deps` | Clean install from `package-lock.json`, like CI |
+| `npm install` | Install dependencies |
+| `npm ci` | Clean install from `package-lock.json`, like CI |
 | `npm run dev` | Start the game at http://localhost:5173 |
 | `npm run build` | Build the web version into `dist/` |
 | `npm run preview` | Serve the built version at http://localhost:4173 |

@@ -19,7 +19,7 @@ jobs:
           cache: npm
 
       - name: Install dependencies
-        run: npm ci --legacy-peer-deps
+        run: npm ci
 
       - name: Lint (zero warnings)
         run: npm run lint -- --max-warnings 0
@@ -38,6 +38,9 @@ jobs:
 
       - name: Test with coverage
         run: npm run test:coverage
+
+      - name: Docker build
+        run: docker build -t codewash:ci .
 
       - name: Upload coverage
         if: always()

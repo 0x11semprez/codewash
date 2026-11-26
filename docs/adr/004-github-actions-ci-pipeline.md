@@ -24,7 +24,7 @@ Use **GitHub Actions** with a single workflow file `.github/workflows/ci.yml`.
 Pipeline steps (sequential):
 1. Checkout code
 2. Setup Node 20 with npm cache
-3. Install dependencies (`npm ci --legacy-peer-deps`)
+3. Install dependencies (`npm ci`)
 4. Lint (`eslint src/`)
 5. Build (`vite build`)
 6. Test (`vitest run`)

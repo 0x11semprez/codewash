@@ -16,7 +16,7 @@ Links to pull requests point to this repository. Work done before the move from 
 - GitHub Actions CI on every pull request to `main` and every push to `main`: install, lint, build, test and coverage, with the coverage report kept as an artifact for 14 days. [#5](https://github.com/0x11semprez/codewash/pull/5)
 - Coverage thresholds in `vitest.config.js`. [#6](https://github.com/0x11semprez/codewash/pull/6)
 - CI fails on any ESLint warning, and runs a second ESLint pass as a "Static analysis" step. [#46](https://github.com/0x11semprez/codewash/pull/46)
-- Multi-stage `Dockerfile` (Node build, nginx serve) and `nginx.conf`. Epitech PR #37 (merge `6b3b960`). The image does not build today, see [DEBT-022](https://github.com/0x11semprez/codewash/issues/54).
+- Multi-stage `Dockerfile` (Node build, nginx serve) and `nginx.conf`. Epitech PR #37 (merge `6b3b960`). It did not build until DEBT-022 was fixed.
 - Error boundaries: a full-page "Something went wrong" screen with a "Try Again" button, and a "Game crashed!" screen inside each skill card that ends the battle and keeps the rest of the game running (DEBT-010). [#49](https://github.com/0x11semprez/codewash/pull/49)
 - Loading screen with a progress percentage. It preloads the critical images of the saved theme and offers a "Continue" button when some fail. [#51](https://github.com/0x11semprez/codewash/pull/51)
 - "So... So fast !?" achievement, unlocked from the measured startup time. [#51](https://github.com/0x11semprez/codewash/pull/51)
@@ -69,6 +69,7 @@ Links to pull requests point to this repository. Work done before the move from 
 
 ### Fixed
 
+- The Docker image builds again. `@testing-library/jest-dom` 8 wanted Vitest 5, so `npm ci` failed. Version 7.0.1 works with Vitest 3, so no install flag is needed anymore. CI now builds the image on every pull request, and `.dockerignore` keeps local files out of it (DEBT-022). [#54](https://github.com/0x11semprez/codewash/issues/54)
 - `battlesThisSession` now resets when the game starts, so the "speed_demon" achievement needs 10 battles in one session again (DEBT-015). Epitech PR #46 (merge `a9e408a`).
 - Rapid answers no longer read stale skill data in `handleSuccessHit` (DEBT-016). Epitech PR #45 (merge `7b82098`).
 - Achievement checks run after the stats update instead of after a 100 ms `setTimeout` (DEBT-017). Epitech PR #44 (merge `7fa5858`).

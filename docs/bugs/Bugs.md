@@ -97,4 +97,4 @@ In this run, the storage held only `heroSkills_v23` before the reload. After the
 | Item | Notes |
 | --- | --- |
 | [#37](https://github.com/0x11semprez/codewash/issues/37) `perfectMemoryGames` never incremented | The "Perfectionist" achievement cannot be unlocked |
-| [#54](https://github.com/0x11semprez/codewash/issues/54) Docker build fails | The `Dockerfile` runs `npm ci` without `--legacy-peer-deps` |
+| [#54](https://github.com/0x11semprez/codewash/issues/54) Docker build fails | `@testing-library/jest-dom` 8 wanted Vitest 5. Fixed: version 7.0.1 and a Docker build step in CI |

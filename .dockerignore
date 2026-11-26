@@ -1,0 +1,13 @@
+# Keep the build context small. The image installs its own dependencies.
+node_modules
+dist
+coverage
+release
+.git
+.github
+.claude
+docs
+*.log
+.env
+.env.*
+!.env.example

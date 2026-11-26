@@ -9,12 +9,10 @@ The game was first written by a non-developer with AI tools. This repository is 
 You need Node.js 20 or later and npm 10 or later.
 
 ```bash
-npm install --legacy-peer-deps   # install dependencies
+npm install                      # install dependencies
 npm run dev                      # start the game at http://localhost:5173
 npm test                         # run all tests
 ```
-
-`--legacy-peer-deps` is required: without it, npm refuses to install because of a peer dependency conflict.
 
 ## Other commands
 
@@ -34,7 +32,7 @@ docker build -t codewash .
 docker run --rm -p 8080:80 codewash   # open http://localhost:8080
 ```
 
-The Docker build is broken right now: the `Dockerfile` runs `npm ci` without `--legacy-peer-deps`. See [DEBT-022](https://github.com/0x11semprez/codewash/issues/54).
+CI builds this image on every pull request, so a broken `Dockerfile` fails the checks.
 
 ## Project structure
 
