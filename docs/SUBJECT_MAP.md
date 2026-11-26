@@ -26,8 +26,8 @@ Last checked: 2026-11-25.
 | Requirement | Status | Evidence | Missing |
 | --- | --- | --- | --- |
 | The project runs | Done | [README](../README.md#quick-start) | |
-| The launch process is documented | Partial | [README](../README.md#quick-start) gives the commands | A short write-up of how the team got the original Windows project running, what failed and why `--legacy-peer-deps` is needed. |
-| The Docker image builds | Missing | | `docker build` fails on `npm ci` ([DEBT-022](DEBT.md#debt-022-docker-build-fails-on-npm-ci-p1-open)). |
+| The launch process is documented | Partial | [README](../README.md#quick-start) gives the commands | A short write-up of how the team got the original Windows project running, what failed and how the peer dependency conflict was fixed. |
+| The Docker image builds | Done | `Dockerfile`, `.dockerignore`, "Docker build" step in `.github/workflows/ci.yml` | |
 
 ## Map the debt
 

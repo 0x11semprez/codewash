@@ -3,7 +3,7 @@
 > This is the plan the team wrote at the start of the project. Two points differ from what the team does today:
 >
 > - There are no `release/*` branches. Feature and fix branches merge into `main` through a pull request.
-> - The `Dockerfile` is at the repository root, not in `CodeWashGame/`. Its build currently fails ([DEBT-022](../DEBT.md#debt-022-docker-build-fails-on-npm-ci-p1-open)).
+> - The `Dockerfile` is at the repository root, not in `CodeWashGame/`. Its build currently fails ([DEBT-022](../DEBT.md#debt-022-docker-build-fails-on-npm-ci-p1-done-)).
 
 ## 1. Project overview
 
