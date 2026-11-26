@@ -21,7 +21,7 @@ const renderBattle = (config) =>
         <SkillCard
             config={config}
             data={{ level: 1, xp: 0, mobHealth: 100, mobMaxHealth: 100 }}
-            themeData={THEME_CONFIG.minecraft}
+            themeData={THEME_CONFIG.blocks}
             isCenter
             isBattling
             mobName="Zombie"

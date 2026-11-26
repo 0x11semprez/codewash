@@ -76,7 +76,7 @@ describe('getMobForSkill with injected random', () => {
         const random = () => {
             throw new Error('random should not be called');
         };
-        expect(getMobForSkill({ id: 'math' }, { level: 1, mathMob: 'Creeper' }, random)).toBe('Creeper');
+        expect(getMobForSkill({ id: 'math' }, { level: 1, mathMob: 'Boomer' }, random)).toBe('Boomer');
     });
 });
 

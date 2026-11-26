@@ -168,14 +168,14 @@ describe('getRandomBoss', () => {
 });
 
 describe('getMobForSkill', () => {
-    it('cleaning skill level 20 returns Ender Chest', () => {
+    it('cleaning skill level 20 returns Magic Chest', () => {
         const result = getMobForSkill({ id: 'cleaning' }, { level: 20 });
-        expect(result).toBe('Ender Chest');
+        expect(result).toBe('Magic Chest');
     });
 
-    it('cleaning skill level 5 returns Shulker Box', () => {
+    it('cleaning skill level 5 returns Shell Box', () => {
         const result = getMobForSkill({ id: 'cleaning' }, { level: 5 });
-        expect(result).toBe('Shulker Box');
+        expect(result).toBe('Shell Box');
     });
 
     it('cleaning skill level 1 returns standard chest', () => {
@@ -189,8 +189,8 @@ describe('getMobForSkill', () => {
     });
 
     it('boss level returns stored boss', () => {
-        const result = getMobForSkill({ id: 'reading' }, { level: 20, currentBoss: 'Wither' });
-        expect(result).toBe('Wither');
+        const result = getMobForSkill({ id: 'reading' }, { level: 20, currentBoss: 'Skull King' });
+        expect(result).toBe('Skull King');
     });
 
     it('miniboss level returns stored miniboss', () => {
