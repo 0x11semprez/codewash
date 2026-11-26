@@ -38,6 +38,8 @@ Links to pull requests point to this repository. Work done before the move from 
 - Space and Ocean themes, made from CC0 assets (Kenney packs and OpenGameArt music and sounds). Credits are in `docs/features/themes.md`. Issue [#21](https://github.com/0x11semprez/codewash/issues/21).
 - Own creatures, items, music and sounds for the Monsters, Idols and Spy themes, and own music and sounds for Blocks, all CC0. Issue [#21](https://github.com/0x11semprez/codewash/issues/21).
 - A save migration: at startup, old theme ids and old creature names in each profile save are updated, so no progress is lost. Issue [#21](https://github.com/0x11semprez/codewash/issues/21).
+- CodeQL static analysis in `.github/workflows/codeql.yml`, on every pull request to `main`, every push to `main` and once a week. It uses the `security-and-quality` queries on `src/` and `electron/` ([ADR-014](docs/adr/014-codeql-static-analysis.md)). No pull request yet.
+- ESLint complexity ceilings (`complexity` 58, `max-depth` 6, `max-params` 5, `max-lines-per-function` 543), set at the current maximum so no function gets worse ([ADR-014](docs/adr/014-codeql-static-analysis.md)). No pull request yet.
 - French text for every theme (name, skill texts, pattern pieces) in a `"translations"` block of each theme JSON, and French text for the new UI labels, the "Titanium" badge and the "Shadow Portal" border. Issue [#21](https://github.com/0x11semprez/codewash/issues/21).
 - Themes are data: one folder in `public/assets/themes/<id>/` and one JSON file in `src/themes/<id>.json` per theme. The game loads every JSON file, so adding a theme needs no code ([ADR-013](docs/adr/013-themes-as-data-folders.md)). Issue [#21](https://github.com/0x11semprez/codewash/issues/21).
 - Per-theme music and sound effects. The music switches as soon as the player changes theme. Issue [#21](https://github.com/0x11semprez/codewash/issues/21).
@@ -49,6 +51,7 @@ Links to pull requests point to this repository. Work done before the move from 
 
 ### Changed
 
+- The "Static analysis" step in `ci.yml` is removed. It ran ESLint a second time with the same rules. The lint step is renamed "Lint and complexity ceilings (zero warnings)". No pull request yet.
 - `App.jsx` is split into six hooks: `useGameState`, `useBattle`, `useAudio`, `useCarousel`, `useVoiceRecognition` and `useFullscreen` (DEBT-001). `App.jsx` went from 1,492 lines in the received version to 353 after this PR. Later features brought it back to 579 lines today. [#45](https://github.com/0x11semprez/codewash/pull/45)
 - `SkillCard.jsx` is split into one component per mini-game under `src/components/skills/games/` (DEBT-003). [#48](https://github.com/0x11semprez/codewash/pull/48)
 - Drawers, modals and the six mini-games load on demand with `React.lazy`. Display components and closed drawers are memoized. Startup JavaScript went from 392.46 kB to 319.27 kB. [#51](https://github.com/0x11semprez/codewash/pull/51)

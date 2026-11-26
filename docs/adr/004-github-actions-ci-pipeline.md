@@ -33,6 +33,8 @@ Pipeline steps (sequential):
 
 Triggers: push to `main`, pull requests targeting `main`.
 
+Update (2026-11-26): the pipeline now also checks the format and builds the Docker image. A second workflow, `.github/workflows/codeql.yml`, runs CodeQL static analysis on `src/` and `electron/`. The lint step also enforces complexity ceilings. See [ADR-014](014-codeql-static-analysis.md).
+
 ## Consequences
 
 ### Positive

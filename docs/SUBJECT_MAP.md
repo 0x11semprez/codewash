@@ -47,7 +47,7 @@ Last checked: 2026-11-25.
 | Test suite in a single command | Done | `npm test` | |
 | CI on every pull request: build, tests, lint, format, coverage | Done | `.github/workflows/ci.yml`, format check since [#56](https://github.com/0x11semprez/codewash/pull/56) | |
 | Quality gates block the merge | Partial | CI fails on a test failure, a lint warning or low coverage | `main` is protected since 2026-11-25: a pull request is required, the `build-and-test` check must pass on an up-to-date branch, and force pushes and deletion are blocked. Admins can still bypass the rule. |
-| Static analysis in the pipeline | Partial | "Static analysis" step in `ci.yml` | The step is a second ESLint run. There is no dedicated tool. |
+| Static analysis in the pipeline | Done | `.github/workflows/codeql.yml` (CodeQL, `security-and-quality` queries on `src/` and `electron/`), complexity ceilings in `eslint.config.js`, [ADR-014](adr/014-codeql-static-analysis.md) | The CodeQL checks are not yet required in the branch protection of `main`. The complexity ceilings only block regressions. |
 | New code fully covered, 80% of modified lines | Done | `vitest.config.js` | Global thresholds are 100% for lines, statements, branches and functions, so new code without tests fails CI. There is no separate diff coverage check. |
 | Lowered thresholds are written down as debt | Done | [ADR-003](adr/003-conservative-coverage-thresholds.md) | |
 | Tests can control the clock and random numbers | Partial | [ADR-008](adr/008-inject-randomness-and-clock.md), `src/__tests__/gameUtils.deterministic.test.js`, `src/__tests__/useGameState.clock.test.js` | Same 10 calls as in "Directed jet" above. |

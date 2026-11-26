@@ -1,0 +1,15 @@
+name: "CodeWash CodeQL config"
+
+# security-and-quality runs the default security queries and adds
+# the maintainability and reliability queries.
+queries:
+  - uses: security-and-quality
+
+paths:
+  - src
+  - electron
+
+paths-ignore:
+  - dist
+  - coverage
+  - node_modules

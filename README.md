@@ -73,7 +73,9 @@ Start with [docs/SUBJECT_MAP.md](docs/SUBJECT_MAP.md). It lists every requiremen
 
 ## Continuous integration
 
-GitHub Actions runs on every pull request to `main` and on every push to `main`. It installs dependencies, runs ESLint with zero warnings allowed, builds the app, runs the tests and checks coverage. The team rule is to never merge on red. GitHub enforces it: `main` is protected, so a pull request with a green `build-and-test` check is needed to merge.
+GitHub Actions runs on every pull request to `main` and on every push to `main`. It installs dependencies, runs ESLint with zero warnings allowed, checks the format, builds the app, runs the tests, checks coverage and builds the Docker image. ESLint also has complexity ceilings: no function may get more complex than the worst one today ([ADR-014](docs/adr/014-codeql-static-analysis.md)). The team rule is to never merge on red. GitHub enforces it: `main` is protected, so a pull request with a green `build-and-test` check is needed to merge.
+
+A second workflow, `.github/workflows/codeql.yml`, runs CodeQL static analysis on `src/` and `electron/` with the `security-and-quality` queries. It runs on the same pull requests and pushes, and once a week. Alerts are in the Security tab under Code scanning. The runbook explains what to do when CodeQL fails.
 
 Coverage thresholds live in `vitest.config.js`. They are 100% for lines, statements, branches and functions, so any new code without tests fails CI. Two files are left out of the count: `src/main.jsx`, which only starts React, and `src/constants/assets.js`, a list of placeholder paths that nothing imports.
 
