@@ -148,7 +148,7 @@ describe('screens in French', () => {
         expect(screen.getByText('Appuie pour parler')).toBeInTheDocument();
         rerender(
             <I18nProvider initialLanguage="fr">
-                <ReadingGame challenge={{ question: 'CAT', answer: 'CAT' }} isListening spokenText="Listening..." />
+                <ReadingGame challenge={{ question: 'CAT', answer: 'CAT' }} isListening spokenText="games.listening" />
             </I18nProvider>,
         );
         expect(screen.getByText('Écoute...')).toBeInTheDocument();

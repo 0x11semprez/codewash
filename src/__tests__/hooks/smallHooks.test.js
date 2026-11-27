@@ -3,7 +3,7 @@ import { renderHook, act } from '@testing-library/react';
 import { useCarousel } from '../../hooks/useCarousel';
 import { useAudio } from '../../hooks/useAudio';
 import { useFullscreen } from '../../hooks/useFullscreen';
-import { useVoiceRecognition } from '../../hooks/useVoiceRecognition';
+import { MIC_STATUS, READING_SPEECH_LANGUAGE, useVoiceRecognition } from '../../hooks/useVoiceRecognition';
 import * as sound from '../../services/soundManager';
 
 vi.mock('../../services/soundManager', () => {
@@ -184,10 +184,11 @@ describe('useVoiceRecognition', () => {
         const { result, onCorrect, onWrong } = setup();
         act(() => result.current.startVoiceListener('reading', 'reading'));
         const [recognition] = instances;
-        expect(recognition.lang).toBe('en-US');
+        expect(recognition.lang).toBe(READING_SPEECH_LANGUAGE);
+        expect(READING_SPEECH_LANGUAGE).toBe('en-US');
         expect(recognition.continuous).toBe(true);
         expect(result.current.isListening).toBe(true);
-        expect(result.current.spokenText).toBe('Listening...');
+        expect(result.current.spokenText).toBe(MIC_STATUS.listening);
 
         say(recognition, 'see.');
         expect(result.current.spokenText).toBe('SEE');
@@ -248,7 +249,7 @@ describe('useVoiceRecognition', () => {
         const { result } = setup();
         act(() => result.current.startVoiceListener('math', 'math'));
         act(() => instances[0].onend());
-        expect(result.current.spokenText).toBe('Mic Off');
+        expect(result.current.spokenText).toBe(MIC_STATUS.off);
     });
 
     it('reports a refused mic and ignores other errors', () => {
@@ -257,7 +258,7 @@ describe('useVoiceRecognition', () => {
         act(() => instances[0].onerror({ error: 'network' }));
         expect(result.current.isListening).toBe(true);
         act(() => instances[0].onerror({ error: 'not-allowed' }));
-        expect(result.current.spokenText).toBe('Mic permission denied');
+        expect(result.current.spokenText).toBe(MIC_STATUS.denied);
         expect(result.current.isListening).toBe(false);
     });
 
@@ -282,7 +283,7 @@ describe('useVoiceRecognition', () => {
         const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
         const { result } = setup();
         act(() => result.current.stopVoiceRecognition());
-        expect(result.current.spokenText).toBe('Mic Off');
+        expect(result.current.spokenText).toBe(MIC_STATUS.off);
 
         act(() => result.current.startVoiceListener('reading', 'reading'));
         instances[0].stop.mockImplementation(() => {
@@ -304,6 +305,6 @@ describe('useVoiceRecognition', () => {
 
         vi.stubGlobal('webkitSpeechRecognition', undefined);
         act(() => result.current.toggleMicListener('reading', 'reading'));
-        expect(result.current.spokenText).toBe('Mic not available');
+        expect(result.current.spokenText).toBe(MIC_STATUS.unavailable);
     });
 });

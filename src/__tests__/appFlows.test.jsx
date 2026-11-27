@@ -298,7 +298,7 @@ describe('App battle', () => {
             render(<App />);
             await startCentreBattle();
             fireEvent.click(screen.getByText('mic'));
-            expect(screen.getByText('Mic not available')).toBeInTheDocument();
+            expect(screen.getByText('games.micUnavailable')).toBeInTheDocument();
         },
         TEST_TIMEOUT,
     );

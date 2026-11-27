@@ -2,7 +2,26 @@ import { useState, useRef } from 'react';
 import { HOMOPHONES } from '../constants/gameData';
 
 const MIN_SPOKEN_TEXT_LENGTH = 2;
-const MIC_OFF_TEXT = 'Mic Off';
+
+// The reading words and their homophones are English game data (ADR-012), and
+// the spoken text must match them exactly. A French recognizer writes what it
+// hears as French words, so its text would rarely match and a French player
+// could not pass. Recognition stays in English whatever the interface language
+// is, until the reading words are translated.
+export const READING_SPEECH_LANGUAGE = 'en-US';
+
+// Status messages are dictionary keys, so the reading game shows them in the
+// current language. A transcript never contains a dot, so it cannot match a key.
+export const MIC_STATUS = {
+    listening: 'games.listening',
+    off: 'games.micOff',
+    denied: 'games.micDenied',
+    unavailable: 'games.micUnavailable',
+};
+
+const MIC_STATUS_KEYS = new Set(Object.values(MIC_STATUS));
+
+export const isMicStatus = (text) => MIC_STATUS_KEYS.has(text);
 
 export const useVoiceRecognition = (challengeDataRef, onCorrect, onWrong) => {
     const [isListening, setIsListening] = useState(false);
@@ -19,7 +38,7 @@ export const useVoiceRecognition = (challengeDataRef, onCorrect, onWrong) => {
             recognitionRef.current = null;
         }
         setIsListening(false);
-        setSpokenText(MIC_OFF_TEXT);
+        setSpokenText(MIC_STATUS.off);
     };
 
     const startVoiceListener = (targetId, battlingSkillId) => {
@@ -27,12 +46,12 @@ export const useVoiceRecognition = (challengeDataRef, onCorrect, onWrong) => {
         if (recognitionRef.current) return;
 
         recognitionRef.current = new window.webkitSpeechRecognition();
-        recognitionRef.current.lang = 'en-US';
+        recognitionRef.current.lang = READING_SPEECH_LANGUAGE;
         recognitionRef.current.continuous = true;
 
         recognitionRef.current.onstart = () => {
             setIsListening(true);
-            setSpokenText('Listening...');
+            setSpokenText(MIC_STATUS.listening);
         };
 
         recognitionRef.current.onend = () => {
@@ -45,13 +64,13 @@ export const useVoiceRecognition = (challengeDataRef, onCorrect, onWrong) => {
                     }
                 }, 100);
             } else {
-                setSpokenText(MIC_OFF_TEXT);
+                setSpokenText(MIC_STATUS.off);
             }
         };
 
         recognitionRef.current.onerror = (event) => {
             if (event.error === 'not-allowed') {
-                setSpokenText('Mic permission denied');
+                setSpokenText(MIC_STATUS.denied);
                 setIsListening(false);
             }
         };
@@ -80,7 +99,7 @@ export const useVoiceRecognition = (challengeDataRef, onCorrect, onWrong) => {
 
     const toggleMicListener = (targetId, battlingSkillId) => {
         if (!window.webkitSpeechRecognition) {
-            setSpokenText('Mic not available');
+            setSpokenText(MIC_STATUS.unavailable);
             return;
         }
         if (recognitionRef.current && isListening) {
