@@ -21,6 +21,7 @@ import { useVoiceRecognition } from './hooks/useVoiceRecognition';
 import { usePauseWhenPageHidden } from './hooks/useAnimationPause';
 import { useTranslation } from './i18n/useTranslation';
 import { themeSkillText } from './i18n/gameText';
+import styles from './App.module.css';
 
 const ResetModal = lazy(() => import('./components/modals/ResetModal'));
 const BugReportModal = lazy(() => import('./components/modals/BugReportModal'));
@@ -398,7 +399,7 @@ const App = ({ startupLoadSeconds = null }) => {
                         width="60"
                         height="450"
                         viewBox="0 0 60 450"
-                        className="animate-chevron-left"
+                        className={styles['animate-chevron-left']}
                         style={{ opacity: 0.8 }}
                     >
                         <path
@@ -425,7 +426,7 @@ const App = ({ startupLoadSeconds = null }) => {
                         width="60"
                         height="450"
                         viewBox="0 0 60 450"
-                        className="animate-chevron-right"
+                        className={styles['animate-chevron-right']}
                         style={{ opacity: 0.8 }}
                     >
                         <path

@@ -1,0 +1,51 @@
+/* Badge borders of the skill card (by level) and the gem socket. */
+
+.gem-socket {
+    position: absolute;
+    top: -16px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 32px;
+    height: 32px;
+    background: #222;
+    border: 2px solid #ffd700;
+    border-radius: 50%;
+    z-index: 50;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.5);
+}
+.gem-stone {
+    width: 18px;
+    height: 18px;
+    border-radius: 2px;
+    transform: rotate(45deg);
+    box-shadow:
+        inset 2px 2px 4px rgba(255, 255, 255, 0.7),
+        inset -2px -2px 4px rgba(0, 0, 0, 0.5),
+        0 0 4px currentColor;
+    border: 1px solid rgba(0, 0, 0, 0.5);
+}
+
+.border-wood {
+    border-color: #8b4513 !important;
+}
+.border-stone {
+    border-color: #808080 !important;
+}
+.border-gold {
+    border-color: #ffd700 !important;
+}
+.border-iron {
+    border-color: #c0c0c0 !important;
+}
+.border-emerald {
+    border-color: #50c878 !important;
+}
+.border-diamond {
+    border-color: #00ced1 !important;
+}
+.border-titanium {
+    border-color: #4a4a4a !important;
+}

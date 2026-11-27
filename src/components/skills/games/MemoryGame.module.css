@@ -1,0 +1,40 @@
+/* 3D card flip and the shake of a wrong pair. */
+
+@keyframes shake-flipped {
+    0%,
+    100% {
+        transform: translateX(0) rotateY(180deg);
+    }
+    25% {
+        transform: translateX(-5px) rotateY(180deg);
+    }
+    75% {
+        transform: translateX(5px) rotateY(180deg);
+    }
+}
+.animate-shake-flipped {
+    animation: shake-flipped 0.4s ease-in-out;
+}
+.transform-style-3d {
+    transform-style: preserve-3d;
+}
+.backface-hidden {
+    backface-visibility: hidden;
+}
+.rotate-y-180 {
+    transform: rotateY(180deg);
+}
+
+/* Copy of the global shake keyframes: names in a CSS module are local. */
+@keyframes shake {
+    0%,
+    100% {
+        transform: translateX(0);
+    }
+    25% {
+        transform: translateX(-5px);
+    }
+    75% {
+        transform: translateX(5px);
+    }
+}

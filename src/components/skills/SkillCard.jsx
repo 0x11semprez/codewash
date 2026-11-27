@@ -12,6 +12,11 @@ import { calculateXPToLevel } from '../../utils/gameUtils';
 import { AURA_ADJECTIVES } from '../../utils/mobDisplayUtils';
 import { useTranslation } from '../../i18n/useTranslation';
 import { mobNameWithAura, themeSkillText } from '../../i18n/gameText';
+import styles from './SkillCard.module.css';
+import borderEffects from '../../styles/borderEffects.module.css';
+// Class of an animated border effect. An unknown id (an old save) keeps its plain name, as before.
+const borderEffectClass = (id) => borderEffects[`border-effect-${id}`] ?? `border-effect-${id}`;
+
 const MemoryGame = lazy(() => import('./games/MemoryGame'));
 const PatternGame = lazy(() => import('./games/PatternGame'));
 const MathGame = lazy(() => import('./games/MathGame'));
@@ -52,35 +57,35 @@ const SkillCard = ({
     let levelTextColor = 'text-white';
     if (data.level >= 20) {
         levelTextColor = 'text-amber-700';
-        borderClass = 'border-wood';
+        borderClass = styles['border-wood'];
     }
     if (data.level >= 40) {
         levelTextColor = 'text-stone-400';
-        borderClass = 'border-stone';
+        borderClass = styles['border-stone'];
     }
     if (data.level >= 60) {
         levelTextColor = 'text-yellow-400';
-        borderClass = 'border-gold';
+        borderClass = styles['border-gold'];
     }
     if (data.level >= 80) {
         levelTextColor = 'text-gray-200';
-        borderClass = 'border-iron';
+        borderClass = styles['border-iron'];
     }
     if (data.level >= 100) {
         levelTextColor = 'text-emerald-400';
-        borderClass = 'border-emerald';
+        borderClass = styles['border-emerald'];
     }
     if (data.level >= 120) {
         levelTextColor = 'text-cyan-300';
-        borderClass = 'border-diamond';
+        borderClass = styles['border-diamond'];
     }
     if (data.level >= 140) {
         levelTextColor = 'text-gray-500';
-        borderClass = 'border-titanium';
+        borderClass = styles['border-titanium'];
     }
     if (data.level >= 160) {
         levelTextColor = 'text-rainbow';
-        borderClass = 'border-titanium';
+        borderClass = styles['border-titanium'];
     }
 
     let appliedBorderEffect = '';
@@ -94,7 +99,7 @@ const SkillCard = ({
                 boxShadow: `0 0 20px ${effectiveColor}, 0 0 40px ${effectiveColor}`,
             };
         } else {
-            appliedBorderEffect = `border-effect-${selectedBorder}`;
+            appliedBorderEffect = borderEffectClass(selectedBorder);
             if (selectedBorder === 'gradient' || selectedBorder === 'sparkle') {
                 borderStyle = { '--border-color': borderColor || '#FFD700' };
             }
@@ -266,8 +271,8 @@ const SkillCard = ({
             style={isCenter ? borderStyle : {}}
         >
             {isCenter && data.level >= PRESTIGE_LEVEL_THRESHOLD && (
-                <div className="gem-socket">
-                    <div className="gem-stone" style={gemStyle}></div>
+                <div className={styles['gem-socket']}>
+                    <div className={styles['gem-stone']} style={gemStyle}></div>
                 </div>
             )}
             <div className={topSectionBaseClass} style={config.colorStyle}>
