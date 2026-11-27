@@ -216,7 +216,7 @@ The [runbook](handover/RUNBOOK.md#white-screen-or-something-went-wrong) explains
 | `src/constants/game/` | Game data split by topic: `items`, `mobs`, `skills`, `words`, `difficulty`, `themes`, `audio`. `constants/gameData.js` re-exports them. |
 | `src/constants/` | Also `achievements.js`, and the dead file `assets.js` (DEBT-004). |
 | `src/themes/` | One JSON file per theme. Their pictures and sounds are in `public/assets/themes/<id>/`. |
-| `src/styles/` | Six CSS files loaded through `components/ui/GlobalStyles.css`. Class names are global (DEBT-002). |
+| `src/styles/` | Global CSS shared by several components (`base.css`, `animation-pause.css`, loaded through `components/ui/GlobalStyles.css`) and the border effects module shared by `SkillCard` and `CosmeticsDrawer`. Styles used by one component live in a CSS module next to it (`*.module.css`, DEBT-002). |
 | `src/assets/` | Self-hosted font and textures. |
 | `src/__tests__/` | Vitest suites. Coverage is 100% with 100% thresholds. |
 | `electron/` | Electron main process. |

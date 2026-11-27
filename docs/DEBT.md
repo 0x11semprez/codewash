@@ -221,17 +221,19 @@ Each item links to its GitHub issue for full context and to the PR that addresse
 - **Fix:** Extract custom hooks (`useBattle`, `useProfile`, `useVoiceRecognition`, `useCarousel`, `useAchievements`), move state into context providers.
 - **Effort:** L
 
-### DEBT-002: GlobalStyles monolith [P2] [Partly done]
+### DEBT-002: GlobalStyles monolith [P2] [Done ✓]
 
-- **Issue:** [#25](https://github.com/0x11semprez/codewash/issues/25) (open) — **PR:** [#65](https://github.com/0x11semprez/codewash/pull/65) (merged)
-- **Location:** `src/styles/` (5 files, 1,777 lines), loaded through `src/components/ui/GlobalStyles.css`
+- **Issue:** [#25](https://github.com/0x11semprez/codewash/issues/25) — **PR:** [#65](https://github.com/0x11semprez/codewash/pull/65) (merged), `refactor/debt-002-css-modules`
+- **Location:** one CSS module per component (`App.module.css`, `MobWithAura.module.css`, `AchievementToast.module.css`, `SkillCard.module.css`, `MemoryGame.module.css`, `ProfileCard.module.css`, `CosmeticsDrawer.module.css`) and `src/styles/borderEffects.module.css` (shared by `SkillCard` and `CosmeticsDrawer`). `src/styles/base.css` and `src/styles/animation-pause.css` stay global, loaded through `src/components/ui/GlobalStyles.css`.
 - **Smell:** Monolith. All CSS was in one `<style>` tag: animations, layouts, themes, aura effects. No scoping, no tree-shaking.
-- **Done:** the CSS moved out of `GlobalStyles.jsx` into a stylesheet, then was split into 5 files by topic (`base`, `card-borders`, `aura-animations`, `auras`, `achievement-borders`). The built CSS is byte-identical to the one before the split. The unused `GlobalStyles.jsx` copy was deleted.
-- **Remaining:** class names are still global, so a style change can still affect unrelated components. No dead-CSS elimination.
-- **Impact:** Any style change risks breaking unrelated components.
-- **Risk:** High impact, medium likelihood.
-- **Fix (next step):** CSS modules or Tailwind utilities per component.
-- **Why it stays:** moving about 1,800 lines of global CSS to modules touches every component and needs visual checks of all six themes. It was less urgent than the tests and the missions.
+- **Done:**
+  - The CSS moved out of `GlobalStyles.jsx` into a stylesheet, then was split into 5 files by topic ([#65](https://github.com/0x11semprez/codewash/pull/65)).
+  - Every class used by one component moved to a CSS module next to it. Vite gives module classes a unique name, so a style change no longer reaches another component.
+  - Dead CSS was removed (the CSS went from 1,814 to 1,392 lines): the `.aura-*` classes (about 450 lines) (the game draws auras with `[data-aura]` on `MobWithAura`, and nothing ever applied these classes), `.selected-card-glow`, `.animate-spin-aura`, and the `toast-slide`, `aura-breathe` and `aura-pulse-spiky` keyframes.
+  - `base.css` keeps only what several components share: the page body, the range slider, `scrollbar-hide`, `text-rainbow`, `animate-bob`, `animate-knockback`, `animate-shake` and `perspective-1000`. A test fails if a class in it is used by fewer than two files, if a module keeps an unused class, or if the border effect list and its classes drift apart.
+  - Checked in the production build: the computed styles of 47 elements (every moved class, every aura, every border effect, with their `::before` and `::after`) are identical before and after, except one unused Tailwind variable (`--tw-rotate-y`) that the final `transform` does not use. The 748 elements of the main screen have the same position and size. Screenshots of five screens match, apart from anti-aliasing on a few image edges.
+- **Remaining:** nothing for this item. Shared animation classes stay global on purpose (see above).
+- **Side effect:** the styles of the main screen now load with the first CSS file instead of the lazy global file: +3.2 kB gzip at startup. The total CSS went from 16.3 kB to 16.2 kB gzip.
 - **Effort:** M
 
 ### DEBT-003: SkillCard does too much [P1] [Done ✓]
@@ -496,7 +498,7 @@ Placement is the impact and likelihood when the item was found. ✓ = done, ◐ 
 ```
               │ Low Likelihood │ Med Likelihood  │ High Likelihood │
 ──────────────┼────────────────┼─────────────────┼─────────────────┤
-High Impact   │ DEBT-010 ✓     │ DEBT-002 ◐      │ DEBT-001 ✓      │
+High Impact   │ DEBT-010 ✓     │ DEBT-002 ✓      │ DEBT-001 ✓      │
               │                │                 │ DEBT-003 ✓      │
               │                │                 │ DEBT-005 ✓      │
               │                │                 │ DEBT-006 ✓      │
@@ -514,7 +516,7 @@ Low Impact    │ DEBT-018 ✓     │                 │ DEBT-004 ◐      │
 ──────────────┴────────────────┴─────────────────┴─────────────────┘
 ```
 
-17 items done, 4 partly done, 2 open. No high-likelihood item is fully open. The only high-impact item left is DEBT-002, and its biggest part (the 1,302-line component) is gone.
+18 items done, 3 partly done, 2 open. No high-likelihood item is fully open, and every high-impact item is done.
 
 ---
 
@@ -555,7 +557,7 @@ Low Impact    │ DEBT-018 ✓     │                 │ DEBT-004 ◐      │
 
 | # | Debt | Task | Status |
 |---|------|------|--------|
-| 17 | DEBT-002 | Break GlobalStyles into modules | Partly done — [#65](https://github.com/0x11semprez/codewash/pull/65) (merged). Class names are still global. |
+| 17 | DEBT-002 | Break GlobalStyles into modules | Done ✓ — [#65](https://github.com/0x11semprez/codewash/pull/65) (merged), CSS modules in `refactor/debt-002-css-modules` |
 | 18 | DEBT-008 | Remove internal duplication | Done ✓ |
 | 19 | DEBT-011 | Refactor sound manager + audio pooling | Open |
 | 20 | DEBT-013 | Add error tracking | Done ✓ — [#83](https://github.com/0x11semprez/codewash/pull/83) (merged) |
@@ -570,7 +572,7 @@ Low Impact    │ DEBT-018 ✓     │                 │ DEBT-004 ◐      │
 | Debt | Issue | PR | Status |
 |------|-------|----|--------|
 | DEBT-001 | [#24](https://github.com/0x11semprez/codewash/issues/24) | [#45](https://github.com/0x11semprez/codewash/pull/45) (merged) | Done ✓ |
-| DEBT-002 | [#25](https://github.com/0x11semprez/codewash/issues/25) (open) | [#65](https://github.com/0x11semprez/codewash/pull/65) (merged) | Partly done |
+| DEBT-002 | [#25](https://github.com/0x11semprez/codewash/issues/25) | [#65](https://github.com/0x11semprez/codewash/pull/65) (merged), pending | Done ✓ |
 | DEBT-003 | [#26](https://github.com/0x11semprez/codewash/issues/26) | [#48](https://github.com/0x11semprez/codewash/pull/48) (merged) | Done ✓ |
 | DEBT-004 | [#27](https://github.com/0x11semprez/codewash/issues/27) | commit `883e02f` (Epitech PR #43) | Partly done |
 | DEBT-005 | [#28](https://github.com/0x11semprez/codewash/issues/28) | [#3](https://github.com/0x11semprez/codewash/pull/3), [#4](https://github.com/0x11semprez/codewash/pull/4), [#6](https://github.com/0x11semprez/codewash/pull/6), [#46](https://github.com/0x11semprez/codewash/pull/46), [#80](https://github.com/0x11semprez/codewash/pull/80) (merged) | Done ✓ |
@@ -686,7 +688,6 @@ These items stay open for the next team. Each one has its reason in section 2.
 
 | Debt | What is left | Why it stays | Effort |
 |------|--------------|--------------|--------|
-| DEBT-002 | Global CSS class names in `src/styles/` | Touches every component and needs visual checks of all themes | M |
 | DEBT-004 | Dead file `src/constants/assets.js` | Harmless, not in the bundle. Also remove its entries in `vitest.config.js` and `assetPaths.test.js` | XS |
 | DEBT-011 | `soundManager` singleton, a new `Audio` per sound | Low impact, no reported problem | M |
 | DEBT-020 | No `src/features/` layout | A big move would break open branches. Move one feature at a time | M |

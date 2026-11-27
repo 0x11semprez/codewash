@@ -3,6 +3,7 @@ import { Trophy } from 'lucide-react';
 import { ACHIEVEMENTS, TIER_COLORS } from '../../constants/achievements';
 import { useTranslation } from '../../i18n/useTranslation';
 import { achievementDescription, achievementName } from '../../i18n/gameText';
+import styles from './AchievementToast.module.css';
 
 /**
  * AchievementToast Component
@@ -31,7 +32,9 @@ const AchievementToast = ({ achievementId, tierIndex = null, descriptionOverride
     const bgColor = tierColor ? tierColor.bg : 'rgba(255, 215, 0, 0.1)';
 
     return (
-        <div className="fixed bottom-8 left-1/2 z-50 animate-achievement-toast w-full max-w-2xl pointer-events-none transform -translate-x-1/2">
+        <div
+            className={`fixed bottom-8 left-1/2 z-50 ${styles['animate-achievement-toast']} w-full max-w-2xl pointer-events-none transform -translate-x-1/2`}
+        >
             <div
                 className="bg-black/90 rounded-xl p-4 px-8 flex items-center justify-between backdrop-blur-md mx-4"
                 style={{

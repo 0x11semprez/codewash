@@ -21,6 +21,8 @@ import { pauseWhenOffscreen } from '../../hooks/useAnimationPause';
 import { useTranslation } from '../../i18n/useTranslation';
 import BorderEffectCard from './BorderEffectCard';
 import { achievementDescription, achievementName } from '../../i18n/gameText';
+import styles from './CosmeticsDrawer.module.css';
+import borderEffects from '../../styles/borderEffects.module.css';
 
 const BORDER_EFFECTS = [
     { id: 'solid', badge: null, icon: Star },
@@ -95,7 +97,7 @@ const CosmeticsDrawer = ({
                         data-testid="theme-list"
                         role="group"
                         aria-label={t('cosmetics.themeList')}
-                        className="theme-scroll grid grid-cols-2 gap-4 max-h-[14.5rem] overflow-y-auto p-2 pr-3"
+                        className={`${styles['theme-scroll']} grid grid-cols-2 gap-4 max-h-[14.5rem] overflow-y-auto p-2 pr-3`}
                     >
                         {THEMES_LIST.map((theme) => (
                             <button
@@ -158,7 +160,7 @@ const CosmeticsDrawer = ({
                                     unlocked={unlocked}
                                     isSelected={isSelected}
                                     gridIndex={index}
-                                    previewClassName={isSolid ? '' : `border-effect-${effect.id}`}
+                                    previewClassName={isSolid ? '' : borderEffects[`border-effect-${effect.id}`]}
                                     previewStyle={previewStyle}
                                     onClick={() => {
                                         if (effect.id === 'solid-picker' && isSelected) {
@@ -238,7 +240,7 @@ const CosmeticsDrawer = ({
                                     unlocked={unlocked}
                                     isSelected={selectedBorder === effect.id}
                                     gridIndex={BORDER_EFFECTS.length + index}
-                                    previewClassName={`border-effect-${effect.id}`}
+                                    previewClassName={borderEffects[`border-effect-${effect.id}`]}
                                     onClick={() => {
                                         setSelectedBorder(effect.id);
                                         setShowColorPicker(false);

@@ -6,6 +6,7 @@ import diamondsTexture from '../../assets/textures/diagmonds-light.png';
 import { SKILL_DATA, getTheme } from '../../constants/gameData';
 import { pauseWhenOffscreen } from '../../hooks/useAnimationPause';
 import { useTranslation } from '../../i18n/useTranslation';
+import styles from './ProfileCard.module.css';
 
 const ProfileCard = ({ id, name, stats, isCurrent, onSwitch, onRename, isParent, onParentVerified }) => {
     const [isEditing, setIsEditing] = useState(false);
@@ -50,7 +51,7 @@ const ProfileCard = ({ id, name, stats, isCurrent, onSwitch, onRename, isParent,
         const baseClasses =
             'relative w-full h-[100px] rounded-xl overflow-hidden transition-all cursor-pointer group select-none';
         if (isCurrent) {
-            const ringClass = isParent ? 'ring-rainbow' : 'ring-4 ring-yellow-400';
+            const ringClass = isParent ? styles['ring-rainbow'] : 'ring-4 ring-yellow-400';
             return `${baseClasses} ${ringClass} z-10`; // No scale - this is the "full size"
         }
         return `${baseClasses} scale-[0.98] hover:scale-[0.99] opacity-70 hover:opacity-100`; // Shrunk when inactive
@@ -175,7 +176,7 @@ const ProfileCard = ({ id, name, stats, isCurrent, onSwitch, onRename, isParent,
                             </span>
                         </div>
                         <div className="flex-1 bg-black/50 rounded-lg border-2 border-white/10 inner-shadow p-0 overflow-hidden backdrop-blur-sm relative flex items-center">
-                            <div className="flex gap-6 animate-scroll-left px-6 w-max">
+                            <div className={`flex gap-6 ${styles['animate-scroll-left']} px-6 w-max`}>
                                 {carouselItems.map((skillConfig, index) => {
                                     const userSkillLevel =
                                         stats && stats.skills && stats.skills[skillConfig.id]

@@ -109,6 +109,12 @@ describe('SkillCard border effects', () => {
         expect(card().className).not.toContain('border-stone-500');
         expect(card().style.getPropertyValue('--border-color')).toBe('');
     });
+
+    it('keeps the effect name of an unknown saved border, and no badge border', () => {
+        renderCard({ selectedBorder: 'retired-effect', data: { level: 60, xp: 0, mobHealth: 100, mobMaxHealth: 100 } });
+        expect(card().className).toContain('border-effect-retired-effect');
+        expect(card().className).not.toContain('border-gold');
+    });
 });
 
 describe('SkillCard enemy and health', () => {
