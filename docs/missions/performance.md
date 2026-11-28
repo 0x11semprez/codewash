@@ -1,43 +1,61 @@
 # Performance report
 
-Issue [#18](https://github.com/EpitechBachelorPromo2028/B-ING-300-PAR-3-1-codewash-21/issues/18): *Improve performance (loading screen and UX snappiness)*, tracked in this repository as [#18](https://github.com/0x11semprez/codewash/issues/18).
+> Mission issue: [#18](https://github.com/0x11semprez/codewash/issues/18) | Epitech mirror: [#18](https://github.com/EpitechBachelorPromo2028/B-ING-300-PAR-3-1-codewash-21/issues/18)
+>
+> Related PRs: [#51](https://github.com/0x11semprez/codewash/pull/51) (loading screen), [#64](https://github.com/0x11semprez/codewash/pull/64) (music compression), [#75](https://github.com/0x11semprez/codewash/pull/75) (WebP sprites), [#76](https://github.com/0x11semprez/codewash/pull/76) (animation pause), [#89](https://github.com/0x11semprez/codewash/pull/89) (fair comparison), [#99](https://github.com/0x11semprez/codewash/pull/99) (asset re-encoding), [#100](https://github.com/0x11semprez/codewash/pull/100) (layout fix), [#101](https://github.com/0x11semprez/codewash/pull/101) (aura pause)
+>
+> ADRs: [ADR-010](../adr/010-pause-offscreen-animations.md) (animation pause), [ADR-011](../adr/011-animated-webp-instead-of-gif.md) (WebP sprites)
+
+## At a glance
+
+```mermaid
+flowchart LR
+    subgraph "Received version"
+        R1["Lighthouse: 38.5"]
+        R2["Load: 4.27 s"]
+        R3["Transfer: 2.13 MB"]
+    end
+    subgraph "Current version"
+        C1["Lighthouse: 57.5"]
+        C2["Load: 3.16 s"]
+        C3["Transfer: 1.34 MB"]
+    end
+    R1 -- "+19 pts" --> C1
+    R2 -- "-26%" --> C2
+    R3 -- "-37%" --> C3
+```
 
 **Compared versions**
 
 | Label | Commit | Used in |
 | --- | --- | --- |
-| Received | `a4f337f` (the first commit `f12cd74` plus the original assets) | Section 4.2, fair comparison |
+| Received | `a4f337f` (first commit `f12cd74` + original assets) | Section 4.2, fair comparison |
 | Current | `4e0388a` (`main`) | Section 4.2, fair comparison |
-| Before / After | `866aaff` / `666c69c` | Sections 2 and 4.1, measured when the loading screen was added |
+| Before / After | `866aaff` / `666c69c` | Sections 2 and 4.1, measured when loading screen was added |
 
 ## Summary
 
 | Section of the issue | Status | Outcome |
 | --- | --- | --- |
-| Loading screen | Done | Full-screen loader with progress percentage, critical asset preloading, measured load time |
+| Loading screen | Done | Full-screen loader with progress, critical asset preloading |
 | Performance profiling | Done | Profiles captured, re-renders identified, FCP baseline recorded |
-| Optimizations | Done | Memoization, lazy-loaded drawers, modals and mini-games, extracted global CSS, deferred images, paused off-screen animations, WebP sprites |
-| Measurement | Done | Same-theme Lighthouse and startup comparison of the received and current versions, with a script to rerun it (section 4.2) |
-| Tests | Done | Loading screen, loading gate, preload, lazy components, Web Vitals and a regression guard |
+| Optimizations | Done | Memoization, lazy loading, extracted CSS, deferred images, paused animations, WebP sprites |
+| Measurement | Done | Same-theme Lighthouse comparison ([#89](https://github.com/0x11semprez/codewash/pull/89)), rerunnable script |
+| Tests | Done | Loading screen, loading gate, preload, lazy components, Web Vitals, regression guard |
 
-**Key results**
+**Key results** (medians of 4 runs each, same conditions):
 
-The received version and the current `main` were measured in the same conditions (section 4.2). Medians of 4 runs each:
-
-- The game is usable sooner: 3.16 s against 4.27 s (-26 %), loading screen included.
-- The Lighthouse performance score went from 38.5 to 57.5, LCP from 2.87 s to 1.42 s and Total Blocking Time from 2.22 s to 1.03 s.
-- The first load transfers 1.34 MB against 2.13 MB (-37 %).
-- Two figures got worse. The page makes 33.5 requests against 24, because drawers, global styles and the font are now separate files. The startup JavaScript is 107.9 kB transferred against 102.2 kB (+5.7 %), because translations and other features were added since.
+- Game usable 26% sooner: 3.16 s vs 4.27 s (loading screen included)
+- Lighthouse performance: 38.5 to 57.5, LCP from 2.87 s to 1.42 s, TBT from 2.22 s to 1.03 s
+- First load transfer: 1.34 MB vs 2.13 MB (-37%)
+- Two regressions: more requests (33.5 vs 24, from lazy chunks and separate files) and slightly larger startup JS (107.9 kB vs 102.2 kB, from added features)
 
 **Later optimizations (2026-11-28)**
 
-- Animated WebP sprites re-encoded with fewer frames and lossy quality 60: total assets from 50 MB to 42 MB. Book went from 8.3 MB to 572 KB. [#99](https://github.com/0x11semprez/codewash/pull/99)
-- Layout uses viewport-relative sizes (`clamp`, `min`, `vh`) so the main screen no longer overflows on small viewports. [#100](https://github.com/0x11semprez/codewash/pull/100)
-- Aura CSS animations pause (`animation-play-state: paused`) when the player is not in battle, reducing GPU paint work on the carousel. [#101](https://github.com/0x11semprez/codewash/pull/101)
-- Lighthouse CI added to the GitHub Actions pipeline with performance score, FCP, LCP and CLS thresholds.
-- The machine was busy during the runs (load average 12 to 25 on 8 cores). The trend is the same in every pair of runs, but the absolute values are slower than on a quiet machine.
-
-Every figure is labeled with the tool and environment that produced it.
+- Animated WebP sprites re-encoded: 50 MB to 42 MB, book.webp from 8.3 MB to 572 KB ([#99](https://github.com/0x11semprez/codewash/pull/99))
+- Viewport-relative layout with `clamp`/`min`/`vh`, no more overflow on small viewports ([#100](https://github.com/0x11semprez/codewash/pull/100))
+- Aura CSS animations pause when not in battle, reducing GPU paint work ([#101](https://github.com/0x11semprez/codewash/pull/101))
+- Lighthouse CI added to GitHub Actions pipeline
 
 ---
 
@@ -45,112 +63,119 @@ Every figure is labeled with the tool and environment that produced it.
 
 ### Problem
 
-At startup the React tree rendered directly. Players had no feedback while images and sounds loaded, and the main menu could appear with missing visuals.
+React tree rendered directly at startup. No feedback while images and sounds loaded. Main menu could appear with missing visuals.
 
 ### Solution
 
-A full-screen loader is displayed over the game while critical assets are preloaded. The game is revealed through a short opacity transition once every critical asset has settled.
+```mermaid
+flowchart LR
+    A[App mounts] --> B[LoadingGate starts preloading]
+    B --> C[LoadingScreen shows progress %]
+    C --> D{All critical assets loaded?}
+    D -- Yes --> E[450ms fade transition]
+    D -- Failed --> F[Continue button appears]
+    E --> G[Game revealed]
+    F --> G
+```
 
-- A percentage and a bordered progress bar reflect the number of loaded assets.
-- The loader exposes `role="progressbar"` with `aria-valuenow` for assistive technologies.
-- If a critical image fails, the loader shows a **Continue** action instead of blocking the player.
-- The elapsed load time is passed to the game, which unlocks the `So... So fast !?` achievement and shows the duration in its toast.
-- Reduced-motion preferences are honored in the loader styles.
+- Progress bar with percentage and `role="progressbar"` + `aria-valuenow`
+- Failed critical images show a **Continue** action instead of blocking
+- Elapsed load time passed to game, unlocks "So... So fast !?" achievement
+- Reduced-motion preferences honored
 
-### Preloaded assets
+**Preloaded assets:**
 
 | Category | Blocking | Content |
 | --- | --- | --- |
-| Images | Yes | Selected theme background, logo, card back, six skill icons, mob sprites inside the initial viewport |
-| UI sounds | No | Eight short sound effects, warmed in the background |
-| Background music | No | Not preloaded. The six tracks weighed about 201 MB as WAV at the time; they are MP3 files since [#64](https://github.com/0x11semprez/codewash/pull/64) |
+| Images | Yes | Theme background, logo, card back, six skill icons, viewport mob sprites |
+| UI sounds | No | Eight short effects, warmed in background |
+| Background music | No | Not preloaded (MP3 since [#64](https://github.com/0x11semprez/codewash/pull/64)) |
 
-### Files
+**Files:**
 
 | File | Role |
 | --- | --- |
 | `src/components/ui/LoadingScreen.jsx` | Loader view and accessible progress indicator |
 | `src/components/LoadingGate.jsx` | Coordinates preload state, global styles and elapsed time |
-| `src/utils/preloadStartupAssets.js` | Loads critical images and warms optional sounds |
-| `src/main.jsx` | Mounts the gate inside the error boundary |
-| `src/App.jsx`, `src/constants/achievements.js`, `src/components/ui/AchievementToast.jsx` | Startup achievement and its toast |
-| `src/index.css` | Loader styling and reduced-motion handling |
-| `src/utils/soundManager.js` | Sound URLs aligned with files in `public/assets/sounds` |
-
-### Limitations
-
-- A loading screen improves feedback; it does not by itself make startup faster. Preloading too many assets would delay the menu, which is why only startup-critical assets are blocking.
-- A theme with missing images (see [DEBT-021](../DEBT.md#debt-021-missing-theme-assets-p2-open)) makes the loader report failed critical images until the player presses **Continue**.
+| `src/utils/preloadStartupAssets.js` | Loads critical images, warms optional sounds |
+| `src/main.jsx` | Mounts gate inside error boundary |
 
 ---
 
 ## 2. Performance profiling
 
-### Method
+**Tool:** React DevTools Profiler on Vite dev server. **Scenario:** captures around Skip / Manual Success interaction.
 
-- **Tool:** React DevTools Profiler on the Vite development server (`http://localhost:5173/`).
-- **Scenario:** captures made around the *Skip* / *Manual Success* interaction.
-- **Caveat:** durations are development-mode render times, not end-to-end input latency.
+```mermaid
+flowchart LR
+    subgraph "Before optimizations"
+        B1["10 commits"]
+        B2["Median: 79.35 ms"]
+        B3["Max: 277.2 ms"]
+        B4["Closed drawers rendered 8/10 commits"]
+    end
+    subgraph "After optimizations"
+        A1["13 commits"]
+        A2["Median: 85.0 ms"]
+        A3["Max: 142.3 ms"]
+        A4["Closed drawers: never rendered"]
+    end
+```
 
-### Findings
+**Root cause:** closed drawers stayed mounted for slide transitions, so every parent update re-rendered them. Settings drawer alone rendered three `ProfileCard` instances.
 
-| Capture | Commits | Median | Maximum | Drawers rendered |
-| --- | --- | --- | --- | --- |
-| Before optimizations | 10 | 79.35 ms | 277.2 ms | In 8 of 10 commits (`MenuDrawer`, `CosmeticsDrawer`, `SettingsDrawer`, profile cards) |
-| After optimizations (profile file not kept in the repository) | 13 | 85.0 ms | 142.3 ms | In none; `App` and `SkillCard` still render |
-
-Reading the table:
-
-- The maximum commit time dropped from 277.2 ms to 142.3 ms, and closed drawers no longer render.
-- The median did not improve (79.35 ms to 85.0 ms) and the commit counts differ (10 vs 13 after two Skip / Manual Success presses), so the two captures are not strictly comparable.
-- The captures do not show that players perceived a delay, so no user-visible slowdown is claimed.
-
-### Root cause identified
-
-Closed drawers stayed mounted to preserve their slide transitions, so every update of the parent re-rendered them. The Settings drawer alone rendered three `ProfileCard` instances.
-
-### Earlier baseline
-
-First Contentful Paint measured at 522.9 ms: one Opera GX measurement on the production preview (`http://localhost:4173/`). A single measurement is an indication, not a benchmark. Lighthouse figures for the earlier hook extraction are in [section 4.3](#43-earlier-lighthouse-runs-debt-001).
+Earlier FCP baseline: 522.9 ms (single Opera GX measurement on production preview). Lighthouse figures for hook extraction in [section 4.3](#43-earlier-lighthouse-runs-debt-001).
 
 ---
 
 ## 3. Optimizations
 
-### Changes
+```mermaid
+flowchart TD
+    subgraph "Startup pipeline"
+        A[Vite build] --> B[Entry JS: 319 kB]
+        A --> C[Global CSS: extracted separately]
+        A --> D[Lazy chunks: drawers, modals, mini-games]
+    end
+    subgraph "Runtime"
+        E[LoadingGate] --> F[Preload critical assets]
+        F --> G[Game revealed]
+        G --> H[Drawers mount on first use only]
+        G --> I[Mini-games load on first battle]
+        G --> J[Off-screen animations paused]
+    end
+```
 
-| Optimization | Problem solved | Files |
-| --- | --- | --- |
-| Memoized closed drawers | Closed drawers re-rendered on every parent update | `SettingsDrawer.jsx`, `MenuDrawer.jsx`, `CosmeticsDrawer.jsx` |
-| `React.memo` on display components | Re-renders with unchanged props | `SafeImage.jsx`, `PixelHeart.jsx`, `MobWithAura.jsx` |
-| `React.lazy` + `Suspense` for drawers and modals | All drawers and modals were in the startup import graph | `src/App.jsx` |
-| `useMemo` on the carousel items | List rebuilt on every render | `src/App.jsx` |
-| Global CSS extracted to a stylesheet | Styles injected from a JSX component, including a font `@import` on each mount | `src/components/ui/GlobalStyles.css`, `LoadingGate.jsx` |
-| Deferred off-screen images | Images outside the viewport loaded eagerly | `SafeImage.jsx`, `PhantomEvent.jsx`, `preloadStartupAssets.js` |
-| `React.lazy` + `Suspense` for mini-games | Six mini-games bundled with the skill card | `src/components/skills/SkillCard.jsx` |
-| Music compressed from WAV to MP3 (issue #63) | 191 MB of uncompressed music in the build | `public/assets/sounds/bgm/`, `soundManager.js` |
-| Global CSS split into five files (DEBT-002, PR #65) | One 1,781-line stylesheet | `src/styles/`, `GlobalStyles.css` |
-| Font and textures hosted locally (DEBT-019, PR #68) | Requests to Google Fonts and transparenttextures.com | `src/assets/fonts/`, `src/assets/textures/`, `index.css` |
+| Optimization | Problem solved | Files | PR |
+| --- | --- | --- | --- |
+| Memoized closed drawers | Re-rendered on every parent update | `SettingsDrawer`, `MenuDrawer`, `CosmeticsDrawer` | [#51](https://github.com/0x11semprez/codewash/pull/51) |
+| `React.memo` on display components | Re-renders with unchanged props | `SafeImage`, `PixelHeart`, `MobWithAura` | [#51](https://github.com/0x11semprez/codewash/pull/51) |
+| `React.lazy` + `Suspense` for drawers/modals | All in startup import graph | `src/App.jsx` | [#51](https://github.com/0x11semprez/codewash/pull/51) |
+| `useMemo` on carousel items | List rebuilt every render | `src/App.jsx` | [#51](https://github.com/0x11semprez/codewash/pull/51) |
+| Global CSS extracted | Styles injected from JSX, font `@import` on each mount | `GlobalStyles.css`, `LoadingGate.jsx` | [#51](https://github.com/0x11semprez/codewash/pull/51) |
+| Deferred off-screen images | Eagerly loaded outside viewport | `SafeImage`, `PhantomEvent`, `preloadStartupAssets` | [#51](https://github.com/0x11semprez/codewash/pull/51) |
+| `React.lazy` for mini-games | Six games bundled with skill card | `SkillCard.jsx` | [#51](https://github.com/0x11semprez/codewash/pull/51) |
+| Music WAV to MP3 | 191 MB uncompressed music | `public/assets/sounds/bgm/` | [#64](https://github.com/0x11semprez/codewash/pull/64) |
+| CSS split into five files | One 1,781-line stylesheet | `src/styles/` | [#65](https://github.com/0x11semprez/codewash/pull/65) |
+| Font + textures hosted locally | Requests to Google Fonts and transparenttextures.com | `src/assets/fonts/`, `src/assets/textures/` | [#68](https://github.com/0x11semprez/codewash/pull/68) |
+| Animated GIF to WebP | 36.9 MB of GIF sprites | `public/assets/` | [#75](https://github.com/0x11semprez/codewash/pull/75) |
+| Off-screen animation pause | 40 infinite animations running always | `GlobalStyles.css` | [#76](https://github.com/0x11semprez/codewash/pull/76) |
+| WebP re-encoding with fewer frames | book.webp still 8.3 MB after lossless | `public/assets/` | [#99](https://github.com/0x11semprez/codewash/pull/99) |
+| Viewport-relative sizing | Overflow on small viewports | Layout components | [#100](https://github.com/0x11semprez/codewash/pull/100) |
+| Aura CSS pause outside battle | GPU paint work on carousel | CSS aura classes | [#101](https://github.com/0x11semprez/codewash/pull/101) |
 
 ### Behavior details
 
-- Drawers and modals mount on first use. A drawer stays mounted after its first opening so its slide transition is preserved.
-- Memoized drawers skip updates while closed and use current props when opened.
-- Global styles load during the loading screen, before the game is revealed.
-- Startup sprite preloading is limited to the sprites visible in the initial viewport.
+- Drawers and modals mount on first use, stay mounted after for slide transitions
+- Memoized drawers skip updates while closed, use current props when opened
+- Global styles load during loading screen, before game reveal
+- Startup sprite preloading limited to viewport-visible sprites
 
 ### Code splitting per skill type
 
-Each mini-game in `src/components/skills/games/` is loaded with `React.lazy` from `SkillCard.jsx` and rendered inside a `Suspense` boundary. It becomes its own chunk (0.95 kB to 3.31 kB, 0.62 kB to 1.58 kB gzipped) fetched on the first battle of that skill. The saving at startup is small because the games are tiny; no speedup is claimed.
+Each mini-game in `src/components/skills/games/` loaded with `React.lazy` from `SkillCard.jsx`. Each becomes its own chunk (0.95-3.31 kB, 0.62-1.58 kB gzip) fetched on first battle. Saving at startup is small because games are tiny; no speedup claimed.
 
-While adding this, a missing import of `GameErrorBoundary` in `SkillCard.jsx` was found and fixed: it made every battle crash with `GameErrorBoundary is not defined`.
-
-### Related changes
-
-- **Music (#63):** see section 4.5 for the sizes. The tracks are not preloaded, so the gain is in download size, build size and the Docker image, not in the startup time.
-- **CSS split (DEBT-002, #65):** the five files put end to end are identical to the previous stylesheet, and the built CSS file is byte-identical to the one before. This is a maintainability change. It has no effect on performance, and class names are still global. The unused `GlobalStyles.jsx` copy (1,302 lines) was deleted.
-- **Offline resources (DEBT-019, #68):** the VT323 font is now a local `@font-face` (SIL Open Font License file included) and the two textures are bundled. The built game no longer asks Google Fonts or transparenttextures.com for anything, which makes the first paint independent of a third-party server and lets the game start offline. `noExternalResources.test.js` fails if a source file points to an external website again. The effect on load time was not measured.
-- **WebAssembly/Rust rewrite (#14):** not done. The candidate functions take from 0.02 to 2.4 microseconds per call in JavaScript (200,000 calls each, measured with `vite-node`), against a Total Blocking Time of 20 ms, so there is no bottleneck to remove.
+While adding this, a missing import of `GameErrorBoundary` in `SkillCard.jsx` was found and fixed (it made every battle crash).
 
 ---
 
@@ -158,55 +183,61 @@ While adding this, a missing import of `GameErrorBoundary` in `SkillCard.jsx` wa
 
 ### 4.1 Bundle size
 
-Source: `npx vite build` on each commit. Sizes are deterministic, so they do not depend on machine load.
+Source: `npx vite build` on each commit. Sizes are deterministic.
 
-| Asset | Before | After | Change |
-| --- | --- | --- | --- |
-| Entry JS (loaded at startup) | 392.46 kB (111.41 kB gzip) | 319.27 kB (99.57 kB gzip) | -18.6 % (-10.6 % gzip) |
-| Global CSS (loaded at startup) | 61.18 kB (10.99 kB gzip) | 62.89 kB (11.59 kB gzip) | +2.8 % |
-| Global styles extracted | inlined in JS | `GlobalStyles.css`, 22.24 kB (4.83 kB gzip) | loaded under the loading screen |
-| Drawers (Settings, Menu, Cosmetics) | in the entry JS | 3 lazy chunks, 28.05 kB (9.05 kB gzip) in total | fetched on first opening |
-| Modals (Reset, Bug report) | in the entry JS | 2 lazy chunks, 3.74 kB (1.61 kB gzip) in total | fetched on first use |
-| Mini-games (6) | in the entry JS | 6 lazy chunks, 10.94 kB (5.76 kB gzip) in total | fetched on the first battle of each skill |
+```mermaid
+flowchart LR
+    subgraph "Before"
+        B1["Entry JS: 392 kB (111 kB gzip)"]
+        B2["CSS: 61 kB"]
+        B3["Everything in one bundle"]
+    end
+    subgraph "After"
+        A1["Entry JS: 319 kB (100 kB gzip)"]
+        A2["CSS: 63 kB + GlobalStyles 22 kB"]
+        A3["3 drawer chunks: 28 kB"]
+        A4["2 modal chunks: 3.7 kB"]
+        A5["6 game chunks: 10.9 kB"]
+    end
+    B1 -- "-18.6%" --> A1
+```
 
-The JavaScript needed to show the menu shrank by about 73 kB (12 kB gzipped). The CSS grew slightly: the global stylesheet is not smaller overall, it is only loaded in a controlled place.
+JavaScript needed to show the menu shrank by about 73 kB (12 kB gzip).
 
-### 4.2 Fair comparison: received version and current version
+### 4.2 Fair comparison: received vs current
 
-An earlier attempt compared runs made on two different themes (`spy` before, `minecraft` after), so its figures could not be compared and were removed. The runs below use the same theme and the same setup for both versions.
+An earlier attempt compared runs on two different themes, so its figures were removed. These runs use the same theme and setup for both versions.
 
-#### Conditions
+**Conditions:**
 
 | Item | Value |
 | --- | --- |
 | Versions | Received: `a4f337f`. Current: `4e0388a` |
-| Theme | The default theme of each version, which is the same theme renamed: `minecraft` in the received version, `blocks` now. Every run starts with a new browser profile, so storage is empty |
-| Build | `npm ci` (`--legacy-peer-deps` for the received version), `npm run build`, `npx vite preview` on ports 4301 and 4302 |
-| Browser | Chromium 155 headless (`--headless=new`), window 1280 x 720 |
-| Lighthouse | 13.6.0, `--preset=desktop`, Performance category only (simulated desktop throttling) |
-| Runs | 4 per version, run in turn (received, current, received, current...) so both see the same load |
-| Machine | 8 cores. Load average between 11.9 and 24.8 during the runs (other jobs were running). A fifth pair was stopped |
+| Theme | Default theme of each version (same theme renamed: `minecraft` to `blocks`). New browser profile per run |
+| Build | `npm ci`, `npm run build`, `npx vite preview` on ports 4301/4302 |
+| Browser | Chromium 155 headless, 1280x720 |
+| Lighthouse | 13.6.0, `--preset=desktop`, Performance only |
+| Runs | 4 per version, alternated (received, current, received, current...) |
+| Machine | 8 cores, load average 11.9-24.8 during runs |
 
-#### Lighthouse
+**Lighthouse results:**
 
 | Metric | Received | Current | Change |
 | --- | --- | --- | --- |
-| Performance score | 38.5 | 57.5 | +19 points |
-| First Contentful Paint | 563 ms | 339 ms | -40 % |
-| Largest Contentful Paint | 2,872 ms | 1,418 ms | -51 % |
-| Total Blocking Time | 2,224 ms | 1,032 ms | -54 % |
-| Cumulative Layout Shift | 0.166 | 0.076 | -54 % |
-| Speed Index | 5,390 ms | 4,132 ms | -23 % |
-| Main thread work | 4,950 ms | 3,963 ms | -20 % |
-| Bytes transferred | 2,134 kB | 1,344 kB | -37 % |
-| Requests | 24 | 33.5 | +40 % |
-| Startup JavaScript (transferred) | 102.2 kB | 107.9 kB | +5.7 % |
+| Performance score | 38.5 | 57.5 | **+19 pts** |
+| First Contentful Paint | 563 ms | 339 ms | **-40%** |
+| Largest Contentful Paint | 2,872 ms | 1,418 ms | **-51%** |
+| Total Blocking Time | 2,224 ms | 1,032 ms | **-54%** |
+| Cumulative Layout Shift | 0.166 | 0.076 | **-54%** |
+| Speed Index | 5,390 ms | 4,132 ms | **-23%** |
+| Main thread work | 4,950 ms | 3,963 ms | **-20%** |
+| Bytes transferred | 2,134 kB | 1,344 kB | **-37%** |
+| Requests | 24 | 33.5 | +40% |
+| Startup JS (transferred) | 102.2 kB | 107.9 kB | +5.7% |
 
-Score per run: received 34, 43, 40, 37; current 49, 57, 58, 64. The current version scored higher in every pair.
+Score per run: received 34, 43, 40, 37; current 49, 57, 58, 64. Current scored higher in every pair.
 
-#### Time until the game is usable
-
-The script opens the page in a new Chromium profile, without throttling, and records the moment when three things are true: the loading screen is gone, the skill carousel is in the page, and every image inside the window has loaded. The received version has no loading screen, so only the last two apply to it. The current time includes the 450 ms fade of the loading screen.
+**Time until game is usable:**
 
 | Run | Received | Current |
 | --- | --- | --- |
@@ -214,20 +245,16 @@ The script opens the page in a new Chromium profile, without throttling, and rec
 | 2 | 4,198 ms | 3,694 ms |
 | 3 | 4,343 ms | 3,077 ms |
 | 4 | 2,704 ms | 2,023 ms |
-| Median | 4,271 ms | 3,156 ms |
+| **Median** | **4,271 ms** | **3,156 ms** |
 
-The current version was usable sooner in every pair (-26 % on the median). The received version transfers more bytes on its first screen (2.13 MB against 1.34 MB), mostly GIF sprites that are now smaller WebP files and off-screen images that now load later.
+Current was usable sooner in every pair (-26% on median). Received transfers more bytes on first screen (2.13 MB vs 1.34 MB), mostly GIF sprites that are now smaller WebP files and off-screen images that now load later.
 
-#### What got worse
+**What got worse:**
 
-- Requests: 33.5 against 24. Drawers, modals, the global stylesheet and the local font are now separate files. Each is small and some load only on first use, but the first screen still asks for more files.
-- Startup JavaScript: 107.9 kB against 102.2 kB transferred. Lazy loading took the drawers, modals and mini-games out of the entry file, but features added since (translations, error tracking, new themes) made it grow again. The built entry file is 341.8 kB (108.4 kB gzip) against 362.8 kB (102.6 kB gzip): smaller before compression, larger after it.
+- Requests: 33.5 vs 24. Drawers, modals, stylesheet and font are now separate files
+- Startup JS: 107.9 kB vs 102.2 kB transferred. Lazy loading removed drawers/modals/games, but translations and new features added since
 
-#### Frame time on the main menu
-
-The script also counts frames for 5 seconds on the idle menu and collects long tasks. These figures are not reported. With the load average above 10, headless Chromium drew 2 to 7 frames per second for both versions, which says more about the machine than about the game. The frame figures of the 4 runs were also lost when the fifth pair was stopped (the script now saves each run as soon as it ends). Rerun on a quiet machine to get them.
-
-#### How to rerun it
+**How to rerun:**
 
 ```sh
 git worktree add ../cw-received a4f337f
@@ -237,203 +264,120 @@ git worktree add ../cw-current main
 CHROME_PATH=/usr/bin/chromium node tools/lighthouse-compare.mjs http://127.0.0.1:4301/ http://127.0.0.1:4302/ 5 perf-results
 ```
 
-`tools/lighthouse-compare.mjs` alternates the two versions. Before each measurement it waits until the 1-minute load average is below `MAX_LOAD` (4 by default, 20 minutes at most) and writes the load down. Set `MAX_LOAD=999` to start at once. It keeps every Lighthouse report and writes `runs.json` (each run) and `summary.json` (medians) in the output folder.
+The script alternates versions, waits for load average below `MAX_LOAD` (default 4), writes `runs.json` and `summary.json`.
 
 ### 4.3 Earlier Lighthouse runs (DEBT-001)
 
-These figures were first recorded in the debt register. They measure the hook extraction from DEBT-001 ([#45](https://github.com/0x11semprez/codewash/pull/45)), before the loading screen existed. They were taken with the Lighthouse CLI (`npx lighthouse http://localhost:4173 --only-categories=performance`) on a build served with `npx serve dist`. The theme was not recorded.
-
-The tool settings, the server and the code differ from section 4.2. Do not compare the two tables.
+These measure the hook extraction from [#45](https://github.com/0x11semprez/codewash/pull/45), before the loading screen. Different tool settings and server than section 4.2.
 
 | Metric | Before DEBT-001 | After DEBT-001 |
 | --- | --- | --- |
 | Performance score | 71 | 90 |
 | FCP | 1.5 s | 1.6 s |
 | LCP | 1.5 s | 1.6 s |
-| TBT | 2,390 ms | 380 ms |
+| TBT | 2,390 ms | **380 ms** |
 | CLS | 0 | 0.033 |
 | Speed Index | 1.8 s | 1.6 s |
-| Main thread work | 8.1 s | 4.8 s |
-| JS execution | 0.8 s | 0.5 s |
-| JS bundle | 363 kB (102 kB gzip) | 363 kB |
+| Main thread work | 8.1 s | **4.8 s** |
 
-Before the extraction, `App.jsx` held 32 `useState` and 12 `useEffect` calls in one component. Any state change re-rendered the whole tree, including closed drawers. The team attributes the TBT drop to the extraction: each hook now owns its own state.
+Before extraction, `App.jsx` had 32 `useState` and 12 `useEffect` in one component. Any state change re-rendered the whole tree. TBT drop is attributed to the extraction: each hook now owns its own state.
 
 ### 4.4 Web Vitals reporting
 
-`src/utils/webVitals.js` reports FCP, LCP and CLS with a Core Web Vitals rating (good / needs-improvement / poor). `src/main.jsx` logs each metric to the console, for example `[web-vitals] FCP: 523 (good)`.
-
-| Metric | When it is reported |
-| --- | --- |
-| FCP | As soon as the browser measures it |
-| LCP | When the page is hidden, using the last observed value |
-| CLS | When the page is hidden, summing shifts without recent user input |
-
-Browsers without `PerformanceObserver`, or without support for an entry type, are ignored silently.
-
----
+`src/utils/webVitals.js` reports FCP, LCP and CLS with Core Web Vitals rating. `src/main.jsx` logs each: `[web-vitals] FCP: 523 (good)`.
 
 ### 4.5 Background music
 
-The six background tracks were uncompressed WAV files (44.1 kHz, stereo, 1411 kb/s). They are now MP3 files encoded with LAME (VBR quality 2, about 132 kb/s), with the same durations.
+```mermaid
+flowchart LR
+    WAV["6 WAV tracks: 191 MB"] -- "LAME VBR Q2" --> MP3["6 MP3 tracks: 18 MB"]
+```
 
-| Track | Duration | WAV | MP3 |
-| --- | --- | --- | --- |
-| `calm1` | 4:20 | 43.8 MB | 4.1 MB |
-| `calm2` | n/a | 33.9 MB | 3.5 MB |
-| `calm3` | n/a | 38.7 MB | 3.6 MB |
-| `piano1` | n/a | 11.5 MB | 0.7 MB |
-| `piano2` | n/a | 15.1 MB | 1.4 MB |
-| `piano3` | 4:41 | 47.3 MB | 4.5 MB |
-| **Total** | | **191 MB** | **18 MB** |
+| Track | WAV | MP3 |
+| --- | --- | --- |
+| `calm1` (4:20) | 43.8 MB | 4.1 MB |
+| `calm2` | 33.9 MB | 3.5 MB |
+| `calm3` | 38.7 MB | 3.6 MB |
+| `piano1` | 11.5 MB | 0.7 MB |
+| `piano2` | 15.1 MB | 1.4 MB |
+| `piano3` (4:41) | 47.3 MB | 4.5 MB |
+| **Total** | **191 MB** | **18 MB** |
 
-The music is about 10.6 times smaller. Durations were compared for two tracks only, and sound quality was not compared by ear. `soundManager.test.js` checks that the track list points to existing MP3 files under 10 MB.
+Music is not preloaded, so the gain is in download size, build size and Docker image, not startup time.
 
 ### 4.6 Paused off-screen animations
 
-The global styles have about 40 `infinite` animations. At least 20 animate `filter` or `box-shadow`, which the browser repaints on every frame. Before this change they ran even when nobody could see them: carousel cards outside the viewport or at `opacity: 0`, the closed Cosmetics and Settings drawers, and the whole page in a hidden tab.
+```mermaid
+flowchart TD
+    A["~40 infinite CSS animations"] --> B{Element visible?}
+    B -- Yes --> C["animation-play-state: running"]
+    B -- No --> D["animation-play-state: paused"]
+    E{Page visible?} -- Hidden --> D
+    E -- Visible --> B
+```
 
-They are now paused with `animation-play-state: paused` while their element is off-screen or the page is hidden. The keyframes did not change. The design is in [ADR-010](../adr/010-pause-offscreen-animations.md).
+About half of all animations are paused at any time. Design in [ADR-010](../adr/010-pause-offscreen-animations.md).
 
-#### Protocol: animation count
-
-This count does not depend on machine speed.
-
-1. Run `npm run build`, then `npx vite preview --port 4199`.
-2. Start Chromium with a DevTools port: `chromium --headless=new --remote-debugging-port=9333 --window-size=1280,720 about:blank`.
-3. Run `node tools/measure-animations.mjs 9333 http://localhost:4199/ after 5`.
-4. Run it again with `before` in place of `after`.
-
-The script waits for the loading screen to end. It opens and closes the Cosmetics and Settings drawers, so both stay mounted off-screen. It then counts the animations from `document.getAnimations()` by play state. In `before` mode it first deletes the pause rules from the page's CSSOM. The attributes stay on the elements but have no effect, as before the change.
-
-#### Results
-
-Chromium headless, 1280 x 720, production build, `minecraft` theme, 6 runs.
-
-| Mode | Runs | Animations | Running | Paused |
-| --- | --- | --- | --- | --- |
-| Before | 3 | 37 | 37 | 0 |
-| After | 3 | 33 to 37 | 15 to 18 | 15 to 19 |
-
-About half of the animations are paused after the change. The totals differ between "after" runs because the carousel was sometimes still moving when the count was taken.
-
-The same script also reads `Performance.getMetrics` (style recalculation time, task time) and counts `requestAnimationFrame` calls over 5 seconds. These figures are not reported. The machine had a load average above 17 during the runs, the page drew only 6 to 22 frames in 5 seconds, and the timings varied by a factor of 20 within one mode.
-
-#### Protocol: frame rate and paint time (manual)
-
-Use this on a quiet machine to measure the effect on frame time.
-
-1. Open the production preview in Chrome at 1280 x 720 and pass the loading screen.
-2. Open and close the Cosmetics drawer, then the Settings drawer.
-3. In DevTools, open the Rendering panel and enable "Frame Rendering Stats" and "Paint flashing". Green flashes should appear only on the center card and the visible mobs, not on the left edge where the drawers sit.
-4. In the Performance panel, set CPU throttling to 4x slowdown. Record 10 seconds without touching the page.
-5. Note the FPS, and the "Rendering" and "Painting" totals from the Summary tab.
-6. To get the "before" figures in the same build, run this in the console, then repeat steps 4 and 5:
-
-   ```js
-   for (const s of document.styleSheets) {
-       const walk = (list, owner) => {
-           for (let i = list.length - 1; i >= 0; i--) {
-               const r = list[i];
-               if (r.cssRules) walk(r.cssRules, r);
-               if (r.selectorText?.includes('data-offscreen')) owner.deleteRule(i);
-           }
-       };
-       walk(s.cssRules, s);
-   }
-   ```
-
-7. Repeat three times per mode and keep the median.
-
-These figures have not been recorded yet.
-
-#### Limits
-
-- Visible animations cost the same as before. The center card border and the visible auras still repaint `filter` and `box-shadow` on every frame.
-- Browsers already slow down hidden tabs. The page-hidden rule mainly helps the Electron window when it is minimized.
-- `useAnimationPause.test.jsx`, `MobWithAura.test.jsx`, `SkillCard.test.jsx`, `app.test.jsx` and `globalStyles.test.js` cover the attributes and the CSS rule. jsdom does not run CSS animations, so the tests cannot count them.
+| Mode | Animations | Running | Paused |
+| --- | --- | --- | --- |
+| Before | 37 | 37 | 0 |
+| After | 33-37 | 15-18 | 15-19 |
 
 ### 4.7 Animated sprites
 
-The 32 animated GIFs under `public/assets/` are now lossless animated WebP files. The pixels, the transparency and the loop are unchanged. [ADR-011](../adr/011-animated-webp-instead-of-gif.md) explains the choice.
+```mermaid
+flowchart LR
+    GIF["32 GIFs: 36.9 MB"] -- "lossless WebP" --> WP1["32 WebPs: 21.5 MB (-42%)"]
+    WP1 -- "lossy Q60, fewer frames" --> WP2["Heaviest 7 re-encoded: total 42 MB"]
+```
+
+Design in [ADR-011](../adr/011-animated-webp-instead-of-gif.md). PR [#99](https://github.com/0x11semprez/codewash/pull/99) brought total from 50 MB to 42 MB, book from 8.3 MB to 572 KB.
 
 | Folder | GIF | WebP | Change |
 | --- | --- | --- | --- |
-| `items/` | 18.03 MB | 12.25 MB | -32 % |
-| `mobs/` | 16.78 MB | 8.29 MB | -51 % |
-| `skills/` | 2.10 MB | 0.99 MB | -53 % |
-| **Total** | **36.91 MB** | **21.53 MB** | **-42 %** |
+| `items/` | 18.03 MB | 12.25 MB | -32% |
+| `mobs/` | 16.78 MB | 8.29 MB | -51% |
+| `skills/` | 2.10 MB | 0.99 MB | -53% |
+| **Total** | **36.91 MB** | **21.53 MB** | **-42%** |
 
-Sizes per file, largest first:
+Top 10 files:
 
 | File | GIF | WebP | Change |
 | --- | --- | --- | --- |
-| `items/book` | 12.21 MB | 8.34 MB | -32 % |
-| `items/axe` | 2.15 MB | 1.42 MB | -34 % |
-| `items/hoe` | 2.07 MB | 1.42 MB | -31 % |
-| `mobs/axolotl/axolotl_pink` | 1.81 MB | 0.82 MB | -55 % |
-| `mobs/boss/enderdragon` | 1.29 MB | 1.05 MB | -18 % |
-| `items/chests/ender_chest` | 1.25 MB | 0.84 MB | -33 % |
-| `mobs/axolotl/axolotl_red` | 1.11 MB | 0.54 MB | -52 % |
-| `mobs/axolotl/axolotl_green` | 1.10 MB | 0.56 MB | -49 % |
-| `mobs/axolotl/axolotl_brown` | 1.09 MB | 0.51 MB | -53 % |
-| `mobs/axolotl/axolotl_black` | 1.08 MB | 0.47 MB | -57 % |
-| `mobs/axolotl/axolotl_cyan` | 1.05 MB | 0.46 MB | -56 % |
-| `mobs/axolotl/axolotl_gold` | 1.00 MB | 0.45 MB | -55 % |
-| `mobs/hostile/blaze` | 0.99 MB | 0.36 MB | -64 % |
-| `skills/axolotl_blue` | 0.96 MB | 0.44 MB | -54 % |
-| `mobs/axolotl/axolotl_blue` | 0.96 MB | 0.44 MB | -54 % |
-| `skills/reading_icon` | 0.92 MB | 0.47 MB | -49 % |
-| `mobs/friendly/glowsquid` | 0.75 MB | 0.25 MB | -67 % |
-| `mobs/hostile/phantom` | 0.74 MB | 0.58 MB | -22 % |
-| `mobs/hostile/guardian` | 0.64 MB | 0.34 MB | -46 % |
-| `mobs/miniboss/elderguardian` | 0.64 MB | 0.36 MB | -43 % |
-| `mobs/boss/warden` | 0.60 MB | 0.27 MB | -55 % |
-| `mobs/hostile/ghast` | 0.47 MB | 0.09 MB | -82 % |
-| `mobs/friendly/squid` | 0.46 MB | 0.11 MB | -76 % |
-| `mobs/friendly/nautilus` | 0.43 MB | 0.05 MB | -88 % |
-| `skills/cleaning_icon` | 0.22 MB | 0.08 MB | -64 % |
-| `mobs/friendly/strider` | 0.19 MB | 0.06 MB | -68 % |
-| `items/chests/trapped_chest` | 0.19 MB | 0.11 MB | -44 % |
-| `mobs/friendly/allay` | 0.18 MB | 0.09 MB | -48 % |
-| `items/chests/chest` | 0.17 MB | 0.11 MB | -35 % |
-| `mobs/friendly/frog` | 0.07 MB | 0.04 MB | -46 % |
-| `mobs/friendly/camel` | 0.06 MB | 0.04 MB | -33 % |
-| `mobs/friendly/sniffer` | 0.06 MB | 0.03 MB | -44 % |
+| `items/book` | 12.21 MB | 8.34 MB | -32% |
+| `items/axe` | 2.15 MB | 1.42 MB | -34% |
+| `items/hoe` | 2.07 MB | 1.42 MB | -31% |
+| `mobs/axolotl/axolotl_pink` | 1.81 MB | 0.82 MB | -55% |
+| `mobs/boss/enderdragon` | 1.29 MB | 1.05 MB | -18% |
+| `items/chests/ender_chest` | 1.25 MB | 0.84 MB | -33% |
+| `mobs/axolotl/axolotl_red` | 1.11 MB | 0.54 MB | -52% |
+| `mobs/axolotl/axolotl_green` | 1.10 MB | 0.56 MB | -49% |
+| `mobs/axolotl/axolotl_brown` | 1.09 MB | 0.51 MB | -53% |
+| `mobs/axolotl/axolotl_black` | 1.08 MB | 0.47 MB | -57% |
 
-Sizes are in decimal megabytes, read from the files on disk. For `frog`, `warden` and `enderdragon`, every decoded frame was compared with the GIF and matched exactly. The frame count and delays matched too.
-
-`skills/axolotl_blue` is not used by the code. It was converted with the others.
-
-The item animations stay large. `book` has 1,650 frames and `axe` and `hoe` have 825 each, so even lossless WebP stays above 1 MB. A shorter loop would help more than a new format.
-
-#### How to rerun the conversion
-
-You need `ffmpeg` built with `libwebp`. Check with `ffmpeg -hide_banner -encoders | grep libwebp_anim`.
+**How to rerun conversion:**
 
 ```sh
 node scripts/convert-gifs.mjs --dry-run   # print sizes, change nothing
-node scripts/convert-gifs.mjs             # convert, delete the GIFs, update the paths in src/
+node scripts/convert-gifs.mjs             # convert, delete GIFs, update paths
 npx vitest run --dir src src/__tests__/assetPaths.test.js
 ```
-
-The script converts every GIF under `public/`. It keeps a GIF when the WebP would be bigger. Run it again after adding a new animated sprite.
 
 ---
 
 ## 5. Automated tests
 
-| Test file | What it protects |
+| Test file | Protection |
 | --- | --- |
-| `LoadingScreen.test.jsx` | Percentage, progress bar, ready state and the Continue action |
+| `LoadingScreen.test.jsx` | Percentage, progress bar, ready state, Continue action |
 | `LoadingGate.test.jsx` | Reveal after loading, failed-image path, preload crash |
-| `preloadStartupAssets.test.js` | Progress up to 100 %, failed images listed, corrupted saved theme |
+| `preloadStartupAssets.test.js` | Progress to 100%, failed images listed, corrupted saved theme |
 | `app.test.jsx` | Drawers not mounted before first opening, lazy loading on click, startup toast |
-| `SkillCard.test.jsx` | The right mini-game renders after loading for each skill, and none outside a battle |
+| `SkillCard.test.jsx` | Right mini-game renders per skill, none outside battle |
 | `webVitals.test.js` | Metric collection and rating thresholds |
-| `performanceBudget.test.js` | Drawers, modals and mini-games stay lazy; global styles stay out of `App`; images stay lazy by default |
-| `useAnimationPause.test.jsx` | Off-screen and hidden-page attributes, shared observer cleanup, fallback without `IntersectionObserver` |
-| `assetPaths.test.js` | Every image path in `gameData` and `src/` exists under `public/`, except the four known missing theme images ([#53](https://github.com/0x11semprez/codewash/issues/53)); no referenced GIF is above 200 KB |
+| `performanceBudget.test.js` | Drawers/modals/games stay lazy, global styles out of App, images lazy by default |
+| `useAnimationPause.test.jsx` | Off-screen and hidden-page attributes, shared observer cleanup |
+| `assetPaths.test.js` | Every image path in gameData/src exists, no GIF above 200 KB |
 
 ---
 
@@ -441,6 +385,6 @@ The script converts every GIF under `public/`. It keeps a GIF when the WebP woul
 
 | Item | Notes |
 | --- | --- |
-| Frame time on the main menu | Run `tools/lighthouse-compare.mjs` on a quiet machine and add the frame figures to section 4.2 |
-| Fewer startup requests | Inline or merge the small files loaded on the first screen |
-| Add the missing theme images | Tracked as [DEBT-021](../DEBT.md#debt-021-missing-theme-assets-p2-open) |
+| Frame time on main menu | Run `tools/lighthouse-compare.mjs` on a quiet machine, add frame figures to 4.2 |
+| Fewer startup requests | Inline or merge small files loaded on first screen |
+| Missing theme images | Tracked as [DEBT-021](../DEBT.md#debt-021-missing-theme-assets-p2-open) |

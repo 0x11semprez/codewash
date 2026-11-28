@@ -4,6 +4,35 @@ A step-by-step guide for every common task on Level Up RPG. Follow these instruc
 
 Last updated: 2026-11-28.
 
+## Development workflow
+
+```mermaid
+flowchart LR
+    A[Pull main] --> B[Create feature branch]
+    B --> C[Write code + tests]
+    C --> D[Lint + test + build locally]
+    D --> E[Push + open PR]
+    E --> F[CI runs checks]
+    F -- Green --> G[Rebase merge]
+    F -- Red --> H[Fix and push again]
+    H --> F
+    G --> I[Push to Epitech mirror]
+```
+
+## CI pipeline
+
+```mermaid
+flowchart TD
+    A[Checkout + Node 20 + npm ci] --> B[Lint — zero warnings]
+    B --> C[Format check]
+    C --> D[Build]
+    D --> E[Test]
+    E --> F[Test with coverage — 100% thresholds]
+    F --> G[Lighthouse — performance thresholds]
+    G --> H[Docker build]
+    H --> I[Upload coverage artifact]
+```
+
 ## Setup
 
 ```bash

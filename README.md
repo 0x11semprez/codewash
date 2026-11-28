@@ -1,6 +1,10 @@
 # Level Up RPG
 
-Level Up RPG is an educational game for children. The player trains skills (math, reading, writing, patterns, memory, cleaning) by answering short challenges. Each right answer damages a mob and earns XP.
+<p align="center">
+  <img src="screenshots/preview.png" alt="Level Up RPG — main game screen with skill carousel and battle card" width="800" />
+</p>
+
+Level Up RPG is an educational game for children. The player trains skills (math, reading, writing, patterns, memory, cleaning) by answering short challenges. Each right answer damages a mob and earns XP. Six themes change the entire look and sound of the game.
 
 The game was first written by a non-developer with AI tools. This repository is the Epitech CodeWash project: we test, clean and document it without breaking what already works.
 
@@ -71,6 +75,8 @@ Start with [docs/SUBJECT_MAP.md](docs/SUBJECT_MAP.md). It lists every requiremen
 | Why the architecture is the way it is | [docs/adr/](docs/adr/) |
 | Branches, CI and team workflow | [docs/handover/development-plan.md](docs/handover/development-plan.md) |
 | Performance mission: loading screen, profiling, measurements | [docs/missions/performance.md](docs/missions/performance.md) |
+| Bug reporting: form, transports, privacy | [docs/features/bug-reporting.md](docs/features/bug-reporting.md) |
+| Translation: add a language, plurals, game data | [docs/features/translation.md](docs/features/translation.md) |
 | Microphone and speech recognition | [docs/features/microphone.md](docs/features/microphone.md) |
 | Themes: how to add a theme, audit, credits | [docs/features/themes.md](docs/features/themes.md) |
 | What to do when something breaks | [docs/handover/RUNBOOK.md](docs/handover/RUNBOOK.md) |

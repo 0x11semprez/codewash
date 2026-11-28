@@ -1,78 +1,118 @@
 # Translation
 
-## Overview
+> Mission issue: [#20](https://github.com/0x11semprez/codewash/issues/20) | Implementation: [#78](https://github.com/0x11semprez/codewash/pull/78) | Menu button: [#87](https://github.com/0x11semprez/codewash/pull/87) | Design: [ADR-012](../adr/012-translation.md)
 
-The game is available in English and French. English is the default language.
+The game ships in English and French. All text switches at once when the player picks a language, and the choice survives a page reload.
 
-There are two ways to change the language. Both use the same list, and all the text changes at once.
+## Architecture
 
-- On the main screen, click the language button in the bottom left corner (the translation icon). A short list of languages opens above it. Pick one and the list closes.
-- In the settings drawer (the gear button, top left), the "Language" section at the top has a button that shows the current language. Click it to open the list, then pick a language.
+```mermaid
+flowchart TD
+    subgraph "Language files"
+        EN[en.js — reference + fallback]
+        FR[fr.js — same keys as EN]
+    end
+    EN --> LOC[locales.js — auto-discovers all language files]
+    FR --> LOC
+    LOC --> TR[translate.js — key lookup, placeholders, plurals]
+    TR --> PROV[I18nProvider.jsx — holds current language, saves choice, sets html lang]
+    PROV --> HOOK["useTranslation() hook"]
+    HOOK --> COMP[Any component]
+    PROV --> MENU[LanguageMenuButton.jsx — main screen]
+    PROV --> SEL[LanguageSelector.jsx — settings drawer]
+```
 
-The main screen button works with the keyboard. When the list opens, focus goes to the current language. Tab and Enter pick another one. Escape closes the list and puts focus back on the button. A click anywhere else also closes it. Screen readers hear "Change language (current: English)" and whether the list is open.
+## Switching languages
 
-The choice is saved in the browser. On the first visit, the game uses the browser language if it is supported. Otherwise it uses English.
+Two ways, both use the same list:
 
-The design and its limits are explained in [ADR-012](../adr/012-translation.md).
+1. **Main screen:** language button in the bottom left corner (translation icon). Opens a short list, pick one, list closes.
+2. **Settings drawer:** gear button (top left), "Language" section shows current language. Click to open list.
 
-## Where the code is
+The main screen button is fully keyboard-accessible: Tab/Enter to pick, Escape to close. Screen readers hear "Change language (current: English)" and the open/closed state.
+
+On first visit, the game matches the browser language if supported, otherwise defaults to English. The choice is saved in `localStorage`.
+
+## Where the code lives
+
+```mermaid
+flowchart LR
+    subgraph src/i18n
+        A[locales/en.js]
+        B[locales/fr.js]
+        C[locales.js]
+        D[translate.js]
+        E[I18nProvider.jsx]
+        F[useTranslation.js]
+        G[gameText.js]
+    end
+    subgraph src/components/ui
+        H[LanguageSelector.jsx]
+        I[LanguageMenuButton.jsx]
+    end
+```
 
 | File | Role |
 | --- | --- |
-| `src/i18n/locales/en.js` | English text. It is the reference and the fallback. |
-| `src/i18n/locales/fr.js` | French text. It has the same keys as English. |
-| `src/i18n/locales.js` | Finds every language file and reads the saved or browser language. |
-| `src/i18n/translate.js` | Pure functions: key lookup, placeholders, plurals, fallback. |
-| `src/i18n/I18nProvider.jsx` | Holds the current language, saves it, and sets `<html lang>`. |
-| `src/i18n/useTranslation.js` | The hook that components use. |
-| `src/i18n/gameText.js` | Helpers for achievement, skill and mob text. |
-| `src/components/ui/LanguageSelector.jsx` | The language button and list in the settings drawer. |
-| `src/components/ui/LanguageMenuButton.jsx` | The language button and list on the main screen. |
+| `src/i18n/locales/en.js` | English text, reference and fallback |
+| `src/i18n/locales/fr.js` | French text, same keys as English |
+| `src/i18n/locales.js` | Auto-discovers language files, reads saved/browser language |
+| `src/i18n/translate.js` | Pure functions: key lookup, placeholders, plurals, fallback |
+| `src/i18n/I18nProvider.jsx` | Holds current language, saves it, sets `<html lang>` |
+| `src/i18n/useTranslation.js` | Hook that components use |
+| `src/i18n/gameText.js` | Helpers for achievement, skill and mob text |
+| `src/components/ui/LanguageSelector.jsx` | Language list in settings drawer |
+| `src/components/ui/LanguageMenuButton.jsx` | Language button on main screen |
 
-## How to add a language
+## Adding a language
 
-1. Copy `src/i18n/locales/en.js` to a new file named after the language code, for example `src/i18n/locales/es.js`.
-2. Set `code` to the same code (`'es'`).
-3. Set `name` to the language name, written in that language (`'Español'`).
-4. Translate every value in `messages`. Do not rename or remove keys.
-5. Keep every placeholder such as `{{level}}` exactly as it is. You can move it inside the sentence.
-6. Run the tests (see below).
+```mermaid
+flowchart LR
+    A[Copy en.js to es.js] --> B[Set code + name]
+    B --> C[Translate all messages]
+    C --> D[Run tests]
+    D --> E[Language appears in both lists automatically]
+```
 
-You do not need to change any other file. The new language appears in both language lists by itself.
+1. Copy `src/i18n/locales/en.js` to a new file, e.g. `es.js`
+2. Set `code` to `'es'` and `name` to `'Espanol'`
+3. Translate every value in `messages`. Do not rename or remove keys
+4. Keep every placeholder like `{{level}}` exactly as-is (you can move it in the sentence)
+5. Run the tests (see below)
 
-If a key is missing in the new file, the game shows the English text and logs a warning in development. The tests fail until the file is complete.
+No other file needs to change. The new language appears in both lists automatically. Missing keys fall back to English with a dev warning. Tests fail until the file is complete.
 
-## How to add a string
+## Adding a string
 
-1. Pick a key in the group of the screen, for example `settings.musicVolume`.
-2. Add it to `en.js` and to every other language file.
-3. In a function component, read it with the hook:
+1. Pick a key in the right group, e.g. `settings.musicVolume`
+2. Add it to `en.js` and every other language file
+3. Use the hook in a function component:
 
-   ```jsx
-   import { useTranslation } from '../../i18n/useTranslation';
+```jsx
+import { useTranslation } from '../../i18n/useTranslation';
 
-   const MyPanel = ({ level }) => {
-       const { t } = useTranslation();
-       return <h2>{t('menu.level', { level })}</h2>;
-   };
-   ```
+const MyPanel = ({ level }) => {
+    const { t } = useTranslation();
+    return <h2>{t('menu.level', { level })}</h2>;
+};
+```
 
-4. In a class component, read the context:
+4. Or the context in a class component:
 
-   ```jsx
-   import { I18nContext } from '../../i18n/I18nContext';
+```jsx
+import { I18nContext } from '../../i18n/I18nContext';
 
-   class MyBoundary extends React.Component {
-       static contextType = I18nContext;
-       render() {
-           return <p>{this.context.t('errors.title')}</p>;
-       }
-   }
-   ```
+class MyBoundary extends React.Component {
+    static contextType = I18nContext;
+    render() {
+        return <p>{this.context.t('errors.title')}</p>;
+    }
+}
+```
 
 ### Placeholders
 
-Write `{{name}}` in the text and pass `{ name: value }` to `t`:
+Write `{{name}}` in the text, pass `{ name: value }` to `t`:
 
 ```js
 t('loot.levelReached', { level: 20 }); // "LEVEL 20 REACHED!"
@@ -80,7 +120,7 @@ t('loot.levelReached', { level: 20 }); // "LEVEL 20 REACHED!"
 
 ### Plurals
 
-Add two keys, `key_one` and `key_other`, and pass a number as `count`:
+Add `key_one` and `key_other` keys, pass a number as `count`:
 
 ```js
 // en.js
@@ -95,38 +135,35 @@ The form is chosen with `Intl.PluralRules`, so each language follows its own rul
 
 ### Game data
 
-Achievements, skills, badges, border effects and auras keep their ids in the constants. Their text lives in the dictionaries under the same id:
+Achievements, skills, badges, border effects and auras keep their ids in constants. Their text lives in dictionaries under the same id:
 
 - `achievements.<id>.name`, `achievements.<id>.description`, `achievements.<id>.tiers.<index>`
 - `skills.<id>.name`, `fantasyName`, `actionName`, `taskDescription`
 - `badges.<title>`, `borders.<id>.name`, `borders.<id>.description`, `auras.<aura>`
 
-When you add an achievement, a skill, a badge or an aura, add its text to the dictionaries too. A test checks this.
+When you add an achievement, skill, badge or aura, add its text to the dictionaries too. A test checks this.
 
-## What is not translated
+## What stays untranslated
 
-- Creature names. Saves and achievements use them as ids, and the spelling game uses them as words.
+- **Creature names** — saves and achievements use them as ids, the spelling game uses them as words
+- **Theme names and skill texts** — translated per theme in each theme's JSON file (`"translations"` block). See [themes guide](themes.md#7-translate-the-theme-optional). Falls back to theme text, then dictionary text
+- **Loading screen wordmark**
+- **Network error details** — come from the browser, stay in its language
+- **Reading words, writing words, math problems** — game data, see ADR-012
 
-Theme names, skill texts per theme and pattern piece labels are translated in each theme's JSON file, in a `"translations"` block. See [the themes guide](themes.md#7-translate-the-theme-optional). When a theme has no translation for a language, the game shows the theme's own text, then the dictionary text.
-- The loading screen wordmark.
-- Network error details in the bug report form. They come from the browser and stay in its language.
-- The reading words, writing words and math problems. They are game data. See ADR-012 for the reasons.
-
-## How to test
-
-Run the i18n tests:
+## Tests
 
 ```sh
 npx vitest run src/__tests__/i18n
 ```
 
-They check:
-
-- `translate.test.js`: key lookup, placeholders, plurals, the English fallback, missing keys and the browser language.
-- `locales.test.js`: every language has the same keys and placeholders as English, and English covers all game data ids.
-- `I18nProvider.test.jsx`: the saved choice, the browser default, `<html lang>`, and the selector switching the text of another component.
-- `components/LanguageMenuButton.test.jsx`: the main screen button, its list, Escape, a click outside and the focus.
-- `translatedScreens.test.jsx`: the main screens rendered in French.
+| Test file | Coverage |
+| --- | --- |
+| `translate.test.js` | Key lookup, placeholders, plurals, English fallback, missing keys, browser language |
+| `locales.test.js` | Every language has same keys and placeholders as English, English covers all game data ids |
+| `I18nProvider.test.jsx` | Saved choice, browser default, `<html lang>`, selector switching text |
+| `LanguageMenuButton.test.jsx` | Main screen button, list, Escape, click outside, focus |
+| `translatedScreens.test.jsx` | Main screens rendered in French |
 
 Run the full suite before a merge:
 
@@ -136,13 +173,13 @@ npm run lint
 npm run format:check
 ```
 
-### Manual check
+### Manual checklist
 
-- [ ] Click the language button in the bottom left corner and switch to Français. The skill cards and the title change, and the list closes.
-- [ ] Open the list again with the keyboard (Tab to the button, then Enter) and press Escape. The list closes and the button keeps the focus.
-- [ ] Open the settings drawer and switch back to English. The drawer, the skill cards and the title change.
-- [ ] Reload the page. The game stays in French.
-- [ ] Open the achievements drawer. Names, descriptions and tiers are in French.
-- [ ] Open "Effacer la progression". The modal asks you to type EFFACER.
-- [ ] Clear the site data and set the browser to French. The game starts in French.
-- [ ] In the dev tools, check that `<html lang>` follows the selected language.
+- [ ] Click language button (bottom left), switch to Francais. Skill cards and title change, list closes
+- [ ] Open list with keyboard (Tab to button, Enter), press Escape. List closes, button keeps focus
+- [ ] Open settings drawer, switch back to English. Drawer, skill cards and title all change
+- [ ] Reload page. Game stays in French
+- [ ] Open achievements drawer. Names, descriptions and tiers are in French
+- [ ] Open "Effacer la progression". Modal asks to type EFFACER
+- [ ] Clear site data, set browser to French. Game starts in French
+- [ ] Check that `<html lang>` follows selected language in DevTools

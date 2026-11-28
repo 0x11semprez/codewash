@@ -4,6 +4,27 @@ This page is for the person on duty when Level Up RPG breaks during a school day
 
 Last checked against the code: 2026-11-28.
 
+## Incident triage
+
+```mermaid
+flowchart TD
+    A[Player reports a problem] --> B{What do they see?}
+    B -- "White screen or error message" --> C["White screen or Something went wrong"]
+    B -- "Loading screen stuck" --> D[Loading screen stuck]
+    B -- "Progress lost" --> E[Saved data broken]
+    B -- "Mic not working" --> F[Microphone issue]
+    B -- "No sound" --> G[Sound/music issue]
+    B -- "Game is slow" --> H[Performance issue]
+    B -- "CI red" --> I[CI or CodeQL failure]
+    C --> J[Check Console for errors]
+    D --> K[Check Network tab for 404s]
+    E --> L[Check localStorage keys]
+    F --> M[Check browser compatibility]
+    G --> N[Check volume + autoplay]
+    H --> O[Check Web Vitals logs]
+    I --> P[Check failing step in Actions]
+```
+
 ## Before you start
 
 Most checks use the browser developer tools (DevTools). In Chrome or Edge, press F12 or Ctrl+Shift+I.
