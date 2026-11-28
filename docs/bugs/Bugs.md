@@ -10,9 +10,59 @@ Bugs found in the code, with the proof, the cause, the fix and a before/after co
 | Corrupted save crashes the game | [#41](https://github.com/0x11semprez/codewash/issues/41) (DEBT-018) | Fixed (PR [#58](https://github.com/0x11semprez/codewash/pull/58), [#66](https://github.com/0x11semprez/codewash/pull/66)) | Not detailed here yet |
 | `perfectMemoryGames` never incremented | [#37](https://github.com/0x11semprez/codewash/issues/37) (DEBT-014) | Fixed, PR pending | A memory game won without a mismatch is counted, and "Perfectionist" can be unlocked |
 | Missing theme images | [#53](https://github.com/0x11semprez/codewash/issues/53) (DEBT-021) | Fixed | Themes mission (#21), not merged yet |
+| Spy memory "match" sound lasts 5 seconds | [#106](https://github.com/0x11semprez/codewash/issues/106) | Fixed, PR pending | The sound lasts 0.6 s and is as loud as in the other themes |
 | Docker build fails on `npm ci` | [#54](https://github.com/0x11semprez/codewash/issues/54) (DEBT-022) | Open | Not started |
 
 Only the bugs with a section below are documented in detail. Every figure and screenshot says how it was produced.
+
+---
+
+## Issue #106: Spy memory "match" sound lasts 5 seconds
+
+### Problem
+
+In the memory game, every pair found plays the theme's `match` sound. In the Spy theme, `public/assets/themes/spy/sounds/match.ogg` was a loud, continuous 5-second clip. Several pairs in a row stacked several copies of it.
+
+### Measures
+
+Durations read from the Ogg files, volumes measured with ffmpeg (`volumedetect`).
+
+| `match` sound | Duration | Mean volume |
+| --- | --- | --- |
+| Spy, before the fix | 5.00 s | -7.1 to -8.2 dB over the whole clip |
+| Spy, after the fix | 0.60 s | -13.2 dB |
+| Blocks | 0.19 s | -12.6 dB |
+| Space | 0.95 s | -11.5 dB |
+| Idols | 0.28 s | -20.0 dB |
+| Ocean | 0.70 s | -21.3 dB |
+
+**Waveform before the fix (5 seconds shown): loud from start to end.**
+
+![Waveform of the Spy match sound before the fix](screens/issue-106-1-before-spy-match-sound.png)
+
+**Waveform after the fix (same 5-second scale): 0.6 s with a fade-out.**
+
+![Waveform of the Spy match sound after the fix](screens/issue-106-2-after-spy-match-sound.png)
+
+### Fix
+
+| Change | File |
+| --- | --- |
+| The clip is cut to its first 0.6 s, with a 0.2 s fade-out and 5 dB less volume (ffmpeg, Ogg Vorbis). The sound is CC0 (Kenney), so it can be changed | `public/assets/themes/spy/sounds/match.ogg` |
+| The credits say the clip was shortened | `docs/features/themes.md` |
+
+### Tests
+
+| Test (`themeSounds.test.js`) | What it protects |
+| --- | --- |
+| Every theme has a `match` and a `mismatch` sound of at most one second | A long pair sound cannot come back, in Spy or in a new theme |
+
+The Spy test failed before the fix and passes after; the 11 other sounds already passed.
+
+### Limits
+
+- The test checks the duration, not the volume.
+- The new clip is the first 0.6 s of the original. It was checked by measure only (duration, volume, waveform), so it should be listened to in the game before merging.
 
 ---
 

@@ -253,7 +253,7 @@ We resized, cropped and converted pictures to WebP, re-encoded music to MP3 at 9
 | Spy | Gadgets, items, bags, icons | Generic Items | Kenney (kenney.nl) | https://opengameart.org/content/generic-items | CC0 |
 | Spy | Pattern pieces (card suits and chess pieces), card back lock | Board Game Icons | Kenney (kenney.nl) | https://opengameart.org/content/board-game-icons | CC0 |
 | Spy | `click`, `card-left`, `card-right`, `fail`, `level-up`, `notification`, `mismatch` sounds | Interface Sounds | Kenney (kenney.nl) | https://opengameart.org/content/interface-sounds | CC0 |
-| Spy | `hit`, `death`, `match`, `enemy-hurt`, `enemy-defeat` sounds | Sci-Fi Sounds | Kenney (kenney.nl) | https://opengameart.org/content/sci-fi-sounds | CC0 |
+| Spy | `hit`, `death`, `match`, `enemy-hurt`, `enemy-defeat` sounds (`match` shortened to 0.6 s, issue #106) | Sci-Fi Sounds | Kenney (kenney.nl) | https://opengameart.org/content/sci-fi-sounds | CC0 |
 | Spy | `music/spy-loop.mp3` | Spy Loop | wipics | https://opengameart.org/content/spy-loop | CC0 |
 | Spy | `music/covert-action.mp3` | Covert Action | congusbongus | https://opengameart.org/content/covert-action | CC0 |
 | All | Logo font (Kenney Future) | Space Shooter Redux | Kenney (kenney.nl) | https://opengameart.org/content/space-shooter-redux | CC0 |
