@@ -23,6 +23,8 @@ jobs:
 
       # ESLint rules and complexity ceilings (eslint.config.js).
       # Security and quality analysis runs in codeql.yml.
+      # Annotations appear inline on the PR diff thanks to the github-actions Vitest
+      # reporter and the problem matcher that actions/setup-node installs for ESLint.
       - name: Lint and complexity ceilings (zero warnings)
         run: npm run lint -- --max-warnings 0
 
@@ -33,10 +35,10 @@ jobs:
         run: npm run build
 
       - name: Test
-        run: npm run test
+        run: npx vitest run --reporter=default --reporter=github-actions
 
       - name: Test with coverage
-        run: npm run test:coverage
+        run: npx vitest run --coverage --reporter=default --reporter=github-actions
 
       - name: Docker build
         run: docker build -t codewash:ci .
