@@ -8,22 +8,7 @@
 
 ## At a glance
 
-```mermaid
-flowchart LR
-    subgraph "Received version"
-        R1["Lighthouse: 38.5"]
-        R2["Load: 4.27 s"]
-        R3["Transfer: 2.13 MB"]
-    end
-    subgraph "Current version"
-        C1["Lighthouse: 57.5"]
-        C2["Load: 3.16 s"]
-        C3["Transfer: 1.34 MB"]
-    end
-    R1 -- "+19 pts" --> C1
-    R2 -- "-26%" --> C2
-    R3 -- "-37%" --> C3
-```
+The game loads 26% faster, transfers 37% less data, and the Lighthouse performance score went from 38.5 to 57.5. Details and methodology are in section 4.2.
 
 **Compared versions**
 
@@ -185,24 +170,16 @@ While adding this, a missing import of `GameErrorBoundary` in `SkillCard.jsx` wa
 
 Source: `npx vite build` on each commit. Sizes are deterministic.
 
-```mermaid
-flowchart LR
-    subgraph "Before"
-        B1["Entry JS: 392 kB (111 kB gzip)"]
-        B2["CSS: 61 kB"]
-        B3["Everything in one bundle"]
-    end
-    subgraph "After"
-        A1["Entry JS: 319 kB (100 kB gzip)"]
-        A2["CSS: 63 kB + GlobalStyles 22 kB"]
-        A3["3 drawer chunks: 28 kB"]
-        A4["2 modal chunks: 3.7 kB"]
-        A5["6 game chunks: 10.9 kB"]
-    end
-    B1 -- "-18.6%" --> A1
-```
+| Asset | Before | After | Change |
+| --- | --- | --- | --- |
+| Entry JS (startup) | 392 kB (111 kB gzip) | 319 kB (100 kB gzip) | -18.6% (-10.6% gzip) |
+| Global CSS (startup) | 61 kB (11 kB gzip) | 63 kB (12 kB gzip) | +2.8% |
+| Global styles extracted | inlined in JS | `GlobalStyles.css`, 22 kB (5 kB gzip) | loaded under loading screen |
+| Drawers (Settings, Menu, Cosmetics) | in entry JS | 3 lazy chunks, 28 kB (9 kB gzip) | fetched on first opening |
+| Modals (Reset, Bug report) | in entry JS | 2 lazy chunks, 3.7 kB (1.6 kB gzip) | fetched on first use |
+| Mini-games (6) | in entry JS | 6 lazy chunks, 10.9 kB (5.8 kB gzip) | fetched on first battle |
 
-JavaScript needed to show the menu shrank by about 73 kB (12 kB gzip).
+The JavaScript needed to show the menu shrank by about 73 kB (12 kB gzip). The CSS grew slightly because the global stylesheet is now loaded separately, not because there is more of it.
 
 ### 4.2 Fair comparison: received vs current
 
@@ -288,10 +265,7 @@ Before extraction, `App.jsx` had 32 `useState` and 12 `useEffect` in one compone
 
 ### 4.5 Background music
 
-```mermaid
-flowchart LR
-    WAV["6 WAV tracks: 191 MB"] -- "LAME VBR Q2" --> MP3["6 MP3 tracks: 18 MB"]
-```
+The six background tracks were uncompressed WAV files. They were encoded to MP3 with LAME (VBR quality 2, about 132 kb/s), dropping from 191 MB to 18 MB total.
 
 | Track | WAV | MP3 |
 | --- | --- | --- |
@@ -307,16 +281,7 @@ Music is not preloaded, so the gain is in download size, build size and Docker i
 
 ### 4.6 Paused off-screen animations
 
-```mermaid
-flowchart TD
-    A["~40 infinite CSS animations"] --> B{Element visible?}
-    B -- Yes --> C["animation-play-state: running"]
-    B -- No --> D["animation-play-state: paused"]
-    E{Page visible?} -- Hidden --> D
-    E -- Visible --> B
-```
-
-About half of all animations are paused at any time. Design in [ADR-010](../adr/010-pause-offscreen-animations.md).
+The global styles have about 40 `infinite` CSS animations. At least 20 animate `filter` or `box-shadow`, which the browser repaints every frame. Before this change, they all ran even when off-screen. Now each animation pauses (`animation-play-state: paused`) when its element is outside the viewport or when the page is hidden. About half of all animations are paused at any time. Design in [ADR-010](../adr/010-pause-offscreen-animations.md).
 
 | Mode | Animations | Running | Paused |
 | --- | --- | --- | --- |
@@ -325,13 +290,7 @@ About half of all animations are paused at any time. Design in [ADR-010](../adr/
 
 ### 4.7 Animated sprites
 
-```mermaid
-flowchart LR
-    GIF["32 GIFs: 36.9 MB"] -- "lossless WebP" --> WP1["32 WebPs: 21.5 MB (-42%)"]
-    WP1 -- "lossy Q60, fewer frames" --> WP2["Heaviest 7 re-encoded: total 42 MB"]
-```
-
-Design in [ADR-011](../adr/011-animated-webp-instead-of-gif.md). PR [#99](https://github.com/0x11semprez/codewash/pull/99) brought total from 50 MB to 42 MB, book from 8.3 MB to 572 KB.
+All 32 animated GIFs were converted to lossless animated WebP, cutting sprites from 36.9 MB to 21.5 MB (-42%). In a second pass ([#99](https://github.com/0x11semprez/codewash/pull/99)), the seven heaviest files were re-encoded with fewer frames and lossy quality 60, bringing total assets from 50 MB to 42 MB. The book sprite alone went from 8.3 MB to 572 KB. Design in [ADR-011](../adr/011-animated-webp-instead-of-gif.md).
 
 | Folder | GIF | WebP | Change |
 | --- | --- | --- | --- |

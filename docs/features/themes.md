@@ -35,43 +35,27 @@ A theme can omit any optional part. The game uses defaults for missing sections.
 
 ## What each theme controls
 
-```mermaid
-mindmap
-  root((Theme))
-    Visuals
-      Background 1280x720
-      Logo 1200x300
-      Card back 400x600
-      Sprites 256x256
-    Skill cards
-      Names and titles
-      Icons
-      Descriptions
-      Button text
-    Creatures
-      Enemies
-      Minibosses
-      Bosses
-      Friends (memory)
-      Pattern pieces
-      Containers (cleaning)
-      Bonus creature
-    Audio
-      Music playlist
-      12 sound effects
-    Translations
-      Per-language overrides
-```
+A theme can replace any of these parts. Anything left out falls back to the Blocks default.
+
+| Part | What changes | Required |
+| --- | --- | --- |
+| Background, logo, card back | The whole screen appearance | Yes |
+| Skill card names, titles, descriptions | Text on each of the six cards | Optional |
+| Skill icons | Small picture on each card | Optional |
+| Enemies, minibosses, bosses | Battle screen opponents | Optional (min 2/1/1) |
+| Friends | Memory card fronts | Optional (min 10) |
+| Pattern pieces | The eight pieces of the pattern game | Optional (min 8) |
+| Containers | Cleaning game buckets | Optional (min 3) |
+| Bonus creature | Flying creature event | Optional |
+| Music playlist | Background tracks | Optional |
+| 12 sound effects | click, hit, fail, death, levelUp, etc. | Optional (per key) |
+| Translations | Per-language overrides for all text | Optional |
 
 ## Audit: what we fixed
 
 Before this work, many parts of the game ignored the active theme. We checked every screen and mini-game against the four original themes.
 
-```mermaid
-flowchart LR
-    A["16 problems found"] --> B["All fixed in PR #79"]
-    B --> C["Test guards prevent regression"]
-```
+We found 16 problems, all fixed in [#79](https://github.com/0x11semprez/codewash/pull/79). Tests now guard against regression.
 
 | Area | Problem | Fix |
 | --- | --- | --- |
@@ -94,17 +78,7 @@ flowchart LR
 
 ## Saved games
 
-Three themes were renamed, and some creatures got new names. `migrateStorage()` in `src/services/storageKeys.js` handles the transition:
-
-```mermaid
-flowchart LR
-    OLD["Old saves: minecraft, pokemon, kpop"] --> MIG["migrateStorage() runs once at startup"]
-    MIG --> NEW["New ids: blocks, monsters, idols"]
-    MIG --> CREA["Creature names updated too"]
-    CREA --> ACH["Achievement progress preserved"]
-```
-
-`resolveThemeId` also accepts old ids as fallback, so saves that were not migrated still load the right theme. Full rename list is in [ADR-013](../adr/013-themes-as-data-folders.md).
+Three themes were renamed (`minecraft` to `blocks`, `pokemon` to `monsters`, `kpop` to `idols`), and some default creatures got new names. `migrateStorage()` in `src/services/storageKeys.js` runs once at startup and updates the theme ids and creature names in every profile's save, so achievement progress is preserved. `resolveThemeId` also accepts old ids as fallback, so saves that were not migrated still load the right theme. The full rename list is in [ADR-013](../adr/013-themes-as-data-folders.md).
 
 ## How to add a theme
 
@@ -158,22 +132,7 @@ Your theme now works with default creatures, music and sounds. Steps 5 and 6 rep
 
 ### 5. Add creatures and items (optional)
 
-Create `sprites/` in your theme folder. Each picture: 256x256 square, transparent background.
-
-```mermaid
-flowchart TD
-    subgraph "Creature groups in JSON"
-        E[enemies — battles, min 2]
-        MB[minibosses — every 10 levels, min 1]
-        B[bosses — every 20 levels, min 1]
-        F[friends — memory card fronts, min 10]
-        CI[craftItems — extra spelling pictures]
-        CO[containers — cleaning skill, min 3]
-        PP[patternPieces — pattern game, min 8]
-    end
-```
-
-Each group is a list of `"Name": "file"`. The name appears in-game and is a spelling word, so use letters and spaces only.
+Create `sprites/` in your theme folder. Each picture must be a 256x256 square with a transparent background. Then add groups to the JSON file. Each group is a list of `"Name": "file"`. The name appears in-game and is a spelling word, so use letters and spaces only.
 
 The cleaning skill also needs `"milestoneContainer"` (every 5 levels) and `"bossContainer"` (every 20 levels), both names from your `containers` list.
 

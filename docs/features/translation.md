@@ -66,13 +66,7 @@ flowchart LR
 
 ## Adding a language
 
-```mermaid
-flowchart LR
-    A[Copy en.js to es.js] --> B[Set code + name]
-    B --> C[Translate all messages]
-    C --> D[Run tests]
-    D --> E[Language appears in both lists automatically]
-```
+Adding a language is a single-file operation. No other file needs to change — the new language appears in both lists automatically.
 
 1. Copy `src/i18n/locales/en.js` to a new file, e.g. `es.js`
 2. Set `code` to `'es'` and `name` to `'Espanol'`

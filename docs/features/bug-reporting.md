@@ -40,45 +40,23 @@ Invalid URLs or emails are silently ignored.
 
 ## What gets sent
 
-```mermaid
-classDiagram
-    class BugReport {
-        +string createdAt
-        +string description
-        +string steps
-        +string reporterEmail
-        +string appVersion
-        +Environment environment
-        +GameContext context
-        +LogEntry[] logs
-        +Attachment[] attachments
-    }
-    class Environment {
-        +string userAgent
-        +string language
-        +string screen
-    }
-    class GameContext {
-        +number profileId
-        +string theme
-    }
-    class LogEntry {
-        +string time
-        +string level
-        +string message
-    }
-    class Attachment {
-        +string name
-        +string type
-        +number size
-    }
-    BugReport --> Environment
-    BugReport --> GameContext
-    BugReport --> LogEntry
-    BugReport --> Attachment
+The endpoint receives a `POST` with `multipart/form-data`. The `report` part is a JSON file that looks like this:
+
+```json
+{
+  "createdAt": "2026-11-25T12:00:00.000Z",
+  "description": "The boss never dies",
+  "steps": "1. Start a math battle",
+  "reporterEmail": "parent@example.com",
+  "appVersion": "0.0.0",
+  "environment": { "userAgent": "...", "language": "en-US", "screen": "1280x720" },
+  "context": { "profileId": 1, "theme": "blocks" },
+  "logs": [{ "time": "...", "level": "error", "message": "..." }],
+  "attachments": [{ "name": "shot.png", "type": "image/png", "size": 20480 }]
+}
 ```
 
-The HTTP endpoint receives a `POST` with `multipart/form-data`: a `report` part (JSON) and an `attachments` part per file. Any 2xx counts as success. Timeout is 15 seconds. CORS must allow the game's origin if on another domain.
+The `attachments` part carries the actual files. Any 2xx counts as success. The request gives up after 15 seconds. If the endpoint is on another origin, it must allow CORS for the game's origin.
 
 ## Attachments
 
@@ -86,26 +64,13 @@ Up to 3 files, 5 MB each. Accepted: images, `.txt`, `.log`, `.json`.
 
 A `mailto:` link cannot carry files. When using email, the form tells the player to attach files by hand. A "Save as JSON" button exports the full report as a downloadable file. Email body is capped at 1800 characters for mail-app compatibility.
 
-## Privacy safeguards
+## Privacy
 
-```mermaid
-flowchart TD
-    A[Console warn/error + uncaught errors] --> B[In-memory log buffer]
-    B --> C[Max 50 entries, 500 chars each]
-    C --> D{Player checks 'Include logs'?}
-    D -- Yes --> E[Logs included in report]
-    D -- No --> F[Logs excluded]
-    E --> G[Emails redacted to email]
-    E --> H[Tokens/passwords redacted]
-```
+Nothing leaves the game until the player presses Send. The report includes only what the player chose to share.
 
-- Nothing leaves the game until the player presses Send
-- Logs live in memory only, lost when the game closes
-- Only `console.warn`, `console.error`, uncaught errors and unhandled rejections are kept
-- Email addresses in logs become `[email]`, sensitive tokens become `[redacted]`
-- Player previews logs before sending and can opt out
-- Reporter email is optional, used only to reply
-- Save data, profile names and achievements are never sent
+Logs stay in memory and are lost when the game closes. Only `console.warn`, `console.error`, uncaught errors and unhandled promise rejections are kept — at most 50 entries, 500 characters each. Email addresses in the logs are replaced with `[email]`, and values after words like `token`, `password` or `secret` become `[redacted]`. The player sees a preview of the logs and can uncheck the box to leave them out.
+
+The reporter email is optional and only used to reply. Save data, profile names and achievements are never included — the report only carries the profile number and the theme name.
 
 ## Electron
 

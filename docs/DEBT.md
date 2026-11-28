@@ -599,9 +599,39 @@ Issues #27, #11 and #59 are closed on GitHub, but their items keep a residual pa
 
 ---
 
-## 7. Post-refactoring dependency graph
+## 7. Post-refactoring graphs
 
-Compare with the [init graph in section 1.3](#13-init-dependency-graph-mermaid-commit-f12cd74). The full architecture description is in [ARCHITECTURE.md](ARCHITECTURE.md).
+Compare with [init call graph (1.2)](#12-init-call-graph-commit-f12cd74) and [init dependency graph (1.3)](#13-init-dependency-graph-mermaid-commit-f12cd74). Full architecture in [ARCHITECTURE.md](ARCHITECTURE.md).
+
+### 7.1 Final call graph
+
+```
+main.jsx
+├── I18nProvider .............. language context, saved choice, <html lang>
+├── ErrorBoundary ............. catches React render errors, logs to errorTracker
+├── LoadingGate ............... preloads critical assets, shows LoadingScreen
+│   ├── preloadStartupAssets .. theme background, logo, card back, icons, mob sprites
+│   └── LoadingScreen ......... progress bar, Continue on failure
+└── App.jsx (wires hooks to components — no game logic)
+    ├── useGameState .......... profiles, skills, stats, theme, save/load via storage
+    ├── useBattle ............. battles, XP, achievements, loot
+    ├── useCarousel ........... card position and drag
+    ├── useAudio .............. music + SFX via soundManager
+    ├── useFullscreen ......... fullscreen API
+    ├── useAnimationPause ..... pauses off-screen CSS animations
+    ├── SkillCard ── useVoiceRecognition, MobWithAura, SafeImage
+    │   └── (lazy) games/* ... MathGame, ReadingGame, SpellingGame, MemoryGame, PatternGame, CleaningGame
+    ├── (lazy) SettingsDrawer ── ProfileCard ── ParentalVerificationModal
+    ├── (lazy) CosmeticsDrawer
+    ├── (lazy) MenuDrawer
+    ├── (lazy) ResetModal
+    ├── (lazy) BugReportModal ── bugReport/*
+    ├── AchievementToast
+    ├── PhantomEvent .......... bonus creature event
+    └── LanguageMenuButton .... main screen language selector
+```
+
+### 7.2 Final dependency graph
 
 ```mermaid
 graph TD
