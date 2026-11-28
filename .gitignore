@@ -23,6 +23,9 @@ desktop.ini
 *.swp
 *.swo
 
+# Claude Code
+.claude/
+
 # Environment
 node_modules/
 dist/
