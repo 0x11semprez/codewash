@@ -5,7 +5,7 @@ import { installFakeIntersectionObserver } from '../helpers/fakeIntersectionObse
 
 vi.mock('../../i18n/useTranslation', () => ({
     useTranslation: () => ({
-        t: (key, params) => {
+        t: (key) => {
             const map = {
                 'menu.title': 'Menu',
                 'menu.totalLevel': 'Total Level',
@@ -22,7 +22,7 @@ vi.mock('../../i18n/useTranslation', () => ({
 }));
 vi.mock('../../i18n/gameText', () => ({
     achievementDescription: (t, a) => a.desc || '',
-    achievementName: (t, a, tier) => a.name || 'Achievement',
+    achievementName: (_t, a) => a.name || 'Achievement',
     skillText: (t, lang, id) => id,
 }));
 vi.mock('../../services/soundManager', () => ({ playClick: vi.fn() }));
