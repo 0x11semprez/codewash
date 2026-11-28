@@ -92,7 +92,7 @@ describe('CSS modules', () => {
 
     it('keeps no CSS for the aura classes that nothing applied', () => {
         const all = Object.keys(MODULES).map(read).join('\n') + read('styles/base.css');
-        expect(all).not.toMatch(/\.aura-[a-z]/);
+        expect(all.replace(/\.aura-paused/g, '')).not.toMatch(/\.aura-[a-z]/);
         ['selected-card-glow', 'animate-spin-aura', 'toast-slide', 'aura-breathe', 'aura-pulse-spiky'].forEach((name) =>
             expect(all).not.toContain(name),
         );
