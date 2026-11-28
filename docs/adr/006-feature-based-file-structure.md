@@ -2,7 +2,7 @@
 
 ## Status
 
-Proposed
+Partly adopted — hooks, mini-games, services and game data are split by topic. The full `src/features/` layout was not started and is deferred as residual debt.
 
 ## Date
 

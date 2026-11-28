@@ -41,6 +41,6 @@ A test in `src/__tests__/assetPaths.test.js` checks two things. Every image path
 
 ### Negative
 
-- `items/book.webp` is still 8.3 MB, and `axe`, `hoe` and `ender_chest` are still above 0.8 MB. Their size comes from long loops: `book` has 1,650 frames, `axe` and `hoe` have 825, and `ender_chest` has 202. A shorter loop, or a 16x16 source scaled up in CSS, would cut them further. That changes the art or the CSS, so it is left for later.
+- ~~`items/book.webp` was still 8.3 MB after the lossless conversion.~~ Resolved in [#99](https://github.com/0x11semprez/codewash/pull/99): the heaviest animated WebPs (book, axe, hoe, ender_chest, enderdragon, phantom, axolotls) were re-encoded with fewer frames (every 2nd-4th kept) and lossy quality 60 via ImageMagick, bringing total assets from 50 MB to 42 MB. Book went from 8.3 MB to 572 KB.
 - Rerunning the script needs `ffmpeg` built with `libwebp`. It is not an npm dependency.
 - WebP needs a recent browser. Old Safari (before 14) cannot show it. The game targets Chromium, so this is accepted.

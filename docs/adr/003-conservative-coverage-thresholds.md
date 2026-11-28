@@ -2,7 +2,7 @@
 
 ## Status
 
-Accepted
+Superseded — thresholds reached 100% (lines, functions, branches, statements). The ratchet strategy completed its goal.
 
 ## Date
 
