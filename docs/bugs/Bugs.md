@@ -8,6 +8,7 @@ Bugs found in the code, with the proof, the cause, the fix and a before/after co
 | --- | --- | --- | --- |
 | Hardcoded localStorage keys | [#32](https://github.com/0x11semprez/codewash/issues/32) (DEBT-009) | Fixed (PR [#70](https://github.com/0x11semprez/codewash/pull/70)) | One file lists every key, and a migration moves old data |
 | Corrupted save crashes the game | [#41](https://github.com/0x11semprez/codewash/issues/41) (DEBT-018) | Fixed (PR [#58](https://github.com/0x11semprez/codewash/pull/58), [#66](https://github.com/0x11semprez/codewash/pull/66)) | Not detailed here yet |
+| Bottom of the screen cut on short windows | [#104](https://github.com/0x11semprez/codewash/issues/104) | Fixed, PR pending | The page, the cards and the battle card fit the window height |
 | `perfectMemoryGames` never incremented | [#37](https://github.com/0x11semprez/codewash/issues/37) (DEBT-014) | Fixed, PR pending | A memory game won without a mismatch is counted, and "Perfectionist" can be unlocked |
 | Missing theme images | [#53](https://github.com/0x11semprez/codewash/issues/53) (DEBT-021) | Fixed | Themes mission (#21), not merged yet |
 | Docker build fails on `npm ci` | [#54](https://github.com/0x11semprez/codewash/issues/54) (DEBT-022) | Open | Not started |
@@ -150,3 +151,68 @@ The two test files failed before the fix (5 tests) and pass after.
 | --- | --- |
 | [#37](https://github.com/0x11semprez/codewash/issues/37) `perfectMemoryGames` never incremented | The "Perfectionist" achievement cannot be unlocked |
 | [#54](https://github.com/0x11semprez/codewash/issues/54) Docker build fails | `@testing-library/jest-dom` 8 wanted Vitest 5. Fixed: version 7.0.1 and a Docker build step in CI |
+
+---
+
+## Issue #104: bottom of the screen cut on short windows
+
+### Problem
+
+The skill cards have a fixed design size (300 x 600 px). On the main screen the centre card is drawn 1.1 times bigger, and during a battle it is zoomed 1.5 times (900 px high), whatever the window height. The page also grew with its content (`min-h-screen`), so the buttons placed at the bottom of the page (bug report, language, hearts) were pushed below the window.
+
+#97 already made the logo, the title and the carousel area follow the window height, but not the cards, so they still overflowed.
+
+### Reproduction
+
+Production build in headless Chromium, new save, "Blocks" theme. "Cut" means a part is outside the window.
+
+| Window | Before: page height | Before: centre card button | Before: battle card | After |
+| --- | --- | --- | --- | --- |
+| 1920 x 1080 | 1120 px (bug button at 1096) | visible | fits | everything fits |
+| 1920 x 940 | 997 px | visible | fits | everything fits |
+| 1536 x 730 | 812 px | cut (bottom at 790) | cut at the top (-85) | everything fits |
+| 1366 x 768 | 846 px | cut (bottom at 812) | cut at the top (-66) | everything fits |
+| 1280 x 720 | 804 px | cut (bottom at 785) | cut at the top (-90) | everything fits |
+
+After the fix the page is exactly the window height in every case, and the bug report button, the language button, the centre card and the battle card are fully visible.
+
+**Before the fix (1366 x 768): the card covers the title, its button is cut, and the bug report and language buttons are below the window.**
+
+![Before the fix: the bottom of the main screen is cut](screens/issue-104-1-before-main-screen-cut.png)
+
+**After the fix (1366 x 768): the cards shrink to fit, every button is visible.**
+
+![After the fix: the main screen fits the window](screens/issue-104-2-after-main-screen-fits.png)
+
+**Before the fix (1366 x 768): the battle card goes out of the window at the top and at the bottom.**
+
+![Before the fix: the battle card is cut](screens/issue-104-3-before-battle-card-cut.png)
+
+**After the fix (1366 x 768): the battle card fits the window.**
+
+![After the fix: the battle card fits](screens/issue-104-4-after-battle-card-fits.png)
+
+### Fix
+
+| Change | File |
+| --- | --- |
+| New hook `useViewportScale`: a card scale (the centre card uses 56% of the window height, never more than its design size) and a battle scale (the 1.5 zoom, reduced so the card fits with a 20 px margin), updated on resize | `src/hooks/useViewportScale.js` |
+| The carousel height, the card positions and the card sizes use the card scale | `src/App.jsx` |
+| The page is exactly the window height (`h-screen`), so the bottom buttons stay on screen | `src/App.jsx` |
+| The title size also follows the window height (`min(10vw, 12vh)`) | `src/App.jsx` |
+| The battle card and its info panel use the battle scale | `src/components/skills/SkillCard.jsx` |
+
+### Tests
+
+| Test (`hooks/useViewportScale.test.js`) | What it protects |
+| --- | --- |
+| Card scale | Full size on a tall window, smaller on shorter ones, never below 0.5 |
+| Battle scale | 1.5 zoom when it fits, otherwise the card fits the window height |
+| Hook | Gives the scales of the window and follows a resize |
+
+The existing carousel and battle tests pass unchanged.
+
+### Limits
+
+- The cards are scaled as a whole, so on very short windows (below about 700 px) the text inside them gets small. The scale never goes below 0.5.
+- Checked in headless Chromium at five window sizes, not on a real phone or in the Electron window.
