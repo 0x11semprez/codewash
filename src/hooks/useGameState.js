@@ -103,6 +103,9 @@ const loadTheme = (profileId) => {
     return resolveThemeId(readSkillsSave(profileId)?.theme);
 };
 
+const loadBorder = (profileId) => localStorage.getItem(borderEffectKey(profileId)) || 'solid';
+const loadBorderColor = (profileId) => localStorage.getItem(borderColorKey(profileId)) || '#FFD700';
+
 const loadStats = (profileId) => {
     const data = readSkillsSave(profileId);
     if (data?.stats && typeof data.stats === 'object') {
@@ -130,14 +133,8 @@ export const useGameState = ({ now = systemNow } = {}) => {
     const [stats, setStats] = useState(() => loadStats(currentProfile));
     const loginTrackedRef = useRef(false);
 
-    const [selectedBorder, setSelectedBorder] = useState(() => {
-        const saved = localStorage.getItem(borderEffectKey(currentProfile));
-        return saved || 'solid';
-    });
-    const [borderColor, setBorderColor] = useState(() => {
-        const saved = localStorage.getItem(borderColorKey(currentProfile));
-        return saved || '#FFD700';
-    });
+    const [selectedBorder, setSelectedBorder] = useState(() => loadBorder(currentProfile));
+    const [borderColor, setBorderColor] = useState(() => loadBorderColor(currentProfile));
 
     useEffect(() => {
         const dataToSave = { skills, theme: activeTheme, stats };
@@ -218,8 +215,13 @@ export const useGameState = ({ now = systemNow } = {}) => {
 
     const handleSwitchProfile = (newId) => {
         if (newId === currentProfile) return;
+        // Everything that belongs to a profile is reloaded, so nothing of the old profile
+        // is shown on the new one or written into its save.
         setSkills(loadSkills(newId));
         setActiveTheme(loadTheme(newId));
+        setStats(loadStats(newId));
+        setSelectedBorder(loadBorder(newId));
+        setBorderColor(loadBorderColor(newId));
         setCurrentProfile(newId);
     };
 
