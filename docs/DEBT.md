@@ -1,6 +1,6 @@
 # Technical debt register
 
-> Living document. Last updated: 2026-11-26.
+> Living document. Last updated: 2026-11-28.
 >
 > Status values: **Done ✓** (fixed on `main`), **Partly done** (the main fix is merged, a residual part stays), **Open** (not started). Partly done and Open items are the residual debt handed to the next team, listed in [section 9](#9-residual-debt-handed-over).
 

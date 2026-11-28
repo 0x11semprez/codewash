@@ -28,6 +28,13 @@ The received version and the current `main` were measured in the same conditions
 - The Lighthouse performance score went from 38.5 to 57.5, LCP from 2.87 s to 1.42 s and Total Blocking Time from 2.22 s to 1.03 s.
 - The first load transfers 1.34 MB against 2.13 MB (-37 %).
 - Two figures got worse. The page makes 33.5 requests against 24, because drawers, global styles and the font are now separate files. The startup JavaScript is 107.9 kB transferred against 102.2 kB (+5.7 %), because translations and other features were added since.
+
+**Later optimizations (2026-11-28)**
+
+- Animated WebP sprites re-encoded with fewer frames and lossy quality 60: total assets from 50 MB to 42 MB. Book went from 8.3 MB to 572 KB. [#99](https://github.com/0x11semprez/codewash/pull/99)
+- Layout uses viewport-relative sizes (`clamp`, `min`, `vh`) so the main screen no longer overflows on small viewports. [#100](https://github.com/0x11semprez/codewash/pull/100)
+- Aura CSS animations pause (`animation-play-state: paused`) when the player is not in battle, reducing GPU paint work on the carousel. [#101](https://github.com/0x11semprez/codewash/pull/101)
+- Lighthouse CI added to the GitHub Actions pipeline with performance score, FCP, LCP and CLS thresholds.
 - The machine was busy during the runs (load average 12 to 25 on 8 cores). The trend is the same in every pair of runs, but the absolute values are slower than on a quiet machine.
 
 Every figure is labeled with the tool and environment that produced it.

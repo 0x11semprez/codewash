@@ -2,7 +2,7 @@
 
 This page is for the person on duty when Level Up RPG breaks during a school day. You do not need to know React. Each incident gives the symptoms, a quick check, a fix, and when to open an issue.
 
-Last checked against the code: 2026-11-25.
+Last checked against the code: 2026-11-28.
 
 ## Before you start
 

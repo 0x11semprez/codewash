@@ -9,7 +9,7 @@ Status values:
 - **Missing**: nothing is done yet.
 - **Not chosen**: an optional mission the team did not pick. The subject asks for 4 missions out of 6.
 
-Last checked: 2026-11-26.
+Last checked: 2026-11-28.
 
 ## Code Wash protocol
 
@@ -50,7 +50,7 @@ Last checked: 2026-11-26.
 | Quality gates block the merge | Done | `main` is protected: a pull request is required, the `build-and-test` check must pass on an up-to-date branch, and force pushes and deletion are blocked. CI fails on a test failure, a lint warning, a format error or coverage under 100% | Admins can still bypass the rule. The CodeQL checks are not required. |
 | Static analysis in the pipeline | Done | `.github/workflows/codeql.yml` (CodeQL, `security-and-quality` queries on `src/` and `electron/`), complexity ceilings in `eslint.config.js`, [#85](https://github.com/0x11semprez/codewash/pull/85), [ADR-014](adr/014-codeql-static-analysis.md) | The CodeQL checks are not yet required in the branch protection of `main`. The complexity ceilings only block regressions. |
 | New code fully covered, 80% of modified lines | Done | `vitest.config.js`, [#80](https://github.com/0x11semprez/codewash/pull/80) | Global thresholds are 100% for lines, statements, branches and functions, so new code without tests fails CI. There is no separate diff coverage check. |
-| Lowered thresholds are written down as debt | Done | [ADR-003](adr/003-conservative-coverage-thresholds.md) records the ratchet rule. Since [#80](https://github.com/0x11semprez/codewash/pull/80) no threshold is lowered | ADR-003 still shows the first values (30% and 20%). |
+| Lowered thresholds are written down as debt | Done | [ADR-003](adr/003-conservative-coverage-thresholds.md) records the ratchet rule. Since [#80](https://github.com/0x11semprez/codewash/pull/80) no threshold is lowered. ADR-003 is now marked Superseded | |
 | Tests can control the clock and random numbers | Partial | [ADR-008](adr/008-inject-randomness-and-clock.md), `src/__tests__/gameUtils.deterministic.test.js`, `src/__tests__/useGameState.clock.test.js` | Same 16 calls as in "Directed jet" above. |
 
 ## Hand over cleanly
@@ -69,9 +69,9 @@ Last checked: 2026-11-26.
 
 | Mission | Status | Evidence | Missing |
 | --- | --- | --- | --- |
-| Improve performance | Done | [#51](https://github.com/0x11semprez/codewash/pull/51), [#64](https://github.com/0x11semprez/codewash/pull/64), [#75](https://github.com/0x11semprez/codewash/pull/75), [#76](https://github.com/0x11semprez/codewash/pull/76), fair Lighthouse comparison on the same theme in [#89](https://github.com/0x11semprez/codewash/pull/89), [performance report](missions/performance.md), [ADR-010](adr/010-pause-offscreen-animations.md), [ADR-011](adr/011-animated-webp-instead-of-gif.md), issue [#18](https://github.com/0x11semprez/codewash/issues/18) | |
-| Bug reporting | Done | [#77](https://github.com/0x11semprez/codewash/pull/77), [bug reporting guide](features/bug-reporting.md), [ADR-009](adr/009-bug-reporting.md), issue [#19](https://github.com/0x11semprez/codewash/issues/19) | |
-| Translation | Done | [#78](https://github.com/0x11semprez/codewash/pull/78) (English and French), language button in the main menu [#87](https://github.com/0x11semprez/codewash/pull/87), [translation guide](features/translation.md), [ADR-012](adr/012-translation.md), issue [#20](https://github.com/0x11semprez/codewash/issues/20) | |
-| Themes | Done | [#79](https://github.com/0x11semprez/codewash/pull/79), [themes guide and audit](features/themes.md), [ADR-013](adr/013-themes-as-data-folders.md), `src/__tests__/themeFiles.test.js`, issue [#21](https://github.com/0x11semprez/codewash/issues/21) | The Blocks theme still uses the creature pictures the game came with (see [Known limits](features/themes.md#known-limits)). |
+| Improve performance | Done | [#51](https://github.com/0x11semprez/codewash/pull/51), [#64](https://github.com/0x11semprez/codewash/pull/64), [#75](https://github.com/0x11semprez/codewash/pull/75), [#76](https://github.com/0x11semprez/codewash/pull/76), fair Lighthouse comparison on the same theme in [#89](https://github.com/0x11semprez/codewash/pull/89), asset re-encoding [#99](https://github.com/0x11semprez/codewash/pull/99), layout overflow [#100](https://github.com/0x11semprez/codewash/pull/100), aura pause [#101](https://github.com/0x11semprez/codewash/pull/101), [performance report](missions/performance.md), [ADR-010](adr/010-pause-offscreen-animations.md), [ADR-011](adr/011-animated-webp-instead-of-gif.md), issue [#18](https://github.com/0x11semprez/codewash/issues/18), Lighthouse CI in `.github/workflows/ci.yml`. Documentation: [performance report](missions/performance.md) with before/after Lighthouse scores, key results and measurement methodology | |
+| Bug reporting | Done | [#77](https://github.com/0x11semprez/codewash/pull/77), [bug reporting guide](features/bug-reporting.md), [ADR-009](adr/009-bug-reporting.md), issue [#19](https://github.com/0x11semprez/codewash/issues/19). Documentation: guide explains the modal, the transports (mailto and HTTP), the log buffer and how to test it | |
+| Translation | Done | [#78](https://github.com/0x11semprez/codewash/pull/78) (English and French), language button in the main menu [#87](https://github.com/0x11semprez/codewash/pull/87), [translation guide](features/translation.md), [ADR-012](adr/012-translation.md), issue [#20](https://github.com/0x11semprez/codewash/issues/20). Documentation: guide covers adding a language, the plural rules, the key parity test and the microphone language ([microphone.md](features/microphone.md)) | |
+| Themes | Done | [#79](https://github.com/0x11semprez/codewash/pull/79), [themes guide and audit](features/themes.md), [ADR-013](adr/013-themes-as-data-folders.md), `src/__tests__/themeFiles.test.js`, issue [#21](https://github.com/0x11semprez/codewash/issues/21). Documentation: step-by-step guide for non-developers to add a theme, full audit of every theme's assets and licenses, known limits | The Blocks theme still uses the creature pictures the game came with (see [Known limits](features/themes.md#known-limits)). |
 | New game (trivia) | Not chosen | | |
 | New game+ | Not chosen | | |
