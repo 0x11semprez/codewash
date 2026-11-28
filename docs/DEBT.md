@@ -599,9 +599,112 @@ Issues #27, #11 and #59 are closed on GitHub, but their items keep a residual pa
 
 ---
 
-## 7. Post-refactoring call graph
+## 7. Post-refactoring dependency graph
 
-The current module graph, the state, the I/O points and the main flows are in [ARCHITECTURE.md](ARCHITECTURE.md). The graph of the received version stays in [section 1](#1-codebase-map) for comparison.
+Compare with the [init graph in section 1.3](#13-init-dependency-graph-mermaid-commit-f12cd74). The full architecture description is in [ARCHITECTURE.md](ARCHITECTURE.md).
+
+```mermaid
+graph TD
+    main["main.jsx<br/>entry point"]
+    gate["components/LoadingGate.jsx"]
+    app["App.jsx<br/>main screen"]
+
+    subgraph hooks ["hooks/ (state and game logic)"]
+        gameState["useGameState<br/>profiles, skills, stats, save"]
+        battle["useBattle<br/>battles, XP, achievements"]
+        voice["useVoiceRecognition"]
+        audioHook["useAudio"]
+        carousel["useCarousel"]
+        fullscreen["useFullscreen"]
+        pause["useAnimationPause"]
+    end
+
+    subgraph components ["components/"]
+        skillCard["skills/SkillCard"]
+        games["skills/games/*<br/>6 mini-games"]
+        drawers["drawers/<br/>Menu, Settings, Cosmetics"]
+        modals["modals/<br/>Reset, BugReport"]
+        ui["ui/<br/>LoadingScreen, ErrorBoundary,<br/>GameErrorBoundary, LanguageSelector, ..."]
+        phantom["PhantomEvent"]
+    end
+
+    subgraph i18n ["i18n/"]
+        provider["I18nProvider + I18nContext"]
+        locales["locales/en.js, fr.js"]
+    end
+
+    subgraph constants ["constants/"]
+        gameData["gameData.js<br/>(re-exports game/*)"]
+        gameFolder["game/<br/>items, mobs, skills, words,<br/>difficulty, themes, audio"]
+        achievements["achievements.js"]
+    end
+
+    themesJson["themes/*.json<br/>one file per theme"]
+
+    subgraph services ["services/ (browser I/O)"]
+        storage["storage + storageKeys"]
+        sound["soundManager"]
+        errors["errorTracker"]
+    end
+
+    subgraph utils ["utils/ (pure logic)"]
+        gameUtils["gameUtils, achievementUtils,<br/>mobDisplayUtils, random, clock"]
+        preload["preloadStartupAssets"]
+        bugReport["bugReport/<br/>config, buildReport, transports,<br/>logBuffer, attachments"]
+        vitals["webVitals"]
+    end
+
+    main --> provider
+    main --> gate
+    main --> errors
+    main --> storage
+    main --> bugReport
+    main --> vitals
+    gate --> app
+    gate --> preload
+    gate --> ui
+    app --> hooks
+    app --> skillCard
+    app --> phantom
+    app -.-> drawers
+    app -.-> modals
+    skillCard -.-> games
+    skillCard --> ui
+    drawers --> ui
+    modals --> bugReport
+    provider --> locales
+    hooks --> gameData
+    hooks --> gameUtils
+    hooks --> storage
+    hooks --> sound
+    games --> sound
+    gameData --> gameFolder
+    gameFolder --> themesJson
+    achievements --> gameData
+    gameUtils --> gameData
+    gameUtils --> achievements
+    preload --> gameData
+    preload --> storage
+    errors --> storage
+    errors --> bugReport
+    ui --> errors
+    sound --> gameFolder
+```
+
+### Key differences from init graph
+
+| Aspect | Received version | Current version |
+| --- | --- | --- |
+| God component | `App.jsx` held 32 `useState`, 12 `useEffect`, all game logic | `App.jsx` wires hooks to components, logic in `hooks/` and `utils/` |
+| Drawers/modals | Always mounted, re-rendered on every state change | Lazy-loaded (`React.lazy`), mounted on first use only |
+| Mini-games | Bundled in startup JS | Lazy-loaded per skill, own chunks |
+| I/O | Scattered `localStorage` and `Audio` calls | Centralized in `services/` (storage, soundManager, errorTracker) |
+| Themes | Hardcoded Minecraft data in constants | Data-driven: one JSON per theme, auto-discovered |
+| i18n | No translation support | Full i18n layer with provider, hook, 2 languages |
+| Error tracking | No error handling | ErrorBoundary, GameErrorBoundary, errorTracker with log buffer |
+| Loading | No loading screen, all assets loaded eagerly | LoadingGate with preload, progress bar, deferred images |
+| Bug reporting | Not present | Full bug report system with 2 transports |
+| State persistence | Unsafe `JSON.parse`, no migration | Safe parse with fallback, storage key migration |
 
 ---
 
