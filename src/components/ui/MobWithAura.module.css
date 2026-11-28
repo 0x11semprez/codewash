@@ -404,6 +404,11 @@
         aura-nature-cycle 3.5s ease-in-out infinite;
 }
 
+/* Pause all aura animations when not in battle to save GPU cycles */
+.aura-paused::before {
+    animation-play-state: paused !important;
+}
+
 /* Mob image styling within the container */
 .mob-with-aura-container .mob-image {
     position: relative;

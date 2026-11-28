@@ -302,6 +302,7 @@ const SkillCard = ({
                                 size={mobSize}
                                 isHit={isHit}
                                 bossHealing={bossHealing}
+                                isBattling={isBattling}
                             />
                         ) : (
                             <SafeImage

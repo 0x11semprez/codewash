@@ -26,6 +26,7 @@ const MobWithAura = ({
     size = '100%',
     isHit = false,
     bossHealing = false,
+    isBattling = false,
     className = '',
 }) => {
     // Normalize size - if it's a number, add 'px' suffix; otherwise use as-is
@@ -37,7 +38,7 @@ const MobWithAura = ({
     return (
         <div
             ref={pauseWhenOffscreen}
-            className={`${styles['mob-with-aura-container']} ${className}`}
+            className={`${styles['mob-with-aura-container']} ${!isBattling ? styles['aura-paused'] : ''} ${className}`}
             style={{
                 width: isFillContainer ? '100%' : normalizedSize,
                 height: isFillContainer ? '100%' : normalizedSize,
