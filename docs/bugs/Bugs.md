@@ -7,6 +7,7 @@ Bugs found in the code, with the proof, the cause, the fix and a before/after co
 | Bug | Issue | Status | Outcome |
 | --- | --- | --- | --- |
 | Hardcoded localStorage keys | [#32](https://github.com/0x11semprez/codewash/issues/32) (DEBT-009) | Fixed (PR [#70](https://github.com/0x11semprez/codewash/pull/70)) | One file lists every key, and a migration moves old data |
+| Switching profile mixes two profiles | [#103](https://github.com/0x11semprez/codewash/issues/103) | Fixed, PR pending | Each profile keeps its own stats, border and border color |
 | Corrupted save crashes the game | [#41](https://github.com/0x11semprez/codewash/issues/41) (DEBT-018) | Fixed (PR [#58](https://github.com/0x11semprez/codewash/pull/58), [#66](https://github.com/0x11semprez/codewash/pull/66)) | Not detailed here yet |
 | `perfectMemoryGames` never incremented | [#37](https://github.com/0x11semprez/codewash/issues/37) (DEBT-014) | Fixed, PR pending | A memory game won without a mismatch is counted, and "Perfectionist" can be unlocked |
 | Missing theme images | [#53](https://github.com/0x11semprez/codewash/issues/53) (DEBT-021) | Fixed | Themes mission (#21), not merged yet |
@@ -141,6 +142,60 @@ The two test files failed before the fix (5 tests) and pass after.
 - The counter is raised when the game is won, so a game that is abandoned or lost is not counted, which is the intended rule.
 - Players who already won perfect games before this fix are not credited: the game never recorded them, so there is nothing to recover.
 - The screenshots use a headless browser that plays the game by itself, on a new save.
+
+---
+
+## Issue #103: switching profile mixes two profiles
+
+### Problem
+
+The game has three profiles, each with its own save. `handleSwitchProfile` (`src/hooks/useGameState.js`) reloaded the skills and the theme of the new profile, but not three other values: the stats (defeat counters, used by the achievements), the selected border and its color.
+
+These values stayed those of the previous profile. The save effects then wrote them under the new profile, so its real save was overwritten.
+
+### Reproduction
+
+Profile 1 has the Emerald badge, the "Lifestream" border and 42 mobs defeated. Profile 3 has no badge, the default border and 0 mobs defeated. In the settings, switch from profile 1 to profile 3. Production build in headless Chromium, with saves built for the test.
+
+| Profile 3 after the switch | Before the fix | After the fix |
+| --- | --- | --- |
+| Active border | Lifestream (from profile 1, locked on profile 3) | Default (its own) |
+| Saved border (`borderEffect_p3`) | `lifestream` | `solid` |
+| Saved mobs defeated | 42 | 0 |
+| Saved theme changes | 3 | 0 |
+
+**Before the fix: on profile 3, "Lifestream" is marked ACTIVE although it needs the Emerald badge.**
+
+![Before the fix: the border of profile 1 is active on profile 3](screens/issue-103-1-before-border-of-profile-1-on-profile-3.png)
+
+**After the fix: profile 3 keeps its own border, "Default".**
+
+![After the fix: profile 3 keeps its own border](screens/issue-103-2-after-profile-3-keeps-its-border.png)
+
+### Fix
+
+| Change | File |
+| --- | --- |
+| `handleSwitchProfile` also reloads the stats, the border and the border color of the new profile | `src/hooks/useGameState.js` |
+| The border and its color are read by two small helpers (`loadBorder`, `loadBorderColor`), used at startup and when switching | `src/hooks/useGameState.js` |
+| Resetting a profile ("Delete profile progress") also removes its border and border color. They are saved apart from the skills, so a reset profile kept a border it had not earned | `src/hooks/useGameState.js` (`handleReset`) |
+
+### Tests
+
+| Test (`hooks/useGameState.saves.test.js`) | What it protects |
+| --- | --- |
+| Shows the data of the new profile | Stats, border and color come from the new profile |
+| Does not overwrite the new profile's save | Its saved stats, border and color are unchanged |
+| Switching back | Profile 1 still has its own data |
+| Profile with no save | Default stats, border and color |
+| Reset | The border and color of the reset profile are removed, those of the other profiles are kept |
+
+Four of these tests failed before the fix (three for the switch, one for the reset) and pass after. The reset was checked by this test only: the browser check could not run on the overloaded test machine.
+
+### Limits
+
+- Saves already mixed by this bug are not repaired: the game cannot know which values were the real ones.
+- The login of the day is recorded once, for the profile open at startup. Switching profile does not record it for the new profile (it did not before either, the old profile's dates were copied).
 
 ---
 

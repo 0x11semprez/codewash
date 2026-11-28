@@ -3,7 +3,7 @@ import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { renderHook, act } from '@testing-library/react';
 import { useGameState } from '../../hooks/useGameState';
 import { createMemoryStorage } from '../helpers/memoryStorage';
-import { skillsKey } from '../../services/storageKeys';
+import { skillsKey, borderEffectKey, borderColorKey } from '../../services/storageKeys';
 import { SKILL_DATA, DEFAULT_THEME_ID } from '../../constants/gameData';
 import { calculateMobHealth } from '../../utils/gameUtils';
 
@@ -189,6 +189,65 @@ describe('useGameState profile actions', () => {
     });
     afterEach(() => {
         vi.unstubAllGlobals();
+    });
+
+    describe('switching profile', () => {
+        const setUpTwoProfiles = () => {
+            save(1, { stats: { totalMobsDefeated: 42, themeChanges: 3 } });
+            localStorage.setItem(borderEffectKey(1), 'lifestream');
+            localStorage.setItem(borderColorKey(1), '#00ff00');
+            save(3, { stats: { totalMobsDefeated: 0 } });
+            localStorage.setItem(borderEffectKey(3), 'fire');
+            localStorage.setItem(borderColorKey(3), '#ff0000');
+            return renderHook(() => useGameState({ now }));
+        };
+
+        it('shows the stats, the border and the color of the new profile', () => {
+            const { result } = setUpTwoProfiles();
+            expect(result.current.stats.totalMobsDefeated).toBe(42);
+            act(() => result.current.handleSwitchProfile(3));
+            expect(result.current.stats.totalMobsDefeated).toBe(0);
+            expect(result.current.stats.themeChanges).toBe(0);
+            expect(result.current.selectedBorder).toBe('fire');
+            expect(result.current.borderColor).toBe('#ff0000');
+        });
+
+        it('does not overwrite the save of the new profile with the old one', () => {
+            const { result } = setUpTwoProfiles();
+            act(() => result.current.handleSwitchProfile(3));
+            expect(JSON.parse(localStorage.getItem(skillsKey(3))).stats.totalMobsDefeated).toBe(0);
+            expect(localStorage.getItem(borderEffectKey(3))).toBe('fire');
+            expect(localStorage.getItem(borderColorKey(3))).toBe('#ff0000');
+        });
+
+        it('keeps the data of the first profile when switching back', () => {
+            const { result } = setUpTwoProfiles();
+            act(() => result.current.handleSwitchProfile(3));
+            act(() => result.current.handleSwitchProfile(1));
+            expect(result.current.stats.totalMobsDefeated).toBe(42);
+            expect(result.current.selectedBorder).toBe('lifestream');
+            expect(result.current.borderColor).toBe('#00ff00');
+            expect(JSON.parse(localStorage.getItem(skillsKey(1))).stats.totalMobsDefeated).toBe(42);
+        });
+
+        it('forgets the border and its color of the profile that is reset, and only of that one', () => {
+            vi.stubGlobal('location', { ...window.location, reload: vi.fn() });
+            const { result } = setUpTwoProfiles();
+            act(() => result.current.handleReset());
+            expect(window.location.reload).toHaveBeenCalled();
+            expect(localStorage.getItem(borderEffectKey(1))).toBeNull();
+            expect(localStorage.getItem(borderColorKey(1))).toBeNull();
+            expect(localStorage.getItem(borderEffectKey(3))).toBe('fire');
+            expect(localStorage.getItem(borderColorKey(3))).toBe('#ff0000');
+        });
+
+        it('uses the default stats, border and color for a profile with no save', () => {
+            const { result } = setUpTwoProfiles();
+            act(() => result.current.handleSwitchProfile(2));
+            expect(result.current.stats.totalMobsDefeated).toBe(0);
+            expect(result.current.selectedBorder).toBe('solid');
+            expect(result.current.borderColor).toBe('#FFD700');
+        });
     });
 
     it('does nothing when switching to the profile that is already open', () => {
