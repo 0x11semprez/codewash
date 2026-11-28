@@ -11,6 +11,7 @@ Bugs found in the code, with the proof, the cause, the fix and a before/after co
 | `perfectMemoryGames` never incremented | [#37](https://github.com/0x11semprez/codewash/issues/37) (DEBT-014) | Fixed, PR pending | A memory game won without a mismatch is counted, and "Perfectionist" can be unlocked |
 | Missing theme images | [#53](https://github.com/0x11semprez/codewash/issues/53) (DEBT-021) | Fixed | Themes mission (#21), not merged yet |
 | Docker build fails on `npm ci` | [#54](https://github.com/0x11semprez/codewash/issues/54) (DEBT-022) | Open | Not started |
+| Music only starts with the first battle | [#107](https://github.com/0x11semprez/codewash/issues/107) | Fixed, PR pending | The music starts on the first click, touch or key press anywhere |
 
 Only the bugs with a section below are documented in detail. Every figure and screenshot says how it was produced.
 
@@ -89,6 +90,46 @@ In this run, the storage held only `heroSkills_v23` before the reload. After the
 - `migrateStorage()` knows one migration only (the original save). A future rename needs its own line.
 - The migration moves keys, not the shape of the saved data. A change in the structure of a save needs its own conversion.
 - The screenshots use a headless browser and a save built for the test, not a real player save.
+
+## Issue #107: music only starts with the first battle
+
+### Problem
+
+The background music was started by `startBattle` only (`useBattle.js` calls `startBGM` from `useAudio`). On the main screen the game stayed silent, even after clicks, until the player launched a battle. Browsers refuse to play audio before a user gesture, but any click on the page is enough.
+
+### Reproduction
+
+Production build in headless Chromium, new save. Every call to `play()` on an audio element is recorded. The page is loaded, then the background is clicked once (no battle).
+
+| | Before the fix | After the fix |
+| --- | --- | --- |
+| Music started at load | none | none (the browser would block it) |
+| Music started by the first click on the background | none | `music/flowerbed-fields.mp3` |
+
+There is no screenshot: the change is a sound.
+
+### Fix
+
+| Change | File |
+| --- | --- |
+| `useAudio` listens once for the first `pointerdown` (mouse or touch) or `keydown` on the page and starts the music, then stops listening. `startBattle` still starts it too, and starting twice does nothing | `src/hooks/useAudio.js` |
+
+### Tests
+
+| Test (`hooks/smallHooks.test.js`) | What it protects |
+| --- | --- |
+| First click | The music starts once, and later clicks or keys do not restart it |
+| First key press | A keyboard player gets the music too |
+| Music already playing | Nothing is started again |
+| After unmount | No listener stays on the page |
+
+Two of these tests failed before the fix and pass after.
+
+### Limits
+
+- The music starts on the first gesture even if it is a click on the settings, for example to lower the music volume first.
+
+---
 
 ---
 

@@ -20,5 +20,17 @@ export const useAudio = () => {
         }
     }, []);
 
+    // Browsers only allow audio after a user gesture, so the music starts on the first click,
+    // touch or key press anywhere on the page. Starting a battle still starts it too.
+    useEffect(() => {
+        const events = ['pointerdown', 'keydown'];
+        const startOnce = () => {
+            events.forEach((name) => window.removeEventListener(name, startOnce));
+            startBGM();
+        };
+        events.forEach((name) => window.addEventListener(name, startOnce));
+        return () => events.forEach((name) => window.removeEventListener(name, startOnce));
+    }, [startBGM]);
+
     return { bgmVol, setBgmVol, sfxVol, setSfxVol: setSfxVolState, startBGM };
 };

@@ -106,6 +106,48 @@ describe('useAudio', () => {
         bgm.isPlaying = false;
         expect(bgm.play).toHaveBeenCalledOnce();
     });
+
+    // The music used to wait for the first battle; browsers only allow it after a user gesture.
+    describe('starts the music on the first gesture on the page', () => {
+        // The mock keeps isPlaying false, like a real manager before it plays.
+        afterEach(() => {
+            sound.getBGMManager().isPlaying = false;
+        });
+
+        it('on the first click, only once', () => {
+            const bgm = sound.getBGMManager();
+            renderHook(() => useAudio());
+            expect(bgm.play).not.toHaveBeenCalled();
+            act(() => window.dispatchEvent(new Event('pointerdown')));
+            expect(bgm.play).toHaveBeenCalledOnce();
+            act(() => window.dispatchEvent(new Event('pointerdown')));
+            act(() => window.dispatchEvent(new Event('keydown')));
+            expect(bgm.play).toHaveBeenCalledOnce();
+        });
+
+        it('on the first key press', () => {
+            const bgm = sound.getBGMManager();
+            renderHook(() => useAudio());
+            act(() => window.dispatchEvent(new Event('keydown')));
+            expect(bgm.play).toHaveBeenCalledOnce();
+        });
+
+        it('not when the music already plays', () => {
+            const bgm = sound.getBGMManager();
+            renderHook(() => useAudio());
+            bgm.isPlaying = true;
+            act(() => window.dispatchEvent(new Event('pointerdown')));
+            expect(bgm.play).not.toHaveBeenCalled();
+        });
+
+        it('not after the hook is gone', () => {
+            const bgm = sound.getBGMManager();
+            const { unmount } = renderHook(() => useAudio());
+            unmount();
+            act(() => window.dispatchEvent(new Event('pointerdown')));
+            expect(bgm.play).not.toHaveBeenCalled();
+        });
+    });
 });
 
 describe('useFullscreen', () => {
