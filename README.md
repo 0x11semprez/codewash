@@ -74,6 +74,7 @@ Start with [docs/SUBJECT_MAP.md](docs/SUBJECT_MAP.md). It lists every requiremen
 | Microphone and speech recognition | [docs/features/microphone.md](docs/features/microphone.md) |
 | Themes: how to add a theme, audit, credits | [docs/features/themes.md](docs/features/themes.md) |
 | What to do when something breaks | [docs/handover/RUNBOOK.md](docs/handover/RUNBOOK.md) |
+| How to work on this project day-to-day | [docs/handover/PLAYBOOK.md](docs/handover/PLAYBOOK.md) |
 | What changed since the received version | [CHANGELOG.md](CHANGELOG.md) |
 
 ## Continuous integration

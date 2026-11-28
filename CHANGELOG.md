@@ -10,6 +10,7 @@ Links to pull requests point to this repository. Work done before the move from 
 
 ### Added
 
+- Tests for `AchievementToast`, `ParentalVerificationModal`, `ProfileCard` and `MenuDrawer` (28 new test cases). [#102](https://github.com/0x11semprez/codewash/pull/102)
 - Language button on the main screen, in the bottom left corner. It opens the list of languages, and picking one changes the language and closes the list. It works with the keyboard (Escape closes it). The selector in the settings drawer stays.
 - Characterization tests that freeze the current behavior of the utilities and constants, before any refactoring (114 tests). [#3](https://github.com/0x11semprez/codewash/pull/3)
 - Component smoke tests with Testing Library for `SafeImage`, `PixelHeart`, `BugReportModal`, `ResetModal` and `MobWithAura`. [#4](https://github.com/0x11semprez/codewash/pull/4)
@@ -56,6 +57,8 @@ Links to pull requests point to this repository. Work done before the move from 
 
 ### Changed
 
+- Animated WebP sprites (book, hoe, axe, ender chest, enderdragon, phantom, axolotls) re-encoded with fewer frames and lower quality: total assets from 50 MB to 42 MB. [#99](https://github.com/0x11semprez/codewash/pull/99)
+- Logo, title and carousel use viewport-relative sizes (`clamp`, `min`, `vh`), so the main screen no longer overflows on small viewports. [#100](https://github.com/0x11semprez/codewash/pull/100)
 - The border effect cards of the cosmetics drawer render through one `BorderEffectCard` component instead of two copied blocks (DEBT-008). [#31](https://github.com/0x11semprez/codewash/issues/31)
 - The "Static analysis" step in `ci.yml` is removed. It ran ESLint a second time with the same rules. The lint step is renamed "Lint and complexity ceilings (zero warnings)". No pull request yet.
 - The debt register (`docs/DEBT.md`) matches the merged pull requests: each done item names its pull request, and DEBT-002, DEBT-004, DEBT-020 and DEBT-023 are "Partly done" because a residual part is still in the code. The risk matrix, the plan and the summary use the same statuses. The old codebase map is kept as the "received version".
@@ -81,6 +84,7 @@ Links to pull requests point to this repository. Work done before the move from 
 
 ### Fixed
 
+- Aura CSS animations on mob sprites now pause when the player is not in battle, reducing GPU paint work on the main carousel screen. [#101](https://github.com/0x11semprez/codewash/pull/101)
 - The reading game shows every microphone status in the game language. `useVoiceRecognition` now stores dictionary keys instead of English strings, and a "permission denied" or "not available" message no longer flashes red as a wrong word. Recognition stays in English (`en-US`) on purpose: the reading words are English, and a French recognizer would never match them (ADR-012, [microphone.md](docs/features/microphone.md)).
 - The Docker image builds again. `@testing-library/jest-dom` 8 wanted Vitest 5, so `npm ci` failed. Version 7.0.1 works with Vitest 3, so no install flag is needed anymore. CI now builds the image on every pull request, and `.dockerignore` keeps local files out of it (DEBT-022). [#54](https://github.com/0x11semprez/codewash/issues/54)
 - `battlesThisSession` now resets when the game starts, so the "speed_demon" achievement needs 10 battles in one session again (DEBT-015). Epitech PR #46 (merge `a9e408a`).
