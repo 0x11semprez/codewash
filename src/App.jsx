@@ -371,7 +371,7 @@ const App = ({ startupLoadSeconds = null }) => {
 
             <main className="flex-1 relative flex flex-col items-center justify-center w-full">
                 {/* Fixed 4:1 box: logos of any size fit inside without moving the cards below. */}
-                <div className="z-10 relative mb-[-30px] md:mb-[-50px] pointer-events-none opacity-90 w-[480px] h-[120px] md:w-[720px] md:h-[180px] lg:w-[960px] lg:h-[240px]">
+                <div className="z-10 relative mb-[-30px] md:mb-[-50px] pointer-events-none opacity-90 w-[min(480px,80vw)] h-[min(120px,15vh)] md:w-[min(720px,80vw)] md:h-[min(180px,18vh)] lg:w-[min(960px,80vw)] lg:h-[min(240px,20vh)]">
                     <SafeImage
                         src={currentThemeData.assets.logo}
                         alt={t('app.logoAlt')}
@@ -379,8 +379,8 @@ const App = ({ startupLoadSeconds = null }) => {
                     />
                 </div>
                 <h1
-                    className="text-9xl text-yellow-400 tracking-widest uppercase mt-[-20px] mb-[95px] z-20 relative drop-shadow-[4px_4px_0_#000]"
-                    style={{ textShadow: '6px 6px 0 #000' }}
+                    className="text-yellow-400 tracking-widest uppercase mt-[-20px] mb-[min(95px,8vh)] z-20 relative drop-shadow-[4px_4px_0_#000]"
+                    style={{ textShadow: '6px 6px 0 #000', fontSize: 'clamp(3rem, 10vw, 8rem)' }}
                 >
                     {t('app.title')}
                 </h1>
@@ -440,7 +440,7 @@ const App = ({ startupLoadSeconds = null }) => {
                 </button>
 
                 <div
-                    className={`relative w-full flex items-center justify-center perspective-1000 h-[650px] mb-12 ${battlingSkillId ? 'z-50' : ''}`}
+                    className={`relative w-full flex items-center justify-center perspective-1000 h-[min(650px,60vh)] mb-12 ${battlingSkillId ? 'z-50' : ''}`}
                     style={{ cursor: battlingSkillId ? 'default' : isDragging ? 'grabbing' : 'grab' }}
                     onMouseDown={(e) => handleDragStart(e.clientX)}
                     onMouseMove={(e) => handleDragMove(e.clientX)}
