@@ -15,6 +15,7 @@ import { playClick, playAchievement, setSoundTheme } from './services/soundManag
 import { useGameState } from './hooks/useGameState';
 import { useAudio } from './hooks/useAudio';
 import { useFullscreen } from './hooks/useFullscreen';
+import { useViewportScale } from './hooks/useViewportScale';
 import { useCarousel } from './hooks/useCarousel';
 import { useBattle } from './hooks/useBattle';
 import { useVoiceRecognition } from './hooks/useVoiceRecognition';
@@ -62,6 +63,7 @@ const App = ({ startupLoadSeconds = null }) => {
 
     const { bgmVol, setBgmVol, sfxVol, setSfxVol, startBGM } = useAudio();
     const { isFullscreen, toggleFullscreen } = useFullscreen();
+    const { cardScale } = useViewportScale();
 
     // The active theme drives every picture, text, sound and the music.
     const currentThemeData = getTheme(activeTheme);
@@ -189,7 +191,7 @@ const App = ({ startupLoadSeconds = null }) => {
 
     return (
         <div
-            className="min-h-screen overflow-hidden relative flex flex-col bg-cover bg-center bg-no-repeat font-sans text-stone-100"
+            className="h-screen overflow-hidden relative flex flex-col bg-cover bg-center bg-no-repeat font-sans text-stone-100"
             style={containerStyle}
         >
             <div className="absolute inset-0 bg-black/30 pointer-events-none z-0"></div>
@@ -380,7 +382,7 @@ const App = ({ startupLoadSeconds = null }) => {
                 </div>
                 <h1
                     className="text-yellow-400 tracking-widest uppercase mt-[-20px] mb-[min(95px,8vh)] z-20 relative drop-shadow-[4px_4px_0_#000]"
-                    style={{ textShadow: '6px 6px 0 #000', fontSize: 'clamp(3rem, 10vw, 8rem)' }}
+                    style={{ textShadow: '6px 6px 0 #000', fontSize: 'clamp(3rem, min(10vw, 12vh), 8rem)' }}
                 >
                     {t('app.title')}
                 </h1>
@@ -440,8 +442,11 @@ const App = ({ startupLoadSeconds = null }) => {
                 </button>
 
                 <div
-                    className={`relative w-full flex items-center justify-center perspective-1000 h-[min(650px,60vh)] mb-12 ${battlingSkillId ? 'z-50' : ''}`}
-                    style={{ cursor: battlingSkillId ? 'default' : isDragging ? 'grabbing' : 'grab' }}
+                    className={`relative w-full flex items-center justify-center perspective-1000 mb-12 ${battlingSkillId ? 'z-50' : ''}`}
+                    style={{
+                        height: `${650 * cardScale}px`,
+                        cursor: battlingSkillId ? 'default' : isDragging ? 'grabbing' : 'grab',
+                    }}
                     onMouseDown={(e) => handleDragStart(e.clientX)}
                     onMouseMove={(e) => handleDragMove(e.clientX)}
                     onMouseUp={handleDragEnd}
@@ -477,7 +482,7 @@ const App = ({ startupLoadSeconds = null }) => {
                                 className="absolute transition-all duration-500 ease-out"
                                 data-offscreen={Math.abs(item.offset) === 3 ? '' : undefined}
                                 style={{
-                                    transform: `translateX(${item.offset * 320}px) translateY(${translateY}px) rotateX(${rotateX}deg) scale(${item.offset === 0 ? 1.1 : 0.85})`,
+                                    transform: `translateX(${item.offset * 320 * cardScale}px) translateY(${translateY * cardScale}px) rotateX(${rotateX}deg) scale(${cardScale}) scale(${item.offset === 0 ? 1.1 : 0.85})`,
                                     opacity:
                                         item.offset === 0
                                             ? 1

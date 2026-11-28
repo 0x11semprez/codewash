@@ -7,6 +7,7 @@ import ParentalVerificationModal from '../ui/ParentalVerificationModal';
 import GameErrorBoundary from '../ui/GameErrorBoundary';
 import cubesTexture from '../../assets/textures/cubes.png';
 import { pauseWhenOffscreen } from '../../hooks/useAnimationPause';
+import { useViewportScale } from '../../hooks/useViewportScale';
 import { DIFFICULTY_IMAGES } from '../../constants/gameData';
 import { calculateXPToLevel } from '../../utils/gameUtils';
 import { AURA_ADJECTIVES } from '../../utils/mobDisplayUtils';
@@ -183,6 +184,7 @@ const SkillCard = ({
             ? 'h-full bg-[#3a3a3a] p-4 flex flex-col relative rounded-lg'
             : 'flex-1 bg-[#3a3a3a] p-4 flex flex-col relative rounded-b-sm';
     const isBattlingCenter = isBattling && isCenter;
+    const { battleScale } = useViewportScale();
 
     const renderBattleContent = () => {
         switch (config.id) {
@@ -396,13 +398,17 @@ const SkillCard = ({
                 {ReactDOM.createPortal(
                     <div className="fixed inset-0 z-50 flex items-center justify-center" onClick={onEndBattle}>
                         <div className="flex items-center justify-center relative" onClick={(e) => e.stopPropagation()}>
-                            <div style={{ transform: 'scale(1.5)', transformOrigin: 'center center' }}>
+                            <div style={{ transform: `scale(${battleScale})`, transformOrigin: 'center center' }}>
                                 {cardContent}
                             </div>
                             {!['memory', 'cleaning'].includes(config.id) && (
                                 <div
-                                    className="absolute left-[calc(50%+225px+30px)] top-0"
-                                    style={{ transform: 'scale(1.5)', transformOrigin: 'left top' }}
+                                    className="absolute top-0"
+                                    style={{
+                                        left: `calc(50% + ${150 * battleScale + 30}px)`,
+                                        transform: `scale(${battleScale})`,
+                                        transformOrigin: 'left top',
+                                    }}
                                 >
                                     <div
                                         className="relative w-[175px] bg-gradient-to-br from-amber-100 via-yellow-50 to-amber-50 border-4 border-amber-800 rounded-lg overflow-hidden"
