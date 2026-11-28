@@ -178,6 +178,7 @@ Profile 1 has the Emerald badge, the "Lifestream" border and 42 mobs defeated. P
 | --- | --- |
 | `handleSwitchProfile` also reloads the stats, the border and the border color of the new profile | `src/hooks/useGameState.js` |
 | The border and its color are read by two small helpers (`loadBorder`, `loadBorderColor`), used at startup and when switching | `src/hooks/useGameState.js` |
+| Resetting a profile ("Delete profile progress") also removes its border and border color. They are saved apart from the skills, so a reset profile kept a border it had not earned | `src/hooks/useGameState.js` (`handleReset`) |
 
 ### Tests
 
@@ -187,8 +188,9 @@ Profile 1 has the Emerald badge, the "Lifestream" border and 42 mobs defeated. P
 | Does not overwrite the new profile's save | Its saved stats, border and color are unchanged |
 | Switching back | Profile 1 still has its own data |
 | Profile with no save | Default stats, border and color |
+| Reset | The border and color of the reset profile are removed, those of the other profiles are kept |
 
-Three of these tests failed before the fix and pass after.
+Four of these tests failed before the fix (three for the switch, one for the reset) and pass after. The reset was checked by this test only: the browser check could not run on the overloaded test machine.
 
 ### Limits
 

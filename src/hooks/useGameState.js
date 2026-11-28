@@ -252,6 +252,9 @@ export const useGameState = ({ now = systemNow } = {}) => {
 
     const handleReset = () => {
         localStorage.removeItem(skillsKey(currentProfile));
+        // The border is saved apart from the skills, so it is removed too: a reset profile starts with the default one.
+        localStorage.removeItem(borderEffectKey(currentProfile));
+        localStorage.removeItem(borderColorKey(currentProfile));
         const parentStatusObj = readJSON(STORAGE_KEYS.parentStatus, { ...DEFAULT_PARENT_STATUS });
         parentStatusObj[currentProfile] = false;
         localStorage.setItem(STORAGE_KEYS.parentStatus, JSON.stringify(parentStatusObj));

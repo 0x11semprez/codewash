@@ -230,6 +230,17 @@ describe('useGameState profile actions', () => {
             expect(JSON.parse(localStorage.getItem(skillsKey(1))).stats.totalMobsDefeated).toBe(42);
         });
 
+        it('forgets the border and its color of the profile that is reset, and only of that one', () => {
+            vi.stubGlobal('location', { ...window.location, reload: vi.fn() });
+            const { result } = setUpTwoProfiles();
+            act(() => result.current.handleReset());
+            expect(window.location.reload).toHaveBeenCalled();
+            expect(localStorage.getItem(borderEffectKey(1))).toBeNull();
+            expect(localStorage.getItem(borderColorKey(1))).toBeNull();
+            expect(localStorage.getItem(borderEffectKey(3))).toBe('fire');
+            expect(localStorage.getItem(borderColorKey(3))).toBe('#ff0000');
+        });
+
         it('uses the default stats, border and color for a profile with no save', () => {
             const { result } = setUpTwoProfiles();
             act(() => result.current.handleSwitchProfile(2));
